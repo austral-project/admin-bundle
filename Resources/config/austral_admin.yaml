@@ -1,0 +1,28 @@
+parameters:
+
+  austral.admin.class.configuration_status.class:     Austral\AdminBundle\Admin\ConfigurationStatusAdmin
+
+##### Austral Dashboard module defined
+  austral_admin.modules.manager_bundle:
+    austral_admin_dashboard:
+      enabled:                    true
+      navigation:
+        position:                 0
+      name:                       "Dashboard"
+      picto:                      "austral-picto-home"
+      actions:
+        index:                    "dashboard"
+      route:                      "austral_admin_index"
+      translate:                  "female_c"
+
+    austral_admin_configuration_status:
+      enabled:                    true
+      navigation:
+        position:                 1000
+      name:                       "Status"
+      picto:                      "austral-picto-sliders"
+      class:                      "%austral.admin.class.configuration_status.class%"
+      actions:
+        index:                    "index"
+      route:                      "status-configuration"
+      translate:                  "female_c"

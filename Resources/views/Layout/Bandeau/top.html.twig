@@ -1,0 +1,135 @@
+{% apply spaceless %}
+
+  {%- if list.mapper is defined and list.mapper.actions|length > 0 -%}
+    {% set actions = list.mapper.actions %}
+  {%- elseif form.mapper is defined and form.mapper.actions|length > 0 -%}
+    {% set actions = form.mapper.actions %}
+  {% endif %}
+
+  <div class="bandeau-top-container" {% if sticky is defined and sticky %}data-sticky-bandeau=""{% endif %}>
+    <div class="grid grid--container {{ gridContainerCss ?? "" }}">
+      {% if returnButton is defined and returnButton %}
+        <div class="row row--center button-return-top-container">
+          <div class="col col--xs-12">
+            <div class="button-return-content">
+              {{ include("@AustralDesign/Components/Button/picto.html.twig",
+                  {
+                    tag:            "span",
+                    url:            returnButton.url,
+                    picto:          "austral-picto-arrow-left",
+                    title:          returnButton.entitled,
+                    withEntitled:   true,
+                    data:     {
+                      "data-click-actions":         "reload",
+                      "data-reload-elements-key":   "all",
+                    }
+                  }
+                )
+              }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      <div class="row row--center title-buttons-container">
+        <div class="col col--xs-7 title-button-content">
+          {% if returnButton is defined and returnButton %}
+            <div class="button-return-container">
+              {{ include("@AustralDesign/Components/Button/picto.html.twig",
+                  {
+                    tag:            "span",
+                    url:            returnButton.url,
+                    picto:          "austral-picto-arrow-left",
+                    title:          returnButton.entitled,
+                    data:     {
+                    "data-click-actions":         "reload",
+                    "data-reload-elements-key":   "all",
+                  }
+                  }
+                )
+              }}
+            </div>
+          {% endif %}
+          <div class="title-container">
+            {{ include("@AustralDesign/Components/Title/title.html.twig",
+                {
+                  tag:        "h1",
+                  value:      module.translatePlural,
+                  subTitle:   subTitle is defined and subTitle ? subTitle : null
+                }
+              )
+            }}
+          </div>
+        </div>
+        {%- if actions is defined and actions|length > 0 or (submitButton is defined and submitButton == true) or (selectLanguage is defined) -%}
+          <div class="col col--xs-4 col--xs-offset-1 col--align-bottom">
+            <ul class="buttons-content">
+              {%- if actions is defined and actions|length > 0 -%}
+                {% for actionkey, action in actions %}
+                  <li>
+                    {% if action.actions is defined %}
+                      {% set popActions = [] %}
+                      {% for oneAction in action.actions %}
+                        {% set popActions = popActions|merge([{
+                          tag:          "a",
+                          url:          oneAction.path,
+                          withEntitled: true,
+                          title:        oneAction.entitled|trans(oneAction.translateParameters, oneAction.translateDomain ?? null),
+                          data:     {
+                          }|merge(oneAction.attr(false))
+                        }]) %}
+                      {% endfor %}
+                      {{ include('@AustralDesign/Components/Pop/pop.html.twig', {
+                          class:        action.class,
+                          picto:        action.picto ?? null,
+                          position:     "bottom-center",
+                          title:        (action.entitled is defined and action.entitled) ? action.entitled|trans(action.translateParameters, action.translateDomain ?? null) : null,
+                          id:           "buttons-content-top-"~actionkey,
+                          actions:      popActions
+                        })
+                      }}
+                    {% else %}
+                      {{ include(action.picto ? "@AustralDesign/Components/Button/picto.html.twig" : "@AustralDesign/Components/Button/action.html.twig",
+                          {
+                            tag:            "a",
+                            url:            action.path,
+                            class:          action.class,
+                            picto:          action.picto ?? null,
+                            title:          action.entitled|trans(action.translateParameters, action.translateDomain ?? null),
+                            data:     {
+                            }|merge(action.attr(false))
+                          }
+                        )
+                      }}
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              {% endif %}
+              {% if (submitButton is defined and submitButton == true) %}
+                <li>
+                  {{ include("@AustralDesign/Components/Button/action.html.twig",
+                      {
+                        tag:            "button",
+                        title:          submitButton.entitled,
+                        data:     {
+                        }|merge(submitButton.attr is defined ? submitButton.attr : {})
+                      }
+                    )
+                  }}
+                </li>
+              {% endif %}
+              {% if (selectLanguage is defined) %}
+                <li>
+                  {{ include('@AustralDesign/Components/SelectLanguage/select-language.html.twig', {
+                      url:      selectLanguage.url,
+                      language: selectLanguage.language
+                    })
+                  }}
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endapply %}

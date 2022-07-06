@@ -1,0 +1,19 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          Austral - Service
+# Required-Start:    $all
+# Required-Stop:
+# Default-Start:     3 4 5
+# Default-Stop:
+# Short-Description: Start Austral Service
+### END INIT INFO
+export USER=__USER__
+export HOME=__HOME_PATH__
+DAEMON="/usr/bin/php __PATH__/bin/console austral:admin:conflict-detect -s"
+if [ "$1" = "start" ]; then
+        $DAEMON > /dev/null &
+elif [ "$1" = "status" ]; then
+  ps aux | grep -e "austral:admin:conflict-detect" | grep -v grep | awk '{ print $2 }'
+else
+  kill -9 $(ps aux | grep -e "austral:admin:conflict-detect" | grep -v grep | awk '{ print $2 }')
+fi

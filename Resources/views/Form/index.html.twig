@@ -1,0 +1,106 @@
+{% extends "@AustralAdmin/Layout/layout.html.twig" %}
+{% form_theme form.view "@AustralDesign/Components/Form/_theme.html.twig"  %}
+
+{% block content %}
+  {% apply spaceless %}
+    {{ form_start(form.view, {attr: {class: "form form-container content-bandeau-sticky "~form.mapper.attributes.class, "data-austral-ping": "", "data-form-actions": "reload", "data-reload-elements-key": "container" }}) }}
+
+    {{ include("@AustralAdmin/Layout/Bandeau/top.html.twig", {
+      sticky: true,
+      subTitle: "pages.form.edit.title"|trans({"%module_gender%": module.translateGenre, "%module_name%": module.translateSingular }, form.mapper.translateDomain),
+      returnButton: {
+        "entitled":   "pages.list.title"|trans({"%module_gender%": module.translateGenre, "%module_name%": module.translatePlural }, form.mapper.translateDomain),
+        "url":        path("austral_admin_module_index", {modulePath: module.modulePath})
+      }
+    }) }}
+
+    {% if form.mapper.errorMessage is defined %}
+      <div class="debug-exception-content">
+        <div class="debug-exception">{{ form.mapper.errorMessage|raw() }}</div>
+      </div>
+    {% endif %}
+
+    <div class="right-container">
+      {% set fieldsetRight = form.mapper.fieldsetByPosition("right")|first %}
+      {% if fieldsetRight and fieldsetRight.fields|length > 0 %}
+        <div class="content-fields">
+          {{ include("@AustralAdmin/Form/Components/fieldset.html.twig", {fieldset: fieldsetRight}) }}
+        </div>
+      {% endif %}
+      <div class="buttons-content">
+        <div id="content-conflict-detected">
+          {{ include("@AustralDesign/Components/Notification/multi-user.html.twig")}}
+        </div>
+        {{ include("@AustralDesign/Components/Button/action.html.twig",
+            {
+              tag:            "button",
+              title:          "actions.save"|trans({}, form.mapper.translateDomain),
+              full:           true,
+              data: {
+                "data-animate-to-save": ""
+              }
+            }
+          )
+        }}
+        {{ include("@AustralDesign/Components/Button/link.html.twig",
+            {
+              tag:            "a",
+              url:            path('austral_admin_module_index', {modulePath: module.modulePath }),
+              title:          "actions.cancel"|trans({}, form.mapper.translateDomain),
+              full:           true,
+              data: {
+                "class": "color-grey-50",
+                "data-click-actions":         "reload",
+                "data-reload-elements-key":   "container",
+              }
+            }
+          )
+        }}
+      </div>
+    </div>
+
+    <div class="central-container grid grid--container">
+      {% for field in form.mapper.getFields() %}
+        {% if field.isView and (field.positionName is not defined or (field.positionName != "right" and field.positionName != "bottom")) %}
+          <div class="row">
+            <div class="col col--xs-12">
+              {% if field is instanceof("Austral\\FormBundle\\Mapper\\Fieldset") %}
+                {{ include("@AustralAdmin/Form/Components/fieldset.html.twig", {fieldset: field, class:"fieldset-content-parent"}) }}
+              {% elseif field is instanceof("Austral\\FormBundle\\Mapper\\GroupFields") %}
+                {{ include("@AustralAdmin/Form/Components/group-fields.html.twig", {fields: field.fields}) }}
+              {% elseif field is instanceof("Austral\\FormBundle\\Mapper\\Popin") %}
+                {{ include("@AustralAdmin/Form/Components/popin.html.twig", {fields: field.fields}) }}
+              {% else %}
+                {% if form.view[field.fieldname()].rendered != true %}
+                  <div class="no-fieldset fieldset-content background-white border-radius-4-all">
+                    <div class="fields-content">
+                      {% include '@AustralAdmin/Form/Components/field.html.twig' with {
+                        field: {
+                          name:         field.fieldname(),
+                          type:         field,
+                          required:     field.required(),
+                          input:        form_widget(form.view[field.fieldname()], {fieldMapper:field}),
+                          label:        form_label(form.view[field.fieldname()], null, {fieldMapper:field}),
+                          errors:       form_errors(form.view[field.fieldname()], {fieldMapper:field}),
+                        },
+                        form:           form,
+                      } only %}
+                    </div>
+                  </div>
+                {% endif %}
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+
+    {% set fieldsetBottom = form.mapper.fieldsetByPosition("bottom")|first %}
+    {% if fieldsetBottom and fieldsetBottom.fields|length > 0 %}
+      {{ include("@AustralAdmin/Form/Components/fieldset.html.twig", {fieldset: fieldsetBottom}) }}
+    {% endif %}
+
+    {{ form_end(form.view) }}
+  {% endapply %}
+{% endblock %}

@@ -1,0 +1,12 @@
+<div id="field-form_austral_languageSelectForm-content" class="field-content">
+  {{ include('@AustralDesign/Components/SelectLanguage/select-language.html.twig', {
+      label:            "fields.languageSelectForm.entitled",
+      translateDomain:  form.mapper.translateDomain,
+      url:      {
+        "route":        'austral_admin_module_form_'~form.mapper.formTypeAction~'_language',
+        "parameters":   { "id": form.mapper.object.id, "modulePath": module.modulePath }
+      },
+      language: field.vars.language
+    })
+  }}
+</div>

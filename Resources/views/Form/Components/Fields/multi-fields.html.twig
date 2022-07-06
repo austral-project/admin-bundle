@@ -1,0 +1,25 @@
+<div class="multi-fields">
+  {% if field.entitled != false %}
+    <label>{{ field.entitled|trans({}, form.mapper.translateDomain) }}</label>
+  {% endif %}
+  <ul class="multi-fields-content">
+    {% for oneField in field.fields %}
+      {% if loop.index > 1 and field.fieldSeparator %}
+        <li><span class="separator">{{ field.fieldSeparator|raw() }}</span></li>
+      {% endif %}
+      <li>
+        {%- include '@AustralAdmin/Form/Components/field.html.twig' with {
+          field: {
+            name:         oneField.fieldname(),
+            type:         oneField,
+            required:     oneField.required(),
+            input:        oneField.widgetInput == false ? "" : form_widget(form.view[oneField.fieldname()], {fieldMapper:oneField}),
+            label:        form_label(form.view[oneField.fieldname()], null, {fieldMapper:oneField}),
+            errors:       form_errors(form.view[oneField.fieldname()], {fieldMapper:oneField}),
+          },
+          form:           form,
+        } only -%}
+      </li>
+    {% endfor %}
+  </ul>
+</div>

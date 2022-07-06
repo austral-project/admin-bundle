@@ -1,0 +1,28 @@
+<ul class="list-filters">
+  {% for element in filter.mapper.filter(sectionKey).filterTypes %}
+    {% set filterValue = element.renderValue %}
+    {% if filterValue %}
+      {% if filterValue is not iterable %}
+        <li>
+          {{ include('@AustralAdmin/Filter/view-element.html.twig', {
+            "entitled": ("fields."~element.fieldname~".entitled")|trans({}, "austral"),
+            "value": filterValue,
+            "fieldname": element.fieldname
+          }) }}
+        </li>
+      {% else %}
+        {% for key, value in filterValue %}
+          {% if value %}
+            <li>
+              {{ include('@AustralAdmin/Filter/view-element.html.twig', {
+                "entitled": ("fields."~element.fieldname~"."~key~".entitled")|trans({}, "austral"),
+                "value": value,
+                "fieldname": element.fieldname~":"~key
+              }) }}
+            </li>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</ul>

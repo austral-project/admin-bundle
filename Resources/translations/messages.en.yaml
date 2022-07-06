@@ -1,0 +1,10 @@
+date:
+  format:
+    YMD:                              "Y-m-d"
+    YMD_HI:                           "Y-m-d H:i"
+
+cropper:
+  title:                              Crop your image
+  actions:
+    save:                             Save
+    cancel:                           Cancel

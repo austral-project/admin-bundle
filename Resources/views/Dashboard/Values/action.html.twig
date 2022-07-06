@@ -1,0 +1,19 @@
+{# @var dashboardValue \Austral\AdminBundle\Dashboard\Values\Tile #}
+{% set url = "#" %}
+{% if dashboardValue.url %}
+  {% set url = dashboardValue.url %}
+{% elseif dashboardValue.routeName %}
+  {% set url = path(dashboardValue.routeName, dashboardValue.routeParameters) %}
+{% endif %}
+<div class="dashboard-value action-value">
+  {{ include("@AustralDesign/Components/Button/action.html.twig",
+      {
+        tag:      "a",
+        url:      url,
+        pictoTop: true,
+        picto:    dashboardValue.picto,
+        title:    dashboardValue.isTranslatableText ? dashboardValue.entitled|trans(dashboardValue.translateParameters, "austral") : dashboardValue.entitled
+      }
+    )
+  }}
+</div>

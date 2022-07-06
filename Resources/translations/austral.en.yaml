@@ -1,0 +1,312 @@
+austral:
+  name:                                         Austral - Admin
+
+links:
+  logout:                                       Logout
+
+authenticated:
+  sub-title:                                    Administration
+  fields:
+    login:                                      Login
+    password:                                   Password
+  actions:
+    login:                                      Login
+    forgotPassword:                             Forgot password
+  bottom:
+    message:                                    You are lost ?
+    link:                                       Return to website
+
+pages:
+  filter:
+    title:                                      "%module_name% filter"
+  list:
+    title:                                      "%module_name% list"
+    subTitle:                                   "%countAll% %module_name%"
+    pagination:
+      title:                                    "Page : "
+  names:
+    australAdminIndex:
+      singular:                                 Dashboard
+      plural:                                   Dashboard
+    statusConfiguration:
+      singular:                                 Configuration status
+      plural:                                   Configuration status
+
+dashboard:
+  configuration:
+    https:
+      entitled:                                 HTTPS
+      description:                              "The HTTPS protocol makes it possible to secure exchanges on the Internet."
+
+  choiceLanguage:
+    entitled:                                   Select language
+
+warning:
+  delete:
+    element:                                    This element "%element%" has delete !!!
+  conflict:
+    element:                                    Another user is in this page. Warning, your modiciations could be cancel !!!
+
+
+errors:
+  500:                                          Error 500, if persiste problem contact webmaster
+  length:
+    max:                                        This value is too long. It should have {{ limit }} characters or less.
+  type:
+    string:                                     The value {{ value }} is not a valid {{ type }}.
+    int:                                        The value {{ value }} is not a valid {{ type }}.
+    float:                                      The value {{ value }} is not a valid {{ type }}.
+
+actions:
+  cancel:                                       Cancel
+  edit:                                         Edit
+  duplicate:                                    Duplicate
+  truncate:                                     Deletes all
+  delete:                                       Delete
+  deleteThis:                                   Delete %entitled%
+  save:                                         Save
+  deleteLink:                                   Delete link
+  myAccount:                                    My account
+  logout:                                       Logout
+  picture:
+    add:                                        Add picture
+    edit:                                       Edit picture
+  file:
+    add:                                        Add file
+    edit:                                       Edit file
+  download:
+    default:                                    Download
+    xlsx:                                       Download Xlsx
+    csv:                                        Download csv
+    json:                                       Download json
+  validate:                                     Validate
+  more:                                         More actions
+  search:                                       Search
+  newOnglet:                                    Edit (New onglet)
+  reduce:                                       Reduce
+
+download:
+  format:
+    xlsx:                                       Xlsx
+    csv:                                        Csv
+    json:                                       Json
+
+fieldset:
+  generalInformation:                           Generals informations
+  right:                                        Parameters
+  content:                                      Content
+  admin:                                        Admin
+  dev:
+    config:                                     Configuration developpement
+
+duplicate:
+  status:
+    exception:                                  An error has occurred.
+    success:                                    Object has duplicated successfully
+
+changeValue:
+  status:
+    exception:                                  An error has occurred.
+    success:                                    Value has changed successfully
+
+truncate:
+  status:
+    exception:                                  An error has occurred.
+    success:                                    The module has truncated successfully
+
+characters:
+  remaining:                                    Character(s) remaining
+
+choices:
+  placeholder:
+    single:                                     Select an option
+    multi:                                      Select options
+    links:                                      Choice link
+  status:
+    enabled:                                    Enabled
+    disabled:                                   Disabled
+    yes:                                        Yes
+    no:                                         No
+  appearance:
+    dark:                                       Dark
+    light:                                      Light
+    auto:                                       Auto
+  language:
+    en:                                         EN
+    fr:                                         FR
+
+switch:
+  value:
+    0:                                          No
+    1:                                          Yes
+
+boolean_value:
+  "true":                                       Yes
+  "false":                                      No
+
+fields:
+  entitled:
+    entitled:                                   Entitled
+  class:
+    entitled:                                   Class
+  cssClass:
+    entitled:                                   Class css
+  isEnabled:
+    entitled:                                   Enabled ?
+  enabled:
+    entitled:                                   Enabled ?
+  name:
+    entitled:                                   Name
+  keyname:
+    entitled:                                   Keyname
+  keyname_withoutSpan:
+    entitled:                                   Keyname
+  email:
+    entitled:                                   Email
+  username:
+    entitled:                                   Username
+  content:
+    entitled:                                   Content
+  appearance:
+    entitled:                                   Appearance
+  page:
+    children:
+      entitled:                                 Children page
+    status:
+      entitled:                                 Page status
+  type:
+    entitled:                                   Type
+  title:
+    entitled:                                   Title
+  isActive:
+    entitled:                                   Activate ?
+  language:
+    entitled:                                   Language
+  updated:
+    entitled:                                   Updated date
+    from:
+      entitled:                                 From
+    to:
+      entitled:                                 to
+  created:
+    entitled:                                   Created date
+    from:
+      entitled:                                 From
+    to:
+      entitled:                                 to
+  themes:
+    entitled:                                   Themes
+  templatePath:
+    entitled:                                   Template path
+  alt:
+    entitled:                                   Alt
+  reelname:
+    entitled:                                   File name
+  languageSelectForm:
+    entitled:                                   Language version
+
+
+form:
+  optional:                                     (optional)
+  language:
+    add:                                        Add
+  status:
+    exception:                                  An error has occurred.
+    success:                                    Object has saved successfully
+    error:                                      An error is present to your form
+
+summernote:
+  popin:
+    links:
+      title:                                    Insert link
+      buttons:
+        add:                                    Add link
+        cancel:                                 Cancel
+
+notification:
+  multiUser:
+    title:                                      Multiple consultation
+    text:                                       "Several users are currently viewing this page. <br> Your changes may be lost."
+
+helper:
+  australVars:                                  View all vars
+  file:
+    informations:
+      title:                                    Informations
+      mimeType:                                 Mimes Types accepted
+      size:                                     Maximum size
+      dimension:                                Dimension of image
+
+popin:
+  editor:
+    title:                                      File editor
+    file:                                       Imported File
+
+aside:
+  australVars:
+    title:                                      Vars list
+
+sweetAlert:
+  error500:
+    title:                                      Error 500
+    message:                                    Error 500 detected, contact developer if the persist error !!!
+    actions:
+      reload:                                   Reload this page
+      stay:                                     Stay on this page
+  confirm:
+    delete:
+      title:                                      Are you sure ?
+      message:                                    You won't be able to revert this !
+      actions:
+        confirm:                                  Yes, delete it !
+        confirmAll:                               Yes, delete all !
+        cancel:                                   Cancel
+    reload:
+      title:                                      Are you sure ?
+      message:                                    This form has been modified, you will lose all your changes !
+      actions:
+        confirm:                                  Yes, i continue !
+        cancel:                                   Cancel
+
+configuration:
+  subTitle:                                     Configuration visualisation
+  check:
+    services_status_checker:
+      title:                                    Services
+      description:                              Check useful services is started for the project
+      command:
+        entitled:                               Command
+      status:
+        entitled:                               Status
+    dirs:
+      notExist:
+        entitled:                               Path is present
+      title:                                    Paths
+      description:                              Check useful path for the project
+      path:
+        entitled:                               Path dir
+      writable:
+        entitled:                               Is writable
+      readable:
+        entitled:                               Is readable
+      fileperms:
+        entitled:                               File permissions
+    modules:
+      title:                                    Modules
+      description:                              Check configuration module for the project
+    choices:
+      disabled:                                 Disabled
+      enabled:                                  Enabled
+      no:                                       Inactive
+      yes:                                      Active
+      notExist:                                 Not found
+
+layouts:
+  size:
+    full:                                       Full
+    adjust:                                     Adjust
+    center:                                     Center
+
+sortable:
+  status:
+    success:                                    The sorting was successfully saved

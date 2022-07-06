@@ -1,0 +1,27 @@
+var trans = {{ json|raw }};
+class Translate  {
+  constructor(translation) {
+    this.translation = translation;
+    this.language = "{{ language }}";
+  }
+
+  currentLanguage() {
+    return this.language;
+  }
+
+  trans(key, replace, defaultValue = "") {
+    if(this.translation[key] !== undefined)
+    {
+      var value = this.translation[key];
+      if(replace !== undefined)
+      {
+        for (const [key, valueReplace] of Object.entries(replace)) {
+          value = value.replace(key, valueReplace);
+        }
+      }
+      return value;
+    }
+    return defaultValue;
+  }
+}
+Translate = new Translate(trans);

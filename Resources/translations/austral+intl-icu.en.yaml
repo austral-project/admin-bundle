@@ -1,0 +1,31 @@
+actions:
+  create: >-
+    {module_gender, select,
+      female_c  { Add { module_name }}
+      female_v  { Add an { module_name }}
+      male_c    { Add a { module_name }}
+      male_v    { Add an { module_name }}
+      other     { To add }
+    }
+
+
+pages:
+  form:
+    edit:
+      title: >-
+        {module_gender, select,
+          female_c  { Edit { module_name } }
+          female_v  { Edit { module_name } }
+          male_c    { Edit { module_name } }
+          male_v    { Edit { module_name } }
+          other     { Edit }
+        }
+    create:
+      title: >-
+        {module_gender, select,
+          female_c  { Create { module_name }}
+          female_v  { Create { module_name }}
+          male_c    { Create { module_name }}
+          male_v    { Create { module_name }}
+          other     { Create }
+        }

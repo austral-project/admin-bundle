@@ -1,0 +1,11 @@
+<div data-embed-id="{{ form.view.vars.data.id }}" class="collection-embed-element {% if betweenInsertAccepted is not defined or betweenInsertAccepted == false %}no-between-insert{% endif %} {{ collectionForm.options.attr.class }} {{ classEmbedElement is defined ? classEmbedElement : "" }} {% if form.view.vars.errors|length > 0 %} error {% endif %}">
+  {% if betweenInsertAccepted is defined and betweenInsertAccepted %}
+    {% include('@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-between-insert.html.twig') %}
+  {% endif %}
+  <div class="hover">
+    {% include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/form.html.twig") with {parent: parentData} %}
+  </div>
+  {% if collectionForm.allowChild and collectionForm.masterChildren %}
+    {% include("@AustralAdmin/Form/Components/Fields/collection-embed.html.twig") with {field: collectionForm, parent: parentData} %}
+  {% endif %}
+</div>

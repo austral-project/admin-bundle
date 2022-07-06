@@ -1,0 +1,38 @@
+<div class="value-content">
+  <div id="actions-container-{{ row.object.id }}" class="relative">
+    {{ include("@AustralDesign/Components/Button/picto.html.twig",
+        {
+          tag:            "span",
+          picto:          "austral-picto-ellipsis-vertical",
+          title:          "actions.more"|trans({}, list.mapper.translateDomain),
+          data:           {
+            "class":                  "button-toast-actions",
+            "data-toast-container":   "#actions-choices-"~row.object.id,
+          }
+        }
+      )
+    }}
+    <div id="actions-choices-{{ row.object.id }}" class="toast-container toast-action" data-toast="" data-toast-position="left-center" data-toast-origin="#actions-container-{{ row.object.id }} .button-toast-actions">
+      <ul class="list-link">
+        {% for action in row.columnsActions %}
+          <li class="item {% if action.attr()["itemClass"] is defined %}{{ action.attr()["itemClass"] }}{% endif %}">
+
+            {{ include("@AustralDesign/Components/Button/picto.html.twig",
+                {
+                  tag:            action.options["data-url"] ? "span" : "a",
+                  url:            action.path,
+                  picto:          action.picto,
+                  withEntitled:   true,
+                  title:          action.entitled|trans(action.translateParameters, action.translateDomain ?? null),
+                  data:           {
+                    "class":        action.class,
+                  }|merge(action.attr(false))
+                }
+              )
+            }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+<ol class="list-ol-container" class="section-{{ section.keyname }}" data-lvl="1" {% if module.isSortable %}data-sortable="" data-sortable-handle=".sortable-handle" data-sortable-master="" data-sortable-draggable=".row-element" data-sortable-update="{{ path('austral_admin_module_sortable', {"modulePath": module.modulePath}) }}"{% endif %}>
+  {%- if section.rows|length -%}
+    {%- for row in section.rows -%}
+      {%- include "@AustralAdmin/List/List/element.html.twig" with {row: row, list: list, section: section, lvl: 1, module: module} only -%}
+    {% endfor %}
+  {% endif %}
+</ol>

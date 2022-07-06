@@ -1,0 +1,87 @@
+{% if (field.options.allow.add or (field.options.allow.child is defined and field.options.allow.child)) and (embedFieldsLength > 0) %}
+  <div class="collections-add-content">
+    <div class="buttons-content">
+      {% if choiceEmbedField|length == 0 %}
+        {% set uniqueChoiceName = field.fieldname %}
+      {% else %}
+        {% set uniqueChoiceName = false %}
+        {% if choiceEmbedField|length == 1%}
+            {% if choiceEmbedField|first|length == 1%}
+              {% set uniqueChoiceName = choiceEmbedField|first|keys|first %}
+            {% endif %}
+        {% endif %}
+      {% endif %}
+
+      {% if uniqueChoiceName %}
+        {% set dataButton = {
+          "data-collection-embed-choice-type": uniqueChoiceName,
+          "data-collection-embed-append":"#field-"~ field.fieldname ~"-content-embed > .collection-embed-forms"
+        } %}
+      {% else %}
+        {% set dataButton = {
+          "data-aside-container":         "#aside-choices-collections-content"~((parent is defined and parent is not null) ? "-"~parent.id : "-"~field.fieldname),
+        } %}
+      {% endif%}
+
+      {% if uniqueChoiceName == false %}
+        {% set dataButton = dataButton|merge({
+          "class":    "collections-choices-view white"
+        }) %}
+      {% else %}
+        {% set dataButton = dataButton|merge({
+          "class":    "add-new-collection-embed white"
+        }) %}
+      {% endif %}
+      {{ include("@AustralDesign/Components/Button/action.html.twig", {
+        picto:    "austral-picto-square-plus",
+        full:     true,
+        title:    field.entitledButton|trans({}, form.mapper.translateDomain),
+        data:     dataButton
+      }) }}
+    </div>
+    {% if uniqueChoiceName == false %}
+      <div id="aside-choices-collections-content{{ ((parent is defined and parent is not null) ? "-"~parent.id : "-"~field.fieldname) }}" class="aside-container" data-aside="">
+        <div class="collections-choices-content">
+          <div class="button-action-container">
+            {{ include('@AustralDesign/Components/Button/picto.html.twig', {
+              picto:    "austral-picto-cross",
+              title:    "close",
+              data: {
+                "data-aside-close":  true
+              }
+            }) }}
+          </div>
+          <div class="collections-choices">
+            <div class="title-content">
+              <span class="title">{{ "choices.collections.title"|trans({}, form.mapper.translateDomain) }}</span>
+            </div>
+            {% for categKey, choices in choiceEmbedField %}
+              {% if categKey %}
+                <h3 class="title-category">{{ ("choices.editor_component.category."~categKey)|trans({}, form.mapper.translateDomain) }}</h3>
+              {% endif %}
+              <ul class="content-listes-choices">
+                {% for key, choice in choices %}
+                  <li class="choice">
+                    {{ include('@AustralDesign/Components/Button/picto.html.twig', {
+                      picto:          choice.picto ?? "",
+                      image:          choice.image ?? "",
+                      withEntitled:   true,
+                      title:          ("." in choice.entitled ? choice.entitled|trans({}, form.mapper.translateDomain) : choice.entitled),
+                      data: {
+                        class:                "add-new-collection-embed",
+                        "data-aside-close":   true,
+                        "data-collection-embed-choice-type": key,
+                        "data-collection-embed-append":"#field-"~ field.fieldname ~"-content-embed > .collection-embed-forms",
+                        "data-collection-parent-id": ((parent is defined and parent is not null) ? parent.id : "")
+                      }
+                    }) }}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}

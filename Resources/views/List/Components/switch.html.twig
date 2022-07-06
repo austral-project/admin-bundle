@@ -1,0 +1,15 @@
+{{ include("@AustralDesign/Components/Switch/switch.html.twig", {
+  checked:  (col.value == col.heads ? false : true),
+  switch: {
+    urls:   {
+      tails: col.switchData.tails,
+      heads: col.switchData.heads
+    },
+    styles:  col.styles
+  },
+  entitled: {
+    view:       col.options.viewEntitled,
+    heads:      ("switch.value."~col.heads)|trans({}, "austral"),
+    tails:      ("switch.value."~col.tails)|trans({}, "austral")
+  }
+}) }}

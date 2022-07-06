@@ -1,0 +1,25 @@
+{# @var dashboardBlock \Austral\AdminBundle\Dashboard\DashboardBlock #}
+{% if dashboardBlock.children or dashboardBlock.values %}
+  <div class="dashboard-block {% if dashboardBlock.width == "middle" %} middle {% elseif dashboardBlock.width == "full" %} full {% endif %}">
+
+    {% if dashboardBlock.children %}
+      <div class="dashboard-block-children">
+        {% for dashboardBlockChild in dashboardBlock.childrenByPosition %}
+          {{ include("@AustralAdmin/Dashboard/dashboard-block.html.twig", {dashboardBlock: dashboardBlockChild}) }}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if dashboardBlock.values %}
+      <div class="dashboard-values {% if dashboardBlock.isWithBackground %}background{% endif %} children-{{ dashboardBlock.values|length }} {{ dashboardBlock.values|length is odd ? "odd" : "even" }} dashboard-values-type-{{ dashboardBlock.type }}">
+        {% set color = 1 %}
+        {% for dashboardValue in dashboardBlock.valuesByPosition %}
+          {# @var dashboardValue \Austral\AdminBundle\Dashboard\Values\Interfaces\DashboardValueInterface #}
+          {{ include([dashboardValue.templatePath, "@AustralAdmin/Dashboard/Values/default.html.twig"], {dashboardValue: dashboardValue, color: color}) }}
+          {% set color = color + 1 %}
+          {% if color > 6 %}{% set color = 1 %}{% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endif %}

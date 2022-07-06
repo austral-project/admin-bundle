@@ -1,0 +1,38 @@
+{% apply spaceless %}
+<nav class="navigation-container" data-refresh-container="navigation-container">
+  <ul class="list-items">
+    <li class="item logo">
+      <a href="{{ path('austral_admin_index') }}" class="link" data-click-actions="reload" data-reload-elements-key="all">
+        {{ include('@AustralDesign/SVG/logo.svg.twig') }}
+      </a>
+    </li>
+    {%- if navigation is defined -%}
+      {%- for page in navigation -%}
+        {% set is_current = false %}
+        {% set class = "button-picto full-width" %}
+        {%- if module.modulePath == page.modulePath or module.modulePath starts with page.modulePath~"/" -%}
+          {% set class = class~" current" %}
+          {% set is_current = true %}
+        {%- endif %}
+        <li class="item link {{ (is_current) ? "current" }}">
+          {{ include("@AustralDesign/Components/Button/picto.html.twig",
+              {
+                tag:      "a",
+                url:      page.url,
+                picto:    page.picto,
+                title:    page.entitled,
+                data: {
+                  "data-click-actions":         "reload",
+                  "data-reload-elements-key":   "all",
+                  "data-refresh-class":         ""
+                }
+              }
+            )
+          }}
+        </li>
+      {%- endfor -%}
+      {{ include('@AustralAdmin/Layout/Navigation/profil.html.twig') }}
+    {%- endif -%}
+  </ul>
+</nav>
+{% endapply %}

@@ -1,0 +1,25 @@
+{% extends "@AustralAdmin/Layout/layout.html.twig" %}
+
+{% block bandeau_top %}
+  {% apply spaceless %}
+    <div class="bandeau-top-container">
+      <div class="container-auto-width container-auto-margin">
+        <div class="bandeau-top">
+          <div class="title-h1-content">
+            <h1 class="title-h1">
+              <span class="picto {{ module.picto }}"></span>
+              <span class="value">{{ (module.translatePlural) }}</span>
+            </h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endapply %}
+{% endblock %}
+
+{% block content %}
+  {% apply spaceless %}
+    <div class="container-auto-width container-auto-margin">
+    </div>
+  {% endapply %}
+{% endblock %}

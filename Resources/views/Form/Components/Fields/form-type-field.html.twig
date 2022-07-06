@@ -1,0 +1,18 @@
+{% if form.mapper.hasSubFormMapperByKey(field.fieldname) %}
+  {% set subFormMapper = form.mapper.getSubFormMapperByKey(field.fieldname) %}
+  {% if field.entitled %}
+    {{ form_label(form.view[field.fieldname()], null, {fieldMapper:field}) }}
+  {% endif %}
+  {% set form = {view: form.view[field.fieldname], mapper: subFormMapper } %}
+  <div class="form-type-content">
+    {% for subField in subFormMapper.fields %}
+      {% if subField is instanceof("Austral\\FormBundle\\Mapper\\Fieldset") %}
+        {{ include("@AustralAdmin/Form/Components/fieldset.html.twig", {fieldset: subField}) }}
+      {% elseif subField is instanceof("Austral\\FormBundle\\Mapper\\GroupFields") %}
+        {{ include("@AustralAdmin/Form/Components/group-fields.html.twig", {fields: subField.fields, field: subField}) }}
+      {% elseif subField is instanceof("Austral\\FormBundle\\Mapper\\Popin") %}
+        {{ include("@AustralAdmin/Form/Components/popin.html.twig", {field: subField, fields: subField.fields}) }}
+      {%- endif -%}
+    {% endfor %}
+  </div>
+{% endif %}

@@ -1,0 +1,33 @@
+<div class="row">
+  <div class="col--lg-12">
+    <div class="config-check-categ">
+      <div class="background-main-10 main-padding">
+        <h2 class="h2-title">{{ configurationChecker.isTranslatable ? configurationChecker.name|trans({}, list.translateDomain) : configurationChecker.name }}</h2>
+        {% if configurationChecker.description %}
+          <p class="description-categ">{{ configurationChecker.isTranslatable ? configurationChecker.description|trans({}, list.translateDomain) : configurationChecker.description }}</p>
+        {% endif %}
+        {% if configurationChecker.children %}
+          <ul class="config-values">
+            {% for configurationCheckerChild in configurationChecker.children %}
+              <li class="config-values-content {{ configurationCheckerChild.width }}">
+                <h3 class="h3-title">{{ configurationCheckerChild.isTranslatable ? configurationCheckerChild.name|trans({"%keyname%": configurationChecker.keyname}, list.translateDomain) : configurationCheckerChild.name }}</h3>
+                {% if configurationCheckerChild.description %}
+                  <p class="description-categ">{{ configurationCheckerChild.isTranslatable ? configurationCheckerChild.description|trans({}, list.translateDomain) : configurationCheckerChild.description }}</p>
+                {% endif %}
+                <ul class="values-content">
+                  {% for configurationCheckerValue in configurationCheckerChild.values %}
+                    <li>
+                      {{ include("@AustralAdmin/ConfigurationStatus/Components/configuration-checker-value.html.twig", {
+                        configurationCheckerValue: configurationCheckerValue
+                      }) }}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

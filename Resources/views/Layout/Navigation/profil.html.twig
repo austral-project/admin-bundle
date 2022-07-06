@@ -1,0 +1,71 @@
+<li class="item avatar bottom">
+  <div class="relative">
+    <div class="profil-container"  data-toast-container="#toast-account">
+      {{ include('@AustralDesign/Components/Avatar/avatar.html.twig', {
+        background: user.avatarColor
+      }) }}
+      <span class="entitled font-poppins-m-11-uppercase">{{ user.firstname|default('') }} {{ user.lastname|default('') }}</span>
+    </div>
+    <div id="toast-account" class="toast-container" data-toast="" data-toast-position="right-bottom" data-toast-position-origin=".profil-container .avatar-container">
+      <ul class="list-link">
+        <li class="item">
+          {{ include("@AustralDesign/Components/Button/picto.html.twig",
+            {
+              tag:          "a",
+              url:          path('austral_admin_my_account'),
+              picto:        "austral-picto-user",
+              title:        "actions.myAccount"|trans({}, "austral"),
+              full:         true,
+              withEntitled: true,
+              data: {
+                "data-click-actions":         "reload",
+                "data-reload-elements-key":   "all",
+              }
+            }
+          )
+          }}
+        </li>
+        <li class="item">
+          {{ include("@AustralDesign/Components/Button/picto.html.twig",
+            {
+              tag:          "a",
+              url:          path('austral_admin_security_logout'),
+              picto:        "austral-picto-power",
+              title:        "actions.logout"|trans({}, "austral"),
+              full:         true,
+              withEntitled: true,
+              data: {
+              "data-click-actions":         "reload",
+              "data-reload-elements-key":   "body",
+            }
+            }
+          )
+          }}
+        </li>
+      </ul>
+      {% set elements = {} %}
+      {% for interfaceName in ["light", "dark", "auto"] %}
+        {% set elements = elements|merge({
+          (interfaceName): {
+            entitled: ("choices.appearance."~interfaceName)|trans({}, "austral"),
+            url:      path('austral_admin_my_account_change_value', {"fieldname": "interfaceTheme", "value": interfaceName}),
+            callback: "updateBodyClass",
+            style: [
+              "--element-choice-current-background:var(--color-main-10)",
+              "--element-choice-current-color:var(--color-black)",
+              "--element-choice-hover-color:var(--color-black)"
+            ]
+          }
+        }) %}
+      {% endfor %}
+      <div class="dark-mode-container">
+        {{ include('@AustralDesign/Components/ChoiceElement/choice-element.html.twig', {
+          title:      "fields.appearance.entitled"|trans({}, "austral"),
+          class:      "full height-small",
+          current:    user.interfaceTheme,
+          choices:    elements
+        }) }}
+      </div>
+    </div>
+  </div>
+</li>

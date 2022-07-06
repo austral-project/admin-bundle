@@ -1,0 +1,132 @@
+{% extends "@AustralAdmin/Layout/layout.html.twig" %}
+
+{% block content %}
+  {% apply spaceless %}
+    {{ include("@AustralAdmin/Layout/Bandeau/top.html.twig") }}
+    <div class="list-container">
+      <div class="grid grid--container">
+        {% for sectionKey, section in list.mapper.sections %}
+        {# @var section \Austral\ListBundle\Section\Section #}
+          <div class="row row--center">
+            <div class="col col--xs-5">
+              <div class="top-content">
+                {{ include('@AustralDesign/Components/Title/title.html.twig', {
+                  tag:      "h2",
+                  value:    section.title|trans({"%module_name%": module.translatePlural }, "austral"),
+                  subTitle: section.subTitle|trans({"%module_name%": module.translatePlural, "%countAll%": section.countAll}, "austral")
+                }) }}
+              </div>
+            </div>
+            {% if filter.mapper.filterExist(sectionKey) %}
+              <div class="col col--xs-6 col--xs-offset-1 col--align-right">
+                {{ include("@AustralDesign/Components/Button/picto.html.twig",
+                    {
+                      tag:            "span",
+                      picto:          "austral-picto-search",
+                      title:          "actions.search"|trans({}, "austral"),
+                      data:     {
+                        "data-aside-container":       "#filter-content-"~sectionKey,
+                      }
+                    }
+                  )
+                }}
+                {{ include('@AustralAdmin/Filter/view-elements.html.twig') }}
+              </div>
+            {% endif %}
+          </div>
+          <div class="row row--center">
+            <div class="col col--xs-12">
+              <div id="list-content-{{ section.keyname }}" class="list-content">
+                {{ include("@AustralAdmin/List/"~(section.mapperType)~".html.twig") }}
+
+                {% if section.maxResult and section.typePagination == "default" and section.nbPages > 1 %}
+                  <div class="pagination-content">
+                    <ul class="pagination">
+                      <li>
+                        {{ include("@AustralDesign/Components/Button/picto.html.twig",
+                            {
+                              tag:            "a",
+                              url:            path("austral_admin_module_index", {"modulePath": module.modulePath})~"?page="~section.keyname~"-1",
+                              picto:          "austral-picto-chevrons-left",
+                              title:          "",
+                              disable:        section.numPage == 1,
+                              data:     {
+                                "data-click-actions":         "reload",
+                                "data-reload-elements":       "#list-content-"~section.keyname,
+                              }
+                            }
+                          )
+                        }}
+                      </li>
+                      <li>
+                        {{ include("@AustralDesign/Components/Button/picto.html.twig",
+                            {
+                              tag:            "a",
+                              url:            path("austral_admin_module_index", {"modulePath": module.modulePath})~"?page="~section.keyname~"-"~(section.numPage-1),
+                              picto:          "austral-picto-simply-left",
+                              title:          "",
+                              disable:        section.numPage == 1,
+                              data:     {
+                              "data-click-actions":         "reload",
+                              "data-reload-elements":       "#list-content-"~section.keyname,
+                            }
+                            }
+                          )
+                        }}
+                      </li>
+                      <li id="select-page_{{ section.keyname }}" class="toast-select-style">
+                        <label for="austral_change_page_{{ section.keyname }}" class="label">{{ "pages.list.pagination.title"|trans({}, "austral") }}</label>
+                        <div class="field field-select-type" data-field-init="true">
+                          <select id="austral_change_page_{{ section.keyname }}" name="page" data-select="data-select" data-select-options="{{ {"searchEnabled": true}|json_encode }}" data-refresh="#list-content-{{ section.keyname }}" data-url="{{ path("austral_admin_module_index", {"modulePath": module.modulePath}) }}">
+                            {% for numPage in 1..section.nbPages %}
+                              <option value="{{ numPage }}" {% if numPage == section.numPage %}selected="selected"{% endif %}>{{ numPage }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <span class="nb-pages font-poppins-m-13-uppercase">/ {{ (section.nbPages) }}</span>
+                      </li>
+                      <li>
+                        {{ include("@AustralDesign/Components/Button/picto.html.twig",
+                            {
+                              tag:            "a",
+                              url:            path("austral_admin_module_index", {"modulePath": module.modulePath})~"?page="~section.keyname~"-"~(section.numPage+1),
+                              picto:          "austral-picto-simply-right",
+                              title:          "",
+                              disable:        section.numPage == section.nbPages,
+                              data:     {
+                                "data-click-actions":         "reload",
+                                "data-reload-elements":       "#list-content-"~section.keyname,
+                              }
+                            }
+                          )
+                        }}
+                      </li>
+                      <li>
+                        {{ include("@AustralDesign/Components/Button/picto.html.twig",
+                            {
+                              tag:            "a",
+                              url:            path("austral_admin_module_index", {"modulePath": module.modulePath})~"?page="~section.keyname~"-"~section.nbPages,
+                              picto:          "austral-picto-chevrons-right",
+                              title:          "",
+                              disable:        section.numPage == section.nbPages,
+                              data:     {
+                                "data-click-actions":         "reload",
+                                "data-reload-elements":       "#list-content-"~section.keyname,
+                              }
+                            }
+                          )
+                        }}
+                      </li>
+                    </ul>
+                  </div>
+                {% endif %}
+
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        {{ include('@AustralAdmin/Filter/filters.html.twig') }}
+      </div>
+    </div>
+  {% endapply %}
+{% endblock %}

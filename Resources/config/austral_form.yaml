@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire:       true
+    autoconfigure:  true
+    public:         true
+
+##### Listener
+
+  austral.admin.form.listener:
+    class:          Austral\AdminBundle\Listener\FormListener
+    arguments:      ["@request_stack","@router", "@austral.entity_manager", "@?austral.admin.config"]
+    tags:
+      - { name: kernel.event_listener, event: "austral.event.form.add_auto_fields_before", method: formAddAutoFields, priotiry: 2048 }

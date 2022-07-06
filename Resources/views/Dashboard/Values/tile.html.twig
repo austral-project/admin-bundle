@@ -1,0 +1,22 @@
+{# @var dashboardValue \Austral\AdminBundle\Dashboard\Values\Tile #}
+{% set color = dashboardValue.colorNum ? dashboardValue.colorNum : color %}
+
+{% if dashboardValue.url %}
+  {% set url = dashboardValue.url %}
+{% elseif dashboardValue.routeName %}
+  {% set url = path(dashboardValue.routeName, dashboardValue.routeParameters) %}
+{% endif %}
+
+<{{ url is defined and url ? "a" : "div" }} {% if url is defined and url %} href="{{ url }}" data-click-actions="reload" data-reload-elements-key="container"{% endif %} class="dashboard-value tile-value {{ "color-"~color }}">
+  <div class="picto-content">
+    {% set pictoName = dashboardValue.picto %}
+    {% if pictoName is null %}
+      {% set pictoName = "folder" %}
+    {% endif %}
+    <img src="{{ asset("bundles/australadmin/images/tile-picto/color-"~color~"/austral-icon-"~pictoName~".svg") }}">
+  </div>
+  <div class="value-content">
+    <span class="value">{{ dashboardValue.value }}</span>
+    <span class="entitled">{{ dashboardValue.isTranslatableText ? dashboardValue.entitled|trans({}, "austral") : dashboardValue.entitled }}</span>
+  </div>
+</{{ url is defined and url ? "a" : "div" }}>

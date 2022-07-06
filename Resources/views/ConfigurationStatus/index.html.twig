@@ -1,0 +1,21 @@
+{% extends "@AustralAdmin/Layout/layout.html.twig" %}
+
+{% block content %}
+
+  <div class="content-bandeau-sticky check-configuration">
+
+    {{ include("@AustralAdmin/Layout/Bandeau/top.html.twig", {
+      sticky: true,
+      subTitle: "configuration.subTitle"|trans({}, list.translateDomain),
+      gridContainerCss: "central-container"
+    }) }}
+    <div class="central-container grid grid--container">
+      {% for configurationChecker in list.configurationChecker.getChildrenByPosition() %}
+        {{ include("@AustralAdmin/ConfigurationStatus/Components/configuration-checker.html.twig", {
+          configurationChecker: configurationChecker
+        }) }}
+      {% endfor %}
+    </div>
+  </div>
+
+{% endblock %}

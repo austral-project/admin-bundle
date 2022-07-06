@@ -1,0 +1,27 @@
+{% extends "@AustralAdmin/Layout/layout.html.twig" %}
+
+{% block content %}
+  {{ include("@AustralAdmin/Layout/Bandeau/top.html.twig", { selectLanguage: {
+    url:  {
+      "route":        "austral_admin_index_language",
+      "parameters":   {}
+    },
+    language:         language
+  }}) }}
+
+  <div class="dashboard-container">
+    <div class="grid grid--container">
+      <div class="row row--center">
+        <div class="col col--md-12">
+          <div class="dashboard-blocks">
+            {% for dashboardBlock in dashboard.childrenByPosition %}
+              {# @var dashboardBlock \Austral\AdminBundle\Dashboard\DashboardBlock #}
+              {{ include("@AustralAdmin/Dashboard/dashboard-block.html.twig", {dashboardBlock: dashboardBlock}) }}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{%- if col.type == "template" -%}
+  {%- set value = include(col.templateName, {object: row.object}) -%}
+{%- elseif col.type != "value" and (col.isGranted is not defined or col.isGranted) -%}
+  {% set value = include("@AustralAdmin/List/Components/"~col.type~".html.twig", {object: row.object}, ignore_missing = true) -%}
+{% endif %}
+{%- if value is not defined or value == "" -%}
+  {% set value = col.value %}
+{%- endif -%}
+<div class="value-content {{ col.type }}-type {{ (numElement|default(1)) > 1 ? "font-poppins-m-11-grey" : "" }}">{{ value|raw() }}</div>

@@ -1,0 +1,13 @@
+{{ include("@AustralDesign/Components/Switch/switch.html.twig", {
+  checked:  false,
+  class:    "full",
+  switch: {
+    input:    field.input,
+    styles:   []
+  },
+  entitled: {
+    view:       false,
+    heads:      ("choices.status.no")|trans({}, "austral"),
+    tails:      ("choices.status.yes")|trans({}, "austral")
+  }
+}) }}

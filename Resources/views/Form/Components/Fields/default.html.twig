@@ -1,0 +1,6 @@
+{{ field.input|raw() }}
+{%- if field.type.symfonyFormTypeClass is defined and field.type.symfonyFormTypeClass == "passwordType" -%}
+  <span class="picto-view-password austral-picto-eye" data-picto-view="austral-picto-eye" data-picto-no-view="austral-picto-eyenot"></span>
+{%- elseif field.type.picto is defined and field.type.picto -%}
+  <span class="picto-field {{ field.type.picto }}"></span>
+{%- endif -%}

@@ -1,0 +1,33 @@
+<div class="value-content value-content-{{ configurationCheckerValue.type }}">
+  <div class="left">
+    <span class="value-title">{{ configurationCheckerValue.isTranslatable ? configurationCheckerValue.name|trans({"%keyname%": configurationCheckerValue.keyname}, list.translateDomain) : configurationCheckerValue.name }}</span>
+  </div>
+  {% if  configurationCheckerValue.type != "none"%}
+    <div class="right value-{{ configurationCheckerValue.type }}">
+      {% if configurationCheckerValue.type == "checked" %}
+        <div class="checked value {{ configurationCheckerValue.status }}">
+          {{ configurationCheckerValue.isTranslatableValue ? configurationCheckerValue.value|trans({}, list.translateDomain) : configurationCheckerValue.value }}
+        </div>
+      {% elseif configurationCheckerValue.type == "array" %}
+        <ul class="value-list-array">
+          {% for keyVal, val in configurationCheckerValue.values %}
+            <li>
+              <div class="name">{{ keyVal }} : </div>
+              <div class="string value">{{ val }}</div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% elseif configurationCheckerValue.type == "array_without_index" %}
+        <ul class="value-list-array">
+          {% for keyVal, val in configurationCheckerValue.values %}
+            <li>
+              <div class="string value">{{ val }}</div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="string value">{{ configurationCheckerValue.isTranslatableValue ? configurationCheckerValue.value|trans({}, list.translateDomain) : configurationCheckerValue.value }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

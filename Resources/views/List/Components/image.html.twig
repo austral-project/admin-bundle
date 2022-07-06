@@ -1,0 +1,5 @@
+{% if object|austral_entity_file_exist(col.fieldname) %}
+  <img src="{{ object|austral_entity_file_image_url(col.fieldname, "original", "resize", 200, 200) }}"/>
+{% elseif col.defaultTemplate %}
+  {{ include(col.defaultTemplate) }}
+{% endif %}

@@ -1,0 +1,41 @@
+{% if module.entityTranslateEnabled and objectTranslate is not defined%}
+  <div class="list-objects_contenaire-choices">
+    {% for translate in object.getTranslatesByLanguage() %}
+      {{ include("@AustralAdmin/List/Components/choices.html.twig", {object: object, objectTranslate: translate}, ignore_missing = true) }}
+    {% endfor %}
+  </div>
+{% else %}
+  {% set actionsParameters = {} %}
+  <div class="list-objects_content-choices">
+    {% if objectTranslate is defined %}
+      <span class="content-language">
+        {{ objectTranslate.language }}
+      </span>
+      {% set actionsParameters = {"__language__": objectTranslate.language} %}
+      {% set current = objectTranslate|value_by_key(col.fieldname)  %}
+    {% else %}
+      {% set current = object|value_by_key(col.fieldname) %}
+    {% endif %}
+
+    {% set elements = {} %}
+    {% for value, action in col.actions(actionsParameters) %}
+      {% set elements = elements|merge({
+        (value): {
+          url: action.path,
+          entitled: action.entitled|trans({}, list.mapper.translateDomain),
+          style: action.attr().style
+        }
+      }) %}
+    {% endfor %}
+
+    {{ include("@AustralDesign/Components/ChoiceElement/choice-element.html.twig",
+      {
+        direction:      "vertical-line",
+        class:          "no-border",
+        current:        current,
+        choices:        elements
+      }
+    )}}
+  </div>
+
+{% endif %}

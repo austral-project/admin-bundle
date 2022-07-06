@@ -1,0 +1,31 @@
+actions:
+  create: >-
+    {module_gender, select,
+      female_c  { Ajouter une { module_name }}
+      female_v  { Ajouter une { module_name }}
+      male_c    { Ajouter un { module_name }}
+      male_v    { Ajouter un { module_name }}
+      other     { Ajouter }
+    }
+
+
+pages:
+  form:
+    edit:
+      title: >-
+        {module_gender, select,
+          female_c  { Édition de la { module_name }}
+          female_v  { Édition de l'{ module_name }}
+          male_c    { Édition du { module_name }}
+          male_v    { Édition de l'{ module_name }}
+          other     { Édition }
+        }
+    create:
+      title: >-
+        {module_gender, select,
+          female_c  { Création de la { module_name }}
+          female_v  { Création de l'{ module_name }}
+          male_c    { Création du { module_name }}
+          male_v    { Création de l'{ module_name }}
+          other     { Création }
+        }

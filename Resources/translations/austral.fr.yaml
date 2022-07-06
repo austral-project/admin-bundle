@@ -1,0 +1,313 @@
+austral:
+  name:                                         Austral - Admin
+
+links:
+  logout:                                       Déconnexion
+
+authenticated:
+  sub-title:                                    Espace d'Administration
+  fields:
+    login:                                      Login
+    password:                                   Password
+  actions:
+    login:                                      Connexion
+    forgotPassword:                             Mot de passe oublié ?
+  bottom:
+    message:                                    Vous êtes perdu ?
+    link:                                       Retour au site
+
+pages:
+  filter:
+    title:                                      "%module_name% filter"
+  form:
+    edit:
+      name:                                     Édition
+    create:
+      name:                                     Création
+  list:
+    title:                                      Liste des %module_name%
+    subTitle:                                   "%countAll% %module_name%"
+    pagination:
+      title:                                    "Page : "
+  names:
+    australAdminIndex:
+      singular:                                 Dashboard
+      plural:                                   Dashboard
+    statusConfiguration:
+      singular:                                 Configuration status
+      plural:                                   Configuration status
+
+dashboard:
+  configuration:
+    https:
+      entitled:    HTTPS
+      description: "Le protocole HTTPS permet la sécurisation des échanges sur internet."
+
+  choiceLanguage:
+    entitled:                                   Selectionnez la langue
+
+warning:
+  delete:
+    element:                                    Cet élément vient d'être supprimé !!!
+  conflict:
+    element:                                    Un autre utilisateur est dans cette page. Attention, vos modifications pourraient être annulées !!!
+
+errors:
+  500:                                          Erreur 500, Si le problème persiste, contactez le webmaster
+  length:
+    max:                                        Cette valeur est trop longue. Il doit contenir {{ limit }} caractères ou moins.
+  type:
+    string:                                     La valeur {{ value }} n'est pas un {{ type }} valide.
+    int:                                        La valeur {{ value }} n'est pas un {{ type }} valide.
+    float:                                      La valeur {{ value }} n'est pas un {{ type }} valide.
+
+actions:
+  cancel:                                       Annuler
+  edit:                                         Éditer
+  duplicate:                                    Dupliquer
+  truncate:                                     Supprimer tout
+  delete:                                       Supprimer
+  deleteThis:                                   "Supprimer : %entitled%"
+  save:                                         Enregistrer
+  deleteLink:                                   Supprimer le lien
+  myAccount:                                    Mon compte
+  logout:                                       Déconnexion
+  picture:
+    add:                                        Ajouter une image
+    edit:                                       Éditer l'image
+  file:
+    add:                                        Ajouter un fichier
+    edit:                                       Éditer le fichier
+  download:
+    default:                                    Télécharger
+    xlsx:                                       Télécharger au format Xlsx
+    csv:                                        Télécharger au format csv
+    json:                                       Télécharger au format json
+  validate:                                     Valider
+  more:                                         Plus d'actions
+  search:                                       Rechercher
+  newOnglet:                                    Éditer (Nouvel onglet)
+  close:                                        Fermer
+  reduce:                                       Réduire
+
+
+download:
+  format:
+    xlsx:                                       Xlsx
+    csv:                                        Csv
+    json:                                       Json
+
+fieldset:
+  generalInformation:                           Informations générales
+  right:                                        Parametres
+  content:                                      Contenu
+  admin:                                        Admin
+  dev:
+    config:                                     Configuration developpement
+
+duplicate:
+  status:
+    exception:                                  Une erreur est survenue.
+    success:                                    L'élement a été dupliqué avec succès
+
+changeValue:
+  status:
+    exception:                                  Une erreur est survenue.
+    success:                                    La valeur a été changé avec succès
+
+characters:
+  remaining:                                    Caractère(s) restant
+
+choices:
+  placeholder:
+    single:                                     Séléctionnez une option
+    multi:                                      Séléctionnez des options
+    links:                                      Choisissez un link
+  status:
+    enabled:                                    Activé
+    disabled:                                   Désactivé
+    yes:                                        Oui
+    no:                                         Non
+  appearance:
+    dark:                                       Sombre
+    light:                                      Clair
+    auto:                                       Auto
+  language:
+    en:                                         EN
+    fr:                                         FR
+
+switch:
+  value:
+    0:                                          Non
+    1:                                          Oui
+
+boolean_value:
+  "true":                                       Oui
+  "false":                                      Non
+
+fields:
+  entitled:
+    entitled:                                   Intitulé
+  class:
+    entitled:                                   Class
+  cssClass:
+    entitled:                                   Class css
+  isEnabled:
+    entitled:                                   Activé ?
+  enabled:
+    entitled:                                   Activé ?
+  name:
+    entitled:                                   Nom
+  keyname:
+    entitled:                                   Keyname
+  keyname_withoutSpan:
+    entitled:                                   Keyname
+  email:
+    entitled:                                   Email
+  username:
+    entitled:                                   Nom d'utilisateur
+  content:
+    entitled:                                   Contenu
+  appearance:
+    entitled:                                   Thème
+  page:
+    children:
+      entitled:                                 Pages enfants
+    status:
+      entitled:                                 Statut de la page
+  type:
+    entitled:                                   Type
+  title:
+    entitled:                                   Titre
+  isActive:
+    entitled:                                   Activé ?
+  language:
+    entitled:                                   Langue
+  updated:
+    entitled:                                   Date de mise à jour
+    from:
+      entitled:                                 De
+    to:
+      entitled:                                 à
+  created:
+    entitled:                                   Date de création
+    from:
+      entitled:                                 De
+    to:
+      entitled:                                 à
+  themes:
+    entitled:                                   Thèmes
+  templatePath:
+    entitled:                                   Chemin de la template
+  alt:
+    entitled:                                   Alt
+  reelname:
+    entitled:                                   Nom du fichier
+  languageSelectForm:
+    entitled:                                   Version de la langue
+
+
+form:
+  optional:                                     (Facultatif)
+  language:
+    add:                                        Ajouter
+  status:
+    exception:                                  Une erreur est survenue.
+    success:                                    L'objet a été enregistré avec succès
+    error:                                      Une erreur est présente dans votre formulaire
+
+summernote:
+  popin:
+    links:
+      title:                                    Insérer un lien
+      buttons:
+        add:                                    Ajouter un lien
+        cancel:                                 Annulé
+
+notification:
+  multiUser:
+    title:                                      Consultation multiple
+    text:                                       "Plusieurs utilisateurs consultent actuellement cette page.<br>Vos modifications peuvent-être perdues."
+
+
+helper:
+  australVars:                                  Voir toutes les variables
+  file:
+    informations:
+      title:                                    Informations
+      mimeType:                                 Type de fichiers acceptés
+      size:                                     Taille maximum
+      dimension:                                Dimension de l'image
+
+popin:
+  editor:
+    title:                                      Edition de fichier
+    file:                                       Fichier importé
+
+aside:
+  australVars:
+    title:                                      Liste de variables
+
+sweetAlert:
+  error500:
+    title:                                      Erreur 500
+    message:                                    Erreur 500 detectée, contactez le developpeur si le problème persiste !!!
+    actions:
+      reload:                                   Recharger cette page
+      stay:                                     Rester sur cette page
+  confirm:
+    delete:
+      title:                                      Etes vous sur ?
+      message:                                    Vous ne pourrez pas revenir en arrière !
+      actions:
+        confirm:                                  Oui, je le supprime !
+        confirmAll:                               Oui, je supprime tout !
+        cancel:                                   Annuler
+    reload:
+      title:                                      Etes vous sur ?
+      message:                                    Ce formulaire a été modifié, Vous perdrez toutes vos modifications !
+      actions:
+        confirm:                                  Oui, je continue !
+        cancel:                                   Annuler
+
+configuration:
+  subTitle:                                     Visualisation de la configuration
+  check:
+    services_status_checker:
+      title:                                    Services
+      description:                              Vérification des services utiles démarrés pour le projet
+      command:
+        entitled:                               Commande
+      status:
+        entitled:                               Statut
+    dirs:
+      notExist:
+        entitled:                               Le chemin est présent
+      title:                                    Chemin
+      description:                              Vérification des chemins utiles pour le projet
+      path:
+        entitled:                               Chemin du dossier
+      writable:
+        entitled:                               Est editable
+      readable:
+        entitled:                               Est lisible
+      fileperms:
+        entitled:                               Permissions
+    modules:
+      title:                                    Modules
+      description:                              Vérification de la configuration des modules pour le projet
+    choices:
+      disabled:                                 Désactivé
+      enabled:                                  Activé
+      no:                                       Inactif
+      yes:                                      Actif
+
+layouts:
+  size:
+    full:                                       Full
+    adjust:                                     Ajusté
+    center:                                     Centré
+
+sortable:
+  status:
+    success:                                    Le tri a bien été enregistré

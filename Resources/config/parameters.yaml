@@ -1,0 +1,63 @@
+parameters:
+
+##### Defined Class
+
+  austral.admin.project:
+    name:                                                   "Austral"
+    background:                                             "/bundles/australadmin/images/austral.jpg"
+    forgot_enabled:                                         false
+    copyright:                                              "Propulsed with ❤️ by <a href='https://austral.dev' target='_blank'>Austral</a>"
+
+  austral.admin.download:
+    creator:                                                "Austral"
+    title_defore:                                           "austral"
+    trans_domain:                                           "austral"
+    encode:                                                 "UTF-8"
+    xlsTheme:
+      header:
+        color:                                              "#000000"
+        background:                                         "#f0f0f0"
+      content:
+        color:                                              "#000000"
+        background:                                         "#ffffff"
+
+  austral.admin.modules.enabled.compression_gzip:           true
+
+  austral.admin.language:
+    user:                                                   ["en", "fr"]
+    enabled_multi:                                          false
+    list:                                                   []
+
+  austral.admin.modules.data_reload_js:
+    all:
+      - "#container-master"
+    container:
+      - "#container-master"
+    body:
+      - "body"
+
+  austral.admin.modules.actions.entities:
+    list:
+      default:        austral_admin_module_index
+    edit:
+      default:        austral_admin_module_form_edit
+      language:       austral_admin_module_form_edit_language
+    create:
+      default:        austral_admin_module_form_create
+      language:       austral_admin_module_form_create_language
+    delete:
+      default:        austral_admin_module_delete
+      language:       austral_admin_module_delete_language
+    truncate:
+      default:        austral_admin_module_truncate
+    duplicate:
+      default:        austral_admin_module_duplicate
+      language:       austral_admin_module_duplicate_language
+    change:
+      default:        austral_admin_module_change_value
+      language:       austral_admin_module_change_value_language
+    download:
+      default:        austral_admin_module_download
+
+  austral.admin.default.class:                              Austral\AdminBundle\Admin\DefaultAdmin
+  austral.admin.data_hydrate.class:                         Austral\ListBundle\DataHydrate\DataHydrateORM

@@ -1,0 +1,48 @@
+{% if field.fieldname == null %}
+  <div class="button-add-link">
+    {{ include("@AustralDesign/Components/Button/picto.html.twig",
+      {
+        url:        "#",
+        picto:      field.button.picto,
+        title:      field.button.entitled,
+        data:       {
+          "data-popin-container": "#popin-editor-master",
+          "data-popin-options": {
+            "id":       field.popin.id,
+            "class":    field.popin.class,
+            "template": field.popin.template,
+            "update":   "#"~field.popinKeyId|replace({'__name__': form.view.vars.data.id})
+          }|json_encode,
+          "data-view-by-choice-element": ""
+        }
+      }
+    )}}
+  </div>
+{% endif %}
+<div id="{{ field.popinKeyId|replace({'__name__': form.view.vars.data.id}) }}" class="popin-fields-container hidden" data-popin-clone-fields="popin-fields">
+  {%- for field in fields -%}
+    {%- if field is instanceof("Austral\\FormBundle\\Mapper\\GroupFields") -%}
+      {{ include("@AustralAdmin/Form/Components/group-fields.html.twig", {fields: field.fields }) }}
+    {% elseif field is instanceof("Austral\\FormBundle\\Field\\TemplateField") %}
+      {{ include(field.templatePath, {field: field}) }}
+    {% elseif field is instanceof("Austral\\FormBundle\\Field\\CollectionEmbedField")  %}
+      {{ include(field.templatePath, {field: field}) }}
+    {% elseif field is instanceof("Austral\\FormBundle\\Field\\FormTypeField") %}
+      {{ include(field.templatePath, {field: field, init: true}) }}
+    {%- else -%}
+      {% if form.view[field.fieldname()].rendered != true %}
+        {%- include '@AustralAdmin/Form/Components/field.html.twig' with {
+          field: {
+            name:         field.fieldname(),
+            type:         field,
+            required:     field.required(),
+            input:        field.usedGeneratedForm ? (field.widgetInput == false ? "" : form_widget(form.view[field.fieldname()], {fieldMapper:field})) : null,
+            label:        field.usedGeneratedForm ? form_label(form.view[field.fieldname()], null, {fieldMapper:field}) : field.entitled,
+            errors:       field.usedGeneratedForm ? form_errors(form.view[field.fieldname()], {fieldMapper:field}) : null,
+          },
+          form:           form,
+        } only -%}
+      {% endif %}
+    {% endif %}
+  {%- endfor -%}
+</div>

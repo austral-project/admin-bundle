@@ -1,0 +1,62 @@
+{
+  "name":                                     "austral/admin-bundle",
+  "type":                                     "symfony-bundle",
+  "description":                              "Admin symfony Bundle",
+  "keywords":                                 ["Austral", "Admin", "Symfony", "vendor"],
+  "license":                                  "MIT",
+  "homepage":                                 "https://austral.dev",
+  "version":                                  "3.0",
+  "authors": [
+    {
+      "name":                                 "Matthieu Beurel",
+      "email":                                "matthieu@austral.dev",
+      "role":                                 "Developer"
+    },
+    {
+      "name":                                 "Guillaume Grimaud",
+      "email":                                "guillaume@austral.dev",
+      "role":                                 "Designer"
+    }
+  ],
+  "require": {
+    "php":                                    "^7.4 || ^8.0",
+    "austral/tools-bundle":                   "^3.0",
+    "austral/security-bundle":                "^3.0",
+    "austral/design-bundle":                  "^3.0",
+    "austral/http-bundle":                    "^3.0",
+    "austral/entity-bundle":                  "^3.0",
+    "austral/list-bundle":                    "^3.0",
+    "austral/form-bundle":                    "^3.0",
+    "austral/filter-bundle":                  "^3.0",
+
+    "symfony/framework-bundle":               "^5.4",
+    "symfony/runtime":                        "^5.4",
+    "symfony/routing":                        "^5.4",
+    "symfony/config":                         "^5.4",
+    "symfony/event-dispatcher":               "^5.4",
+    "symfony/property-access":                "^5.4",
+    "symfony/property-info":                  "^5.4",
+    "symfony/intl":                           "^5.4",
+    "symfony/translation":                    "^5.4",
+    "symfony/http-kernel":                    "^5.4",
+
+    "sensio/framework-extra-bundle":          "^5.4",
+
+    "phpoffice/phpspreadsheet":               "1.*"
+  },
+  "suggest": {
+    "austral/entity-translate-bundle":        "^3.0",
+    "austral/entity-file-bundle":             "^3.0",
+    "austral/website-bundle":                 "^3.0",
+    "austral/email-bundle":                   "^3.0"
+  },
+  "require-dev": {
+  },
+  "config": {
+    "sort-packages":                          true
+  },
+  "autoload": {
+    "psr-4": { "Austral\\AdminBundle\\": "" }
+  },
+  "minimum-stability":                        "dev"
+}

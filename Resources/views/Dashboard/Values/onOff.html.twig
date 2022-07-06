@@ -1,0 +1,8 @@
+{# @var dashboardValue \Austral\AdminBundle\Dashboard\Values\OnOff #}
+<div class="dashboard-value onOff-value">
+  <span class="entitled">{{ dashboardValue.isTranslatableText ? dashboardValue.entitled|trans({}, "austral") : dashboardValue.entitled }}</span>
+  <p class="description">{{ dashboardValue.isTranslatableText ? dashboardValue.description|trans({}, "austral") : dashboardValue.description }}</p>
+  <div class="value-content {% if dashboardValue.isEnabled %}enabled{% endif %}">
+    <span class="value">{{ (dashboardValue.isEnabled ? "choices.status.yes" : "choices.status.no")|trans({}, "austral") }}</span>
+  </div>
+</div>

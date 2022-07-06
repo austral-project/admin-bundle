@@ -1,0 +1,22 @@
+class AustralVars  {
+  constructor() {
+    this.vars = [
+      {%-  if variables is defined -%}
+        {%- for key, choice in variables -%}
+          { "name": "{{ choice.__toString() }}", "value": "{{ choice.keyname }}" }{% if loop.last %}{% else %},{% endif %}
+        {%- endfor -%}
+      {%- endif -%}
+    ];
+  }
+  getVars() {
+    return this.vars;
+  }
+  getVarByKey(key) {
+    if(this.vars["%"+key+"%"] !== undefined)
+    {
+      return this.vars[key];
+    }
+    return null;
+  }
+}
+AustralVars = new AustralVars();

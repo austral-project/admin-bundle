@@ -1,0 +1,86 @@
+{% if field.type.symfonyFormTypeName == "HiddenType" %}
+  {{ field.input|raw() }}
+{% else %}
+
+  <div id="field-{{ form.view[field.name].vars.id }}-content" class="field-content {{ field.type.attrClass }} {% if field.required %} is-required{% endif %}
+    {% if field.errors %} is-error{% endif %}" {% if field.type.style is defined %}style="{{ field.type.style }}"{% endif %}>
+
+    {%- if field.type.symfonyFormTypeName != "RepeatedType" -%}
+      {{ field.label|raw() }}
+    {%- endif -%}
+
+    {% if field.type.helper is defined and field.type.helper %}
+      <p class="field-information">{{ field.type.helper|trans({}, form.mapper.translateDomain)|raw }}</p>
+    {% endif %}
+
+    <div class="{% if field.type.symfonyFormTypeClass != "repeatedType"  %}field{% endif%} field-{{ field.type.symfonyFormTypeClass }}">
+
+      {% if field.type.fieldOptions.attr["data-colorpicker"] is defined %}
+        <div id="colorPicker-{{ field.name }}" class="input-before"></div>
+      {% endif %}
+
+      {%- if field.type.templatePath is defined and field.type.templatePath -%}
+        {% include [field.type.templatePath, '@AustralAdmin/Form/Components/Fields/default.html.twig'] %}
+      {%- else -%}
+        {% include '@AustralAdmin/Form/Components/Fields/default.html.twig' %}
+
+        {% if field.type.popinId is defined and field.type.popinId and field.type.formMapper %}
+          {% set popin = field.type.formMapper.popinByKey(field.type.popinId) %}
+          {% if popin %}
+            <div class="button-add-link">
+              {{ include("@AustralDesign/Components/Button/picto.html.twig",
+                  {
+                    "picto": popin.button.picto,
+                    "title": popin.button.entitled,
+                    "data": {
+                      "data-popin-container": "#popin-editor-master",
+                      "data-popin-options": {
+                        "id":       popin.popin.id,
+                        "class":    popin.popin.class,
+                        "template": popin.popin.template,
+                        "update":   "#"~popin.popinKeyId|replace({'__name__': form.view.vars.data.id})
+                      }|json_encode,
+                      "data-view-by-choice-element": ""
+                    }
+                  }
+                )
+              }}
+            </div>
+            {{ include("@AustralAdmin/Form/Components/popin.html.twig", {field: popin, fields: popin.fields}) }}
+          {% endif %}
+        {% endif %}
+
+      {%- endif -%}
+      {% if field.type.options.attr["data-characters-max"] is defined %}
+        {{ include("@AustralDesign/Components/Counter/counter.html.twig",
+          {
+            "elementKeyup": "#"~form.mapper.name~"_"~field.type.fieldname,
+            "initialNumber": field.type.options.attr["data-characters-max"]
+          }
+        )}}
+      {% endif %}
+      {% if field.type.options.attr["data-austral-tag"] is defined %}
+        <div class="view-helper-tag" data-click-actions="open-aside" data-aside-element="#aside-select-austral-vars" >
+          <span class="char">%</span>
+          {{ "helper.australVars"|trans({}, form.mapper.translateDomain) }}
+        </div>
+      {% endif %}
+
+      {%- if field.errors and (field.errorNotView is not defined or field.errorNotView == false)-%}
+        {% embed "@AustralDesign/Components/Helper/helper.html.twig" with {
+          id: form.view[field.name].vars.id,
+          class: "error error-content",
+          position: "top-right",
+          picto: "austral-picto-caution"
+        } %}
+          {% block helper_container %}
+            {{ field.errors|raw }}
+          {% endblock %}
+        {% endembed  %}
+      {%- endif -%}
+
+    </div>
+
+  </div>
+
+{% endif %}

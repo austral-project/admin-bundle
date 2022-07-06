@@ -1,0 +1,72 @@
+{% extends '@AustralAdmin/Layout/layout.html.twig' %}
+
+{% block content %}
+  <div class="central-container grid grid--no-gutters">
+    <div class="row">
+      <div class="col col--lg-5">
+        <div class="login-content">
+          <h1 class="authenticated-title">
+            <img class="logo" src="{{ asset('bundles/australadmin/images/logo-with-text.svg') }}" alt="Austral">
+          </h1>
+          <form method="post" name="authenticated" class="form-authenticated form-container no-ajax">
+            <h2 class="website-title">{{ project.name }}</h2>
+            <h2 class="sub-title">{{ "authenticated.sub-title"|trans({}, "austral") }}</h2>
+            <div class="fields-content">
+              <div class="field-element field-login-content">
+                <div class="field-content animate">
+                  <label for="login-email">{{ ("authenticated.fields.login"|trans({}, 'austral')) }}</label>
+                  <div class="field">
+                    <input type="text" value="" name="login" id="login-email" class="form-control" autofocus>
+                  </div>
+                </div>
+                <div class="field-content animate">
+                  <label for="login-email">{{ ("authenticated.fields.password"|trans({}, 'austral')) }}</label>
+                  <div class="field field-passwordType">
+                    <input type="password" value="" name="password" id="login-password" class="form-control" data-password="">
+                    <span class="picto-view-password austral-picto-eye" data-picto-view="austral-picto-eye" data-picto-no-view="austral-picto-eyenot"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="content-buttons">
+              {{ include("@AustralDesign/Components/Button/action.html.twig",
+                  {
+                    tag:    "button",
+                    title:  "authenticated.actions.login"|trans({}, "austral")
+                  }
+                )
+              }}
+
+              {% if project.forgot_enabled %}
+                {# TODO make forgot password #}
+                {{ include("@AustralDesign/Components/Button/link.html.twig",
+                    {
+                      tag:    "a",
+                      url:    "#",
+                      title:  "authenticated.actions.forgotPassword"|trans({}, "austral")
+                    }
+                  )
+                }}
+              {% endif %}
+            </div>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+          </form>
+          <div class="bottom">
+            <p class="message">{{ "authenticated.bottom.message"|trans({}, "austral") }} <a class="link" href="/">{{ "authenticated.bottom.link"|trans({}, "austral") }}</a></p>
+            {% if project.copyright %}
+              <p class="message pdt20">{{ project.copyright|raw() }}</a></p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="col col--lg-7">
+        <div class="content-background-login">
+          {% if project.background %}
+            <img src="{{ project.background }}" />
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

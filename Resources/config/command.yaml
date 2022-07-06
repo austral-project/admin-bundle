@@ -1,0 +1,15 @@
+services:
+  _defaults:
+    public:       false
+
+##### Command to generate Roles with the defined modules
+  austral.manager.roles.command:
+    class:        Austral\AdminBundle\Command\AdminRoleCommand
+    tags:
+      - { name: console.command, command: "austral:admin:roles" }
+
+##### Command to conflict detect
+  austral.manager.conflict_detect.command:
+    class:        Austral\AdminBundle\Command\AdminConflictDetectCommand
+    tags:
+      - { name: console.command, command: "austral:admin:conflict-detect" }

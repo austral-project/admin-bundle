@@ -1,0 +1,19 @@
+<span class="element">
+  <span class="fieldname">{{ entitled }} :</span>
+  <span class="value">"{{ value }}"</span>
+  {{ include("@AustralDesign/Components/Button/picto.html.twig",
+      {
+        tag:      "span",
+        url:      path('austral_admin_module_filter_delete', {"modulePath": module.modulePath, "filterName": sectionKey, "filterElement": fieldname}),
+        picto:    "austral-picto-trash",
+        title:    "actions.delete"|trans({}, "austral"),
+        data: {
+          "data-click-actions":         "reload",
+          "data-reload-elements-key":   "all",
+          "data-ajax-unique":           "",
+        }
+      }
+    )
+  }}
+
+</span>

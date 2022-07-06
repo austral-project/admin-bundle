@@ -1,0 +1,130 @@
+{% set uploadFileParametersFile = form.view.vars.data|austral_entity_file_parameters(field.name) %}
+{% set fieldUploadKey = form.view[field.name].vars.id %}
+{% set popinValues = {
+  "size":           uploadFileParametersFile.infos.sizeHuman,
+  "mime-type":      uploadFileParametersFile.infos.extension,
+  "dimensions":     uploadFileParametersFile.infos.imageSize ? uploadFileParametersFile.infos.imageSize~"px" : null,
+  "reel-filename":  uploadFileParametersFile.file.reelFilename
+} %}
+
+{% set uploadFileOptions = {
+  "max-size": field.type.maxSize(true),
+  "mime-types": field.type.mimeTypes,
+  "image-sizes": field.type.imageSizes,
+  "file-container": "#"~fieldUploadKey~"-container",
+  "input-file": "#"~fieldUploadKey,
+  "fieldname": field.type.fieldname,
+  "cropper": field.type.cropper,
+  "file-path": uploadFileParametersFile.file.path.view,
+  "fileValues": popinValues,
+} %}
+
+<div id="{{ fieldUploadKey}}-container" class="file-upload-content {% if uploadFileParametersFile.file.path.view %}edit{% endif %}" {% if field.type.isInPopin == false %}data-upload-file=""{% endif%} data-upload-file-options="{{ uploadFileOptions|json_encode }}">
+  <div class="hidden">
+    {{ field.input|raw() }}
+    {% if form.view[field.name~'DeleteFile'] is defined %}
+      {{ form_widget(form.view[field.name~'DeleteFile'], {fieldMapper:field}) }}
+    {% endif %}
+  </div>
+  <div class="drag-container">
+    <div class="drag-loader">
+      {{ include("@AustralDesign/SVG/loader.svg.twig") }}
+    </div>
+    <div class="drag-picto">
+      <span class="picto austral-picto-arrow-up"></span>
+    </div>
+  </div>
+  <div class="error-content">
+    <div class="error-picto">
+      <span class="picto austral-picto-cross"></span>
+    </div>
+    <ul class="messages-content">
+    </ul>
+  </div>
+  <div class="preview-file">
+    {% if uploadFileParametersFile.file.path.view %}
+      <img src="{{ uploadFileParametersFile.file.path.view }}" alt="original" />
+    {% endif %}
+  </div>
+
+  {% set popin = null %}
+  {% if field.type.popinId and field.type.formMapper %}
+    {% set popin = field.type.formMapper.popinByKey(field.type.popinId) %}
+    {% if popin %}
+      <div class="button-edit-content">
+        {% set popinData = {
+          "data-popin-container": "#popin-editor-upload-master",
+          "data-popin-options": {
+            "id":       popin.popin.id,
+            "class":    popin.popin.class,
+            "template": popin.popin.template,
+            "update":   "#"~popin.popinKeyId|replace({'__name__': form.view.vars.data.id}),
+            "upload":   uploadFileOptions,
+            "values":   popinValues
+          }|json_encode,
+          "data-view-by-choice-element": ""
+        } %}
+        {{ include("@AustralDesign/Components/Button/action.html.twig",
+            {
+              tag:            "button",
+              title:          popin.button.entitled|trans({}, form.mapper.translateDomain),
+              picto:          popin.button.picto,
+              full:           true,
+                data:         popinData
+            }
+          )
+        }}
+      </div>
+    {% endif %}
+  {% endif %}
+  <div class="label-content">
+    {% if field.name == "file" or field.type.typeFile == "file" %}
+      <div class="picto-content">
+        {{ include("@AustralDesign/SVG/upload-file.svg.twig") }}
+      </div>
+      <span class="label-add">{{ ("actions.file.add")|trans({}, form.mapper.translateDomain) }}</span>
+    {% elseif field.name == "image" or field.type.typeFile == "picture" %}
+      <div class="picto-content">
+        {{ include("@AustralDesign/SVG/upload-image.svg.twig") }}
+      </div>
+      <span class="label-add">{{ ("actions.picture.add")|trans({}, form.mapper.translateDomain) }}</span>
+    {% else %}
+      <div class="picto-content"></div>
+      <span class="label-add">{{ ("actions."~field.name~".add")|trans({}, form.mapper.translateDomain) }}</span>
+    {% endif %}
+  </div>
+</div>
+
+{% if popin %}
+  {{ include("@AustralAdmin/Form/Components/popin.html.twig", {field: popin, fields: popin.fields}) }}
+{% endif %}
+
+{% embed "@AustralDesign/Components/Helper/helper.html.twig" with {
+  id: fieldUploadKey,
+} %}
+  {% block helper_container %}
+    <span class="title">{{ "helper.file.informations.title"|trans({}, form.mapper.translateDomain) }}</span>
+    <ul>
+      <li>
+        <span class="entitled">{{ "helper.file.informations.mimeType"|trans({}, form.mapper.translateDomain) }}</span>
+        <span class="value">{{ field.type.uploadFileParameters.extensions|join(" ") }}</span>
+      </li>
+      <li>
+        <span class="entitled">{{ "helper.file.informations.size"|trans({}, form.mapper.translateDomain) }}</span>
+        <span class="value">{{ field.type.uploadFileParameters.maxSize }}</span>
+      </li>
+      {% if field.type.uploadFileParameters.imageSizes is defined and field.type.uploadFileParameters.imageSizes %}
+        <li>
+          <span class="entitled">{{ "helper.file.informations.dimension"|trans({}, form.mapper.translateDomain) }}</span>
+          {% if field.type.uploadFileParameters.imageSizes.minWidth and field.type.uploadFileParameters.imageSizes.minHeight %}
+            <span class="value">{{ field.type.uploadFileParameters.imageSizes.minWidth }}x{{ field.type.uploadFileParameters.imageSizes.minHeight }} px min.</span>
+          {% endif %}
+          {% if field.type.uploadFileParameters.imageSizes.maxWidth and field.type.uploadFileParameters.imageSizes.maxHeight %}
+            <span class="value">{{ field.type.uploadFileParameters.imageSizes.maxWidth }}x{{ field.type.uploadFileParameters.imageSizes.maxHeight }} px max.</span>
+          {% endif %}
+        </li>
+      {% endif %}
+    </ul>
+  {% endblock %}
+
+{% endembed  %}

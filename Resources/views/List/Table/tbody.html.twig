@@ -1,0 +1,33 @@
+<tbody {% if module.isSortable %}data-sortable="" data-sortable-handle=".sortable-handle" data-sortable-draggable=".row-element" data-sortable-update="{{ path('austral_admin_module_sortable', {"modulePath": module.modulePath}) }}"{% endif %}>
+  {%- if section.rows|length -%}
+    {%- for row in section.rows -%}
+      <tr id="{{ row.id }}" class="{{ row.class }}" {{ row.attrString|raw() }} data-row-id="{{ row.object.id }}" data-click-right-menu="#actions-choices-{{ row.object.id }}">
+        {%- for col in row.columns -%}
+          <td id="{{ col.id }}" class="{{ col.class }} col-element{% if loop.index == 1 and module.isSortable %} sortable-content-picto{% endif %} {{ col.size }} {{ col.align }}" {{ col.attrString ? col.attrString|raw() : "" }}>
+            {% if loop.index == 1 and module.isSortable %}
+              <div class="sortable-content">
+                {{ include("@AustralDesign/Components/Button/picto.html.twig",
+                  {
+                    tag:            "span",
+                    picto:          "austral-picto-arrange",
+                    title:          "Sortable",
+                    data:           {
+                      "class":  "sortable-handle is-enabled"
+                    }
+                  }
+                )
+                }}
+              </div>
+            {% endif %}
+            {%- include "@AustralAdmin/List/column.html.twig" with { numElement: loop.index } -%}
+          </td>
+        {%- endfor -%}
+        {%- if section.columnActionsDefined -%}
+          <td class="actions-object col--align-right">
+            {%- include "@AustralAdmin/List/Components/actions.html.twig" -%}
+          </td>
+        {%- endif -%}
+      </tr>
+    {%- endfor -%}
+  {%- endif -%}
+</tbody>

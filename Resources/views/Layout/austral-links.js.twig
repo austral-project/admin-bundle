@@ -1,0 +1,25 @@
+class AustralLinks  {
+  constructor() {
+    this.links = {
+      {% if pages is defined %}
+        {%- for class, pagesByClass in pages -%}
+          {%- set loopMasterLast = loop.last -%}
+          {%- for page in pagesByClass -%}
+          "{{ class }}:{{ page.id }}": "{{ page.__toString() }}"{% if loop.last and loopMasterLast%}{% else %},{% endif %}
+          {%- endfor -%}
+        {%- endfor -%}
+      {% endif %}
+    };
+  }
+  getLinks() {
+    return this.links;
+  }
+  getLinkByKey(key) {
+    if(this.links[key] !== undefined)
+    {
+      return this.links[key];
+    }
+    return null;
+  }
+}
+AustralLinks = new AustralLinks();

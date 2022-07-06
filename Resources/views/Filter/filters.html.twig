@@ -1,0 +1,89 @@
+{% for oneFilter in filter.mapper.filters %}
+  <div id="filter-content-{{ oneFilter.keyname }}" data-aside="" class="aside-container right filter-content">
+    <div class="button-content-close-aside">
+      {{ include("@AustralDesign/Components/Button/picto.html.twig",
+          {
+            tag:      "span",
+            picto:    "austral-picto-cross",
+            title:    "close code viewer",
+            data: {
+              "data-aside-close":  true
+            }
+          }
+        )
+      }}
+    </div>
+
+    {% form_theme oneFilter.formView "@AustralDesign/Components/Form/_theme.html.twig"  %}
+    {{ form_start(oneFilter.formView, {attr: {class: "filter filter-container", "data-austral-ping": "", "data-form-actions": "reload", "data-reload-elements-key": "container" }}) }}
+    <div class="right-container">
+      {{ include("@AustralDesign/Components/Title/title.html.twig",
+          {
+            tag:        "h2",
+            value:      ("pages.filter.title"|trans({"%module_name%": module.translatePlural}, oneFilter.formMapper.translateDomain))
+          }
+        )
+      }}
+      <div class="content-fields">
+        <div class="fields-content">
+          {% for field in oneFilter.formMapper.allFields %}
+            {% if field is instanceof("Austral\\FormBundle\\Field\\MultiField") %}
+              {{ include(field.templatePath, {field: field,
+                form:           {
+                  "mapper":       oneFilter.formMapper,
+                  "view":         oneFilter.formView,
+                }})
+              }}
+            {% else %}
+              {%- include '@AustralAdmin/Form/Components/field.html.twig' with {
+                field: {
+                  name:         field.fieldname(),
+                  type:         field,
+                  required:     field.required(),
+                  input:        field.widgetInput == false ? "" : form_widget(oneFilter.formView[field.fieldname()], {fieldMapper:field}),
+                  label:        form_label(oneFilter.formView[field.fieldname()], null, {fieldMapper:field}),
+                  errors:       form_errors(oneFilter.formView[field.fieldname()], {fieldMapper:field}),
+                },
+                form:           {
+                  "mapper":       oneFilter.formMapper,
+                  "view":         oneFilter.formView,
+                },
+              } only -%}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      <div class="buttons-content">
+        <div class="buttons-action">
+          {{ include("@AustralDesign/Components/Button/picto.html.twig",
+            {
+              tag:          "span",
+              url:          path('austral_admin_module_filter_delete', {"modulePath": module.modulePath, "filterName": oneFilter.keyname, "filterElement": "all"}),
+              picto:        "austral-picto-trash",
+              title:        "actions.delete"|trans({}, oneFilter.formMapper.translateDomain),
+              withEntitled: true,
+              full:         true,
+              data:   {
+                "data-click-actions":         "reload",
+                "data-reload-elements-key":   "all",
+                "data-aside-close":  true
+              }
+            }
+          ) }}
+          {{ include("@AustralDesign/Components/Button/action.html.twig",
+            {
+              tag:    "button",
+              title:  "actions.search"|trans({}, oneFilter.formMapper.translateDomain),
+              full:   true,
+              data:   {
+                "data-animate-to-save": ""
+              }
+            }
+          ) }}
+        </div>
+      </div>
+    </div>
+
+    {{ form_end(oneFilter.formView) }}
+  </div>
+{% endfor %}

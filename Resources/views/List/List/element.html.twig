@@ -1,0 +1,56 @@
+<li id="{{ row.id }}" class="{{ row.class }} lvl-{{ lvl }} {%- if row.children %} has-children{% endif %}" data-row-id="{{ row.object.id }}">
+  <div class="col-content" {{ row.attrString|raw() }} data-click-right-menu="#actions-choices-{{ row.object.id }}">
+    {%- if row.children -%}
+      <div class="view-children-actions" data-toggle-container="#{{ row.id }}-children-content">
+        <span class="picto austral-picto-simply-down"></span>
+      </div>
+    {%- endif -%}
+    {%- for col in row.columns -%}
+      <div {% if col.id %}id="{{ col.id }}"{% endif%} class="{{ col.class }} col-element {{ col.size }} {% if loop.index == 1 and module.isSortable %} sortable-content-picto{% endif %}" {{ col.attrString ? col.attrString|raw() : "" }}>
+        {% if loop.index == 1 and module.isSortable %}
+          <div class="sortable-content">
+            {{ include("@AustralDesign/Components/Button/picto.html.twig",
+                {
+                  tag:            "span",
+                  picto:          "austral-picto-arrange",
+                  title:          "Sortable",
+                  data:           {
+                    "class":  "sortable-handle is-enabled"
+                  }
+                }
+              )
+            }}
+          </div>
+        {% endif %}
+        {%- include "@AustralAdmin/List/column.html.twig" with { numElement: loop.index } -%}
+      </div>
+    {%- endfor -%}
+    {%- if section.columnActionsDefined -%}
+      <div class="object-actions-field col-element ">
+        {%- include "@AustralAdmin/List/Components/actions.html.twig" -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+
+    {% set toogleParametersChildren = {
+      withHeight: true,
+      show: {
+        picto: "austral-picto-simply-down"
+      },
+      hide: {
+        picto: "austral-picto-simply-up"
+      }
+    } %}
+  {%- if row.children or section.sortableOptions['group'] == "nested" -%}
+    <div id="{{ row.id }}-children-content" class="children-content toggle-element" {%- if row.children -%}data-toggle="{{ toogleParametersChildren|json_encode }}"{% endif %}>
+      <ol class="objects-list-ol-children lvl-child-{{ lvl }}" {% if module.isSortable %}data-sortable="" data-sortable-handle=".sortable-handle" data-sortable-draggable=".row-element" data-sortable-update="{{ path('austral_admin_module_sortable', {"modulePath": module.modulePath}) }}"{% endif %}>
+        {%- if row.children -%}
+          {%- for rowChild in row.children -%}
+            {%- include "@AustralAdmin/List/List/element.html.twig" with {row: rowChild, list: list, section: section, lvl: lvl+1, module: module} only -%}
+          {%- endfor -%}
+        {% endif %}
+      </ol>
+    </div>
+  {% endif %}
+</li>
