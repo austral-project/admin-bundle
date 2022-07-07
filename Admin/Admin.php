@@ -468,21 +468,25 @@ abstract class Admin implements AdminInterface
 
       if(AustralTools::usedImplements($this->module->getEntityManager()->getClass(), "Austral\EntitySeoBundle\Entity\Interfaces\EntitySeoInterface"))
       {
-        $listMapper->addColumnAction(new Action("goTo", "actions.goTo",
-            $listAdminEvent->getAdminHandler()->generateUrl("austral_website_page", array('slug'=>"__refUrl__")),
-            "austral-picto-corner-forward",
-            array(
-              "attr"  =>  array(
-                "itemClass"   =>  "in-to-context",
-                "target"      =>  "_blank"
-              ),
-              "translateParameters" => array(
-                "module_name"     =>  $this->module->translateSingular(),
-                "module_gender"   =>  $this->module->translateGenre()
+        try {
+          $listMapper->addColumnAction(new Action("goTo", "actions.goTo",
+              $listAdminEvent->getAdminHandler()->generateUrl("austral_website_page", array('slug'=>"__refUrl__")),
+              "austral-picto-corner-forward",
+              array(
+                "attr"  =>  array(
+                  "itemClass"   =>  "in-to-context",
+                  "target"      =>  "_blank"
+                ),
+                "translateParameters" => array(
+                  "module_name"     =>  $this->module->translateSingular(),
+                  "module_gender"   =>  $this->module->translateGenre()
+                )
               )
             )
-          )
-        );
+          );
+        } catch(\Exception $e) {
+
+        }
       }
 
       $listAdminEvent->getTemplateParameters()->addParameters("list", array(
