@@ -86,7 +86,7 @@ Class ConflictDetect
       {
         if(strpos($topic, "/create/form") === false)
         {
-          preg_match("^.*\/(.*)\/form/^", $topic, $matches);
+          preg_match("^.*\/(.*)\/form(\/|)^", $topic, $matches);
           if($matches && (count($subscriptions) > 1))
           {
             $this->topicsConflict[$topic] = true;
@@ -98,14 +98,15 @@ Class ConflictDetect
                 if(array_key_exists($userId, $this->user))
                 {
                   $users[] = array(
-                    "firstname" =>  $this->user[$userId]->getFirstname(),
-                    "lastname"  =>  $this->user[$userId]->getLastname(),
-                    "avatar"    =>  $this->linkGenerator->image($this->user[$userId], "avatar", "original", "resize", 100, 100)
+                    "firstname"     =>  $this->user[$userId]->getFirstname(),
+                    "lastname"      =>  $this->user[$userId]->getLastname(),
+                    "avatar"        =>  $this->linkGenerator->image($this->user[$userId], "avatar", "original", "resize", 100, 100),
+                    "avatarColor"   =>  $this->user[$userId]->getAvatarColor()
                   );
                 }
               }
             }
-            $template = $this->twig->render("@AustralAdmin/Components/notification-multi-user.html.twig", array(
+            $template = $this->twig->render("@AustralDesign/Components/Notification/multi-user.html.twig", array(
               "users" =>  $users
             ));
             $this->push->add(Push::TYPE_MERCURE, array('topics'=>array($this->mercure->topicWithoutDomain($topic)), "values" => array(
