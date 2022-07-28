@@ -1,15 +1,19 @@
 {% if field.usedGeneratedForm %}
+  {% set betweenInsertAccepted = false %}
+  {% set sortableEnabled = false %}
   {% set isMasterEmbedForm = isMasterEmbedForm is defined ? false : true %}
   {% if form.mapper.hasSubFormMapperByKey(field.fieldname) %}
     {% set subFormMapper = form.mapper.getSubFormMapperByKey(field.fieldname) %}
     {% if subFormMapper %}
-      {% if field.options.allow.add and field.masterChildren != true %}
+      {% if field.masterChildren != true %}
 
         {% if colorKey is not defined %}
           {% set colorKey = "__COLOR__" %}
         {% endif %}
 
-        {% set betweenInsertAccepted = field.betweenInsert %}
+        {% set betweenInsertAccepted = field.betweenInsert and field.options.allow.add %}
+        {% set sortableEnabled = field.hasSortable %}
+
         {% set childrenForm = {} %}
         {% set childrenFormByParentIds = {} %}
         {% set embedFields = {} %}
@@ -26,7 +30,6 @@
           {% for choiceKey, choiceValue in field.collectionsChoices %}
             {% if field.collectionsForms[choiceKey] is defined and form.view[choiceKey].vars.prototype is defined %}
               {% set collectionFormChild = field.collectionsForms[choiceKey] %}
-
 
               {% set embedFields = embedFields|merge({
                   (choiceKey): include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
@@ -126,13 +129,13 @@
     {% if field.entitled and form.view[field.fieldname()] is defined %}
       {{ form_label(form.view[field.fieldname()]) }}
     {% endif %}
-    <div id="field-{{ field.fieldname }}-content-embed" class="collection-embed-fields color-{{ colorKey }} {{ isMasterEmbedForm ? "collection-embed-fields-master" : "collection-embed-fields-children" }} {{ field.options.attr.class }}" data-color="{{ colorKey }}" data-collection-embed="" {% if field.masterChildren != true %}data-collection-embed-fields-template="{{ embedFields|json_encode }}"{% endif %}>
-      {% if isMasterEmbedForm %}
+    <div id="field-{{ field.fieldname }}-content-embed" class="collection-embed-fields color-{{ colorKey }} {{ isMasterEmbedForm ? "collection-embed-fields-master" : "collection-embed-fields-children" }} {{ field.options.attr.class }}" data-color="{{ colorKey }}" {% if field.options.allow.add %}data-collection-embed="" {% if field.masterChildren != true %}data-collection-embed-fields-template="{{ embedFields|json_encode }}"{% endif %}{% endif %}>
+      {% if isMasterEmbedForm and field.options.allow.add %}
         {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig")}}
       {% endif %}
 
-      <div class="collection-embed-forms" data-replace-id="{{ field.options.prototype.name }}" {% if field.hasSortable %}data-sortable="" data-sortable-draggable=".collection-embed-element"  data-sortable-handle=".sortable-handle" data-sortable-input="*[data-collection-sortabled]"{% endif %}>
-        {% if isMasterEmbedForm != true %}
+      <div class="collection-embed-forms" data-replace-id="{{ field.options.prototype.name }}" {% if sortableEnabled %}data-sortable="" data-sortable-draggable=".collection-embed-element"  data-sortable-handle=".sortable-handle" data-sortable-input="*[data-collection-sortabled]"{% endif %}>
+        {% if isMasterEmbedForm != true and field.options.allow.add%}
           {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig")}}
         {% endif %}
         {% for childForm in childrenForm|ksort %}
