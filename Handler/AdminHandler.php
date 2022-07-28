@@ -336,7 +336,8 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
       ->setName("form_austral")
       ->setObject($object)
       ->setFormTypeAction($formTypeAction)
-      ->setTranslateDomain("austral");
+      ->setTranslateDomain("austral")
+      ->setRequestMethod($this->request->getMethod());
     $this->debug->stopWatchStop("austral.admin.handler.form.mapper.init");
 
     if($this->getSession()->has("austral_form"))
