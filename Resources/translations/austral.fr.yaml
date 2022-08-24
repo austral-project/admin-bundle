@@ -205,7 +205,9 @@ fields:
     entitled:                                   Nom du fichier
   languageSelectForm:
     entitled:                                   Version de la langue
-
+  mainTitle:
+    entitled:                                   Titre principal
+    placeholder:                                Saisir le titre
 
 form:
   optional:                                     (Facultatif)

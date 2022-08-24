@@ -204,6 +204,9 @@ fields:
     entitled:                                   File name
   languageSelectForm:
     entitled:                                   Language version
+  mainTitle:
+    entitled:                                   Main title
+    placeholder:                                Enter the title
 
 
 form:
