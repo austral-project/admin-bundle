@@ -24,5 +24,6 @@ class AdminHttpEvent extends HttpEvent
   const EVENT_AUSTRAL_HTTP_REQUEST = "austral.event.http.admin.request";
   const EVENT_AUSTRAL_HTTP_CONTROLLER = "austral.event.http.admin.controller";
   const EVENT_AUSTRAL_HTTP_RESPONSE = "austral.event.http.admin.response";
+  const EVENT_AUSTRAL_HTTP_EXCEPTION = "austral.event.http.admin.exception";
 
 }
