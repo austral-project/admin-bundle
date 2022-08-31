@@ -12,6 +12,7 @@ namespace Austral\AdminBundle\Admin\Event;
 
 use Austral\AdminBundle\Handler\AdminHandler;
 use Austral\EntityBundle\Entity\EntityInterface;
+use Austral\EntityTranslateBundle\Entity\Interfaces\EntityTranslateChildInterface;
 
 /**
  * Austral Admin Event Duplicate.
@@ -74,7 +75,7 @@ class DuplicateAdminEvent extends AdminEvent
 
   /**
    * Get duplicateObject
-   * @return EntityInterface
+   * @return EntityInterface|EntityTranslateChildInterface|null
    */
   public function getDuplicateObject(): ?EntityInterface
   {

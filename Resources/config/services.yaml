@@ -24,6 +24,12 @@ services:
     tags:
       - { name: kernel.event_subscriber }
 
+  austral.admin.module.event_subscriber:
+    class:          Austral\AdminBundle\EventSubscriber\ModuleEventSubscriber
+    arguments:      [ ]
+    tags:
+      - { name: kernel.event_subscriber }
+
 ##### Configuration
   austral.admin.config:
     class:          Austral\AdminBundle\Configuration\AdminConfiguration
@@ -32,7 +38,7 @@ services:
 ##### Modules
   austral.admin.modules:
     class:          Austral\AdminBundle\Module\Modules
-    arguments:      [ "@service_container", "@router", "@translator", "@austral.admin.config"]
+    arguments:      [ "@service_container", "@event_dispatcher","@router", "@translator", "@austral.admin.config"]
 
 ##### Handler
   austral.admin.handler:

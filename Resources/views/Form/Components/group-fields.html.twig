@@ -1,8 +1,11 @@
 <div {{ field.attrString|raw()|replace({"__name__": form.view.vars.data.id}) }} class="group-fields-container {{ field.keyname }}-fields-container {{ field.classCss }} {{ field.style }}">
-  {%- if field.entitled -%}
+  {%- if field.entitled and field.direction != "group-column" -%}
     <span class="group-fields-name">{{ field.entitled|trans({}, form.mapper.translateDomain) }}</span>
   {%- endif -%}
   <div class="group-fields-content {{ field.direction }} {% if fields|length == 0 %}no-fields{% endif %}">
+    {%- if field.entitled and field.direction == "group-column" -%}
+      <span class="group-fields-name">{{ field.entitled|trans({}, form.mapper.translateDomain) }}</span>
+    {%- endif -%}
     {%- for key, oneField in fields -%}
       {%- if oneField is instanceof("Austral\\FormBundle\\Mapper\\GroupFields") -%}
         <div class="group-col {{ oneField.size }} {{ oneField.classCss }}">

@@ -50,10 +50,26 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
   public static function getSubscribedEvents(): array
   {
     return [
-      AdminHttpEvent::EVENT_AUSTRAL_HTTP_REQUEST     =>  ["onRequest", 1024],
-      AdminHttpEvent::EVENT_AUSTRAL_HTTP_CONTROLLER  =>  ["onController", 1024],
-      AdminHttpEvent::EVENT_AUSTRAL_HTTP_RESPONSE    =>  ["onResponse", 1024],
+      AdminHttpEvent::EVENT_AUSTRAL_HTTP_REQUEST_INITIALISE     =>  ["onRequestInitialise", 1024],
+      AdminHttpEvent::EVENT_AUSTRAL_HTTP_REQUEST                =>  ["onRequest", 1024],
+      AdminHttpEvent::EVENT_AUSTRAL_HTTP_CONTROLLER             =>  ["onController", 1024],
+      AdminHttpEvent::EVENT_AUSTRAL_HTTP_RESPONSE               =>  ["onResponse", 1024],
     ];
+  }
+
+  /**
+   * @param HttpEventInterface $httpEvent
+   *
+   * @return void
+   */
+  public function onRequestInitialise(HttpEventInterface $httpEvent)
+  {
+    $currentLocal = $httpEvent->getKernelEvent()->getRequest()->getSession()->get("austral_language_interface");
+    if(!$httpEvent->getKernelEvent()->getRequest()->attributes->has("language"))
+    {
+      $httpEvent->getKernelEvent()->getRequest()->attributes->set("language", $this->container->getParameter('locale'));
+    }
+    $httpEvent->getHttpRequest()->setLanguage($currentLocal);
   }
 
   /**
@@ -90,6 +106,7 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
         );
       }
     }
+
 
     /** @var Modules $modules */
     $modules = $this->container->get('austral.admin.modules')
@@ -227,6 +244,16 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
       $response = new RedirectResponse($this->container->get('router')->generate("austral_admin_my_account"));
     }
     $httpEvent->getKernelEvent()->setResponse($response);
+  }
+
+  /**
+   * @param HttpEventInterface $httpEvent
+   *
+   * @return void
+   */
+  public function onException(HttpEventInterface $httpEvent)
+  {
+
   }
 
 

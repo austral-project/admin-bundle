@@ -108,12 +108,13 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
     $listMapper = null;
     $filterMapper = null;
 
-    if(AustralTools::usedImplements(get_class($this->module->getAdmin()), AdminModuleInterface::class)) {
+    $actionName = $this->module->getActionName() ? : "configureListMapper";
+
+    if(AustralTools::usedImplements(get_class($this->module->getAdmin()), AdminModuleInterface::class) && $actionName === "configureListMapper") {
       $listMapper = $this->createListMapper();
       $filterMapper = $this->createFilterMapper();
     }
 
-    $actionName = $this->module->getActionName() ? : "configureListMapper";
     $listAdminEvent = new ListAdminEvent(
       $this,
       $this->templateParameters,

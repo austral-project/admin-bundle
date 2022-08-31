@@ -13,8 +13,7 @@ namespace Austral\AdminBundle\Module;
 use Austral\AdminBundle\Admin\AdminInterface;
 use Austral\AdminBundle\Admin\AdminModuleInterface;
 
-use Austral\EntityBundle\EntityManager\EntityManagerInterface;
-
+use Austral\EntityBundle\EntityManager\EntityManagerORMInterface;
 use Austral\ListBundle\Model\ModuleInterface;
 use Austral\ToolsBundle\AustralTools;
 
@@ -38,12 +37,17 @@ class Module implements ModuleInterface
   protected RouterInterface $router;
 
   /**
-   * @var AdminInterface|AdminModuleInterface
+   * @var AdminInterface|AdminModuleInterface|null
    */
   protected $admin = null;
 
   /**
-   * @var EntityManagerInterface|DoctrineEntityManagerInterface|null
+   * @var string|null
+   */
+  protected ?string $adminClass = null;
+
+  /**
+   * @var EntityManagerORMInterface|DoctrineEntityManagerInterface|null
    */
   protected $entityManager = null;
 
@@ -163,7 +167,7 @@ class Module implements ModuleInterface
   /**
    * @var string|null
    */
-  protected string $dataHydrateClass;
+  protected ?string $dataHydrateClass = null;
 
   /**
    * Module constructor.
@@ -174,7 +178,8 @@ class Module implements ModuleInterface
   {
     $this->router = $router;
     $this->moduleKey = $moduleKey;
-    if($adminClass)
+    $this->adminClass = $adminClass;
+    if($adminClass && class_exists($adminClass))
     {
       $this->admin = new $adminClass($this);
     }
@@ -427,7 +432,7 @@ class Module implements ModuleInterface
   }
 
   /**
-   * @param EntityManagerInterface|DoctrineEntityManagerInterface|null $entityManager
+   * @param EntityManagerORMInterface|DoctrineEntityManagerInterface|null $entityManager
    *
    * @return $this
    */
@@ -438,7 +443,7 @@ class Module implements ModuleInterface
   }
 
   /**
-   * @return EntityManagerInterface|DoctrineEntityManagerInterface|null
+   * @return EntityManagerORMInterface|DoctrineEntityManagerInterface|null
    */
   public function getEntityManager()
   {
@@ -446,9 +451,9 @@ class Module implements ModuleInterface
   }
 
   /**
-   * @return string
+   * @return string|null
    */
-  public function getDataHydrateClass(): string
+  public function getDataHydrateClass(): ?string
   {
     return $this->dataHydrateClass;
   }
@@ -465,11 +470,31 @@ class Module implements ModuleInterface
   }
 
   /**
-   * @return AdminInterface|AdminModuleInterface
+   * @return AdminInterface|AdminModuleInterface|null
    */
   public function getAdmin()
   {
     return $this->admin;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getAdminClass(): ?string
+  {
+    return $this->adminClass;
+  }
+
+  /**
+   * @param string|null $adminClass
+   *
+   * @return $this
+   */
+  public function setAdminClass(?string $adminClass = null): Module
+  {
+    $this->adminClass = $adminClass;
+    $this->admin = $adminClass && class_exists($adminClass)? new $adminClass($this) : null;
+    return $this;
   }
 
   /**

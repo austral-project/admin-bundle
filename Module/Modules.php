@@ -11,12 +11,14 @@
 namespace Austral\AdminBundle\Module;
 
 use Austral\AdminBundle\Configuration\AdminConfiguration;
+use Austral\AdminBundle\Event\ModuleEvent;
 use Austral\EntityBundle\EntityManager\EntityManagerInterface;
 use Austral\ToolsBundle\AustralTools;
 
 use ErrorException;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -34,6 +36,11 @@ class Modules
    * @var ContainerInterface
    */
   protected ContainerInterface $container;
+
+  /**
+   * @var EventDispatcherInterface
+   */
+  protected EventDispatcherInterface $eventDispatcher;
 
   /**
    * @var RouterInterface
@@ -97,18 +104,22 @@ class Modules
 
   /**
    * Modules constructor.
+   *
    * @param ContainerInterface $container
+   * @param EventDispatcherInterface $eventDispatcher
    * @param RouterInterface $router
    * @param TranslatorInterface $translator
    * @param AdminConfiguration $adminConfiguration
    */
   public function __construct(ContainerInterface $container,
+    EventDispatcherInterface $eventDispatcher,
     RouterInterface $router,
     TranslatorInterface $translator,
     AdminConfiguration $adminConfiguration
   )
   {
     $this->container = $container;
+    $this->eventDispatcher = $eventDispatcher;
     $this->router = $router;
     $this->translator = $translator;
     $this->adminConfiguration = $adminConfiguration;
@@ -264,8 +275,9 @@ class Modules
    * @return $this
    * @throws ErrorException
    * @throws ReflectionException
+   * @throws \Exception
    */
-  protected function addModule(string $modulePath,
+  public function addModule(string $modulePath,
     array $moduleParameters,
     string $moduleKey,
     ?string $actionName = null,
@@ -306,6 +318,7 @@ class Modules
     {
       $moduleEntityManagerNameDefault = u($moduleKey)->snake()->toString();
       $entityManagerClass = AustralTools::getValueByKey($moduleParameters, "entity_manager",  "austral.entity_manager.{$moduleEntityManagerNameDefault}");
+
       if(!$this->container->has($entityManagerClass))
       {
         throw new ErrorException("The module {$moduleKey} is entity type, but the entity manager {$entityManagerClass} is not found !!!");
@@ -331,21 +344,22 @@ class Modules
       )
     );
 
-    /**
-     * Generate Translate Key and init value
-     */
-    $translateKey = u($modulePath)->camel()->toString();
-    $module->setTranslates(array(
-        'singular'  =>  $this->trans("pages.names.{$translateKey}.singular"),
-        'plural'    =>  $this->trans("pages.names.{$translateKey}.plural"),
-        "type"      =>  AustralTools::getValueByKey($moduleParameters, "translate", "default"),
-        "key"       =>  $translateKey
-      )
-    );
+    if(!array_key_exists("translate_disabled", $moduleParameters) || $moduleParameters["translate_disabled"] === false) {
+      /**
+       * Generate Translate Key and init value
+       */
+      $translateKey = u($modulePath)->camel()->toString();
+      $module->setTranslates(array(
+          'singular'  =>  $this->trans("pages.names.{$translateKey}.singular"),
+          'plural'    =>  $this->trans("pages.names.{$translateKey}.plural"),
+          "type"      =>  AustralTools::getValueByKey($moduleParameters, "translate", "default"),
+          "key"       =>  $translateKey
+        )
+      );
+    }
 
     /**
      * Init security granted and path
-     * @var string $translateKey
      */
     $securityKey = $moduleKey !== "austral_admin_dashboard" ? "ROLE_".strtoupper(u($modulePath)->snake()) : "ROLE_ADMIN_ACCESS";
     $grantedByActionKeys = array();
@@ -401,7 +415,8 @@ class Modules
     {
       $this->modulesByEntityClassname[$entityClassName] = $modulePath;
     }
-
+    $moduleEvent = new ModuleEvent($this, $module, $moduleParameters);
+    $this->eventDispatcher->dispatch($moduleEvent, ModuleEvent::EVENT_AUSTRAL_MODULE_ADD);
     return $this;
   }
 

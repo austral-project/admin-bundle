@@ -8,6 +8,12 @@ services:
     tags:
       - { name: console.command, command: "austral:admin:roles" }
 
+##### Command to generate Module file with the defined modules
+  austral.manager.modules.command:
+    class:        Austral\AdminBundle\Command\AdminModulesCommand
+    tags:
+      - { name: console.command, command: "austral:admin:modules" }
+
 ##### Command to conflict detect
   austral.manager.conflict_detect.command:
     class:        Austral\AdminBundle\Command\AdminConflictDetectCommand
