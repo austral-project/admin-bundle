@@ -192,7 +192,15 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
     }
 
     if($this->container->has('austral.entity_seo.pages')) {
-      $templateParameters->addParameters("pages", $this->container->get('austral.entity_seo.pages')->setByStatus(false)->getObjectsByEntity());
+      $homepageId = null;
+      if($domain = $module->getParametersByKey("domain"))
+      {
+        $homepageId = $domain->getHomepage() ? $domain->getHomepage()->getId() : null;
+      }
+      $templateParameters->addParameters("pages", $this->container->get('austral.entity_seo.pages')
+        ->setHomepageId($homepageId)
+        ->setByStatus(false)
+        ->getObjectsByEntity());
     }
     if($this->container->has('austral.entity_manager.config')) {
       $templateParameters->addParameters("variables", $this->container->get('austral.entity_manager.config')->selectAll());
