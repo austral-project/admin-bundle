@@ -19,7 +19,7 @@
   "fileValues": popinValues,
 } %}
 
-<div id="{{ fieldUploadKey}}-container" class="file-upload-content {% if uploadFileParametersFile.file.path.view %}edit{% endif %}" {% if field.type.isInPopin == false %}data-upload-file=""{% endif%} data-upload-file-options="{{ uploadFileOptions|json_encode }}">
+<div id="{{ fieldUploadKey}}-container" class="file-upload-content {% if uploadFileParametersFile.file.path.download %}edit{% endif %}" {% if field.type.isInPopin == false %}data-upload-file=""{% endif%} data-upload-file-options="{{ uploadFileOptions|json_encode }}">
   <div class="hidden">
     {{ field.input|raw() }}
     {% if form.view[field.name~'DeleteFile'] is defined %}
@@ -44,6 +44,10 @@
   <div class="preview-file">
     {% if uploadFileParametersFile.file.path.view %}
       <img src="{{ uploadFileParametersFile.file.path.view }}" alt="original" />
+    {% elseif uploadFileParametersFile.file.path.download %}
+      {% set assetDefault = asset('/bundles/australadmin/images/mime-type-files/default.png') %}
+      {% set assetByExtension = asset('/bundles/australadmin/images/mime-type-files/'~ uploadFileParametersFile.infos.extension ~'.png') %}
+      <img src="{{ asset_exist(assetByExtension) ? assetByExtension : assetDefault }}" alt="original" />
     {% endif %}
   </div>
 
