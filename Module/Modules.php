@@ -13,6 +13,7 @@ namespace Austral\AdminBundle\Module;
 use Austral\AdminBundle\Configuration\AdminConfiguration;
 use Austral\AdminBundle\Event\ModuleEvent;
 use Austral\EntityBundle\EntityManager\EntityManagerInterface;
+use Austral\HttpBundle\Entity\Interfaces\DomainInterface;
 use Austral\ToolsBundle\AustralTools;
 
 use ErrorException;
@@ -65,12 +66,12 @@ class Modules
   /**
    * @var array
    */
-  protected array $modules = array();
+  protected array $modulesPathByKey = array();
 
   /**
    * @var array
    */
-  protected array $modulesPathByKey = array();
+  protected array $modules = array();
 
   /**
    * @var array
@@ -95,12 +96,17 @@ class Modules
   /**
    * @var string|null
    */
-  protected ?string $currentRoute;
+  protected ?string $currentPath;
 
   /**
    * @var string|null
    */
   protected ?string $languageDefault = null;
+
+  /**
+   * @var bool
+   */
+  protected bool $dispatchEvent = true;
 
   /**
    * Modules constructor.
@@ -159,138 +165,108 @@ class Modules
    * @return $this
    * @throws ErrorException
    * @throws ReflectionException
+   * @throws \Exception
    */
   public function init(): Modules
   {
-    foreach($this->adminConfiguration->getConfig('modules') as $moduleKey => $module)
+    /**
+     * @var string $moduleKey
+     * @var array $moduleParameters
+     */
+    foreach($this->adminConfiguration->getConfig('modules') as $moduleKey => $moduleParameters)
     {
-      if($module['enabled'] === true)
+      if($moduleParameters['enabled'] === true)
       {
-        $this->generateModulePath($module["route"], $module, $moduleKey);
+        $this->generateModule($moduleKey, $moduleParameters);
       }
     }
-
     return $this;
   }
 
   /**
-   * @param string $moduleRoute
-   * @param array $module
    * @param string $moduleKey
+   * @param array $moduleParameters
    * @param bool $defaultNavigationEnabled
    * @param int $defaultNavigationPosition
    * @param Module|null $parent
    *
-   * @throws ErrorException
-   * @throws ReflectionException
+   * @throws \Exception
    */
-  protected function generateModulePath(string $moduleRoute, array $module, string $moduleKey, bool $defaultNavigationEnabled = true, int $defaultNavigationPosition = 0, Module $parent = null)
+  protected function generateModule(string $moduleKey, array $moduleParameters, bool $defaultNavigationEnabled = true, int $defaultNavigationPosition = 0, Module $parent = null)
   {
-    $actions = AustralTools::getValueByKey($module, "actions", array());
-    $navigation = AustralTools::getValueByKey($module, "navigation", array());
-    if((!$actions) || (array_key_exists("entity", $actions) === true))
+    $actions = AustralTools::getValueByKey($moduleParameters, "actions", array());
+    $actionName = null;
+    if(count($actions) <= 0 || array_key_exists("entity", $actions) === true)
     {
-      $this->addModule($moduleRoute,
-        $module,
-        $moduleKey,
-        "entity",
-        AustralTools::getValueByKey($navigation, "enabled", $defaultNavigationEnabled),
-        AustralTools::getValueByKey($navigation, "position", $defaultNavigationPosition),
-        array(),
-        $parent
-      );
+      $actionName = "entity";
+      unset($actions["entity"]);
+    }
+    elseif(array_key_exists("index", $actions) === true)
+    {
+      $actionName = $actions["index"];
+      unset($actions["index"]);
     }
 
-    if($actions)
+    $navigation = AustralTools::getValueByKey($moduleParameters, "navigation", array());
+    $modulePath = ($parent ? $parent->getModulePath()."/" : null).$moduleParameters["route"];
+
+    $module = $this->createModule($moduleKey, $moduleParameters, $modulePath, $actionName);
+    if($parent)
     {
-      $defaultNavigationPosition = AustralTools::getValueByKey($navigation, "position", $defaultNavigationPosition);
+      $module->setParent($parent);
+      $parent->addChildren($module);
+    }
+
+    /**
+     * Add Area parameters
+     */
+    $module->setNavigation(array(
+        "enabled"                 =>  AustralTools::getValueByKey($navigation, "enabled", $defaultNavigationEnabled),
+        "position"                =>  AustralTools::getValueByKey($navigation, "position", $defaultNavigationEnabled),
+      )
+    );
+
+    if(count($actions) > 0)
+    {
+      $module->setExtendActions($actions);
       foreach($actions as $actionKey => $actionName)
       {
-        if($actionKey != "entity")
-        {
-          $moduleRoutes = array();
-          if($moduleRoute !== "austral_admin_index" || $actionKey === "index")
-          {
-            $moduleRoutes[] = $moduleRoute;
-          }
-          if($actionKey !== "index")
-          {
-            $moduleRoutes[] = $actionKey;
-          }
-          $defaultNavigationPosition++;
-          $moduleRouteChild = implode("/", $moduleRoutes);
-          $this->addModule($moduleRouteChild,
-            $module,
-            "{$moduleKey}",
-            $actionName,
-            $actionKey === "index" ? AustralTools::getValueByKey($navigation, "enabled", $defaultNavigationEnabled) : false,
-            $defaultNavigationPosition,
-            array(),
-            $parent
-          );
-        }
+        $moduleAction = $this->createModule("{$moduleKey}_{$actionKey}", $moduleParameters, "{$modulePath}/{$actionKey}", $actionName);
+        $moduleAction->setIsViewParentPage(false);
+        $moduleAction->setParent($module);
+        $module->addChildren($moduleAction);
+        $this->modules["{$module->getModulePath()}/{$actionKey}"] = $moduleAction;
       }
     }
-    if($children = AustralTools::getValueByKey($module, "children", array()))
+
+    if($children = AustralTools::getValueByKey($moduleParameters, "children", array()))
     {
       $defaultNavigationPositionChild = AustralTools::getValueByKey($navigation, "position", $defaultNavigationPosition);
-      foreach($children as $childKey => $child)
+      /**
+       * @var string $childModuleKey
+       * @var array $childModuleParameters
+       */
+      foreach($children as $childModuleKey => $childModuleParameters)
       {
-        $childRoute = AustralTools::getValueByKey($child, "route", $childKey);
         $defaultNavigationPositionChild++;
-        $moduleRouteChild = "{$moduleRoute}/{$childRoute}";
-        $this->generateModulePath($moduleRouteChild, $child, $childKey, false, $defaultNavigationPositionChild, $this->modules[$moduleRoute]);
-        //$this->modules[$moduleRoute] = $parent;
-
-        if($actions = AustralTools::getValueByKey($child, "actions", array()))
-        {
-          foreach($actions as $actionKey => $actionName)
-          {
-            if($actionKey !== "index")
-            {
-              $moduleRoutes = array();
-              $moduleRoutes[] = $moduleRouteChild;
-              $moduleRoutes[] = $actionKey;
-              $moduleRouteChildAction = implode("/", $moduleRoutes);
-              $this->modules[$moduleRouteChildAction]->setParent($this->modules[$moduleRoute])
-                ->setIsViewParentPage(false);
-              $this->modules[$moduleRoute]->addChildren($this->modules[$moduleRouteChildAction]);
-            }
-          }
-        }
+        $this->generateModule($childModuleKey, $childModuleParameters, false, $defaultNavigationPositionChild, $module);
       }
     }
+    $this->addModule($module, true);
   }
 
   /**
-   * @param string $modulePath
-   * @param array $moduleParameters
    * @param string $moduleKey
+   * @param array $moduleParameters
+   * @param string $modulePath
    * @param string|null $actionName
-   * @param bool $navigationEnabled
-   * @param int $navigationPosition
-   * @param array $actionParameters
-   * @param Module|null $parent
    *
-   * @return $this
+   * @return Module
    * @throws ErrorException
-   * @throws ReflectionException
-   * @throws \Exception
    */
-  public function addModule(string $modulePath,
-    array $moduleParameters,
-    string $moduleKey,
-    ?string $actionName = null,
-    bool $navigationEnabled = false,
-    int $navigationPosition = 0,
-    array $actionParameters = array(),
-    Module $parent = null
-  ): Modules
+  public function createModule(string $moduleKey, array $moduleParameters, string $modulePath, ?string $actionName = null): Module
   {
-
-    /**
-     * Construct Module
-     */
+    $actionName = $actionName ?  : "listChildrenModules";
     $module = new Module($this->router, $moduleKey,
       AustralTools::getValueByKey($moduleParameters,
         "class",
@@ -298,51 +274,16 @@ class Modules
       ),
     );
     $module->setName($moduleParameters['name'])
+      ->setActionName($actionName)
+      ->setModulePath($modulePath)
       ->setPicto($moduleParameters['picto'])
       ->setPictoTile(AustralTools::getValueByKey($moduleParameters, 'pictoTile'))
       ->setDataHydrateClass(AustralTools::getValueByKey($moduleParameters, 'data_hydrate_class', $this->container->getParameter("austral.admin.data_hydrate.class")))
-      ->setModulePath($modulePath)
-      ->setActionName($actionName)
       ->setIsSortable(AustralTools::getValueByKey($moduleParameters, "sortable", false))
-      ->setLanguageDefault($this->languageDefault);
-
-    if($parent)
-    {
-      $module->setParent($parent);
-    }
-
-    /**
-     * Init Entity Manager to Module
-     */
-    if($actionName == "entity")
-    {
-      $moduleEntityManagerNameDefault = u($moduleKey)->snake()->toString();
-      $entityManagerClass = AustralTools::getValueByKey($moduleParameters, "entity_manager",  "austral.entity_manager.{$moduleEntityManagerNameDefault}");
-
-      if(!$this->container->has($entityManagerClass))
-      {
-        throw new ErrorException("The module {$moduleKey} is entity type, but the entity manager {$entityManagerClass} is not found !!!");
-      }
-      $entityManager = $this->container->get($entityManagerClass);
-      if(!$entityManager instanceof EntityManagerInterface)
-      {
-        throw new ErrorException("The entity manager \"{$entityManagerClass}\" not implements ".EntityManagerInterface::class);
-      }
-    }
-    else
-    {
-      $entityManager = $this->container->get('doctrine.orm.entity_manager');
-    }
-    $module->setEntityManager($entityManager);
-
-    /**
-     * Add Area parameteers
-     */
-    $module->setNavigation(array(
-        "enabled"                 =>  $navigationEnabled,
-        "position"                =>  $navigationPosition,
-      )
-    );
+      ->setLanguageDefault($this->languageDefault)
+      ->setDisabledActions(AustralTools::getValueByKey($moduleParameters, "disabledActions", array()))
+      ->setExtendActions(AustralTools::getValueByKey($moduleParameters, "extendActions", array()))
+      ->setDownloadFormats(AustralTools::getValueByKey($moduleParameters, "downloadFormats", array()));
 
     if(!array_key_exists("translate_disabled", $moduleParameters) || $moduleParameters["translate_disabled"] === false) {
       /**
@@ -357,66 +298,215 @@ class Modules
         )
       );
     }
+    $module->setTruncateEnabled(array_key_exists("truncate", $moduleParameters) ? $moduleParameters["truncate"] : false);
+
+    $entityManager = $this->container->get('doctrine.orm.entity_manager');
+    if($module->isEntityModule())
+    {
+      $entityManagerClass = AustralTools::getValueByKey($moduleParameters, "entity_manager",  "austral.entity_manager.".(u($moduleKey)->snake()->toString()));
+      if(!$this->container->has($entityManagerClass))
+      {
+        throw new ErrorException("The module {$moduleKey} is entity type, but the entity manager {$entityManagerClass} is not found !!!");
+      }
+      $entityManager = $this->container->get($entityManagerClass);
+      if(!$entityManager instanceof EntityManagerInterface)
+      {
+        throw new ErrorException("The entity manager \"{$entityManagerClass}\" not implements ".EntityManagerInterface::class);
+      }
+      $moduleParameters["entity_manager"] = $entityManagerClass;
+
+      if($domainId = AustralTools::getValueByKey($moduleParameters, "austral_filter_by_domain"))
+      {
+        $this->modulesByEntityClassname[$entityManager->getClass()][$domainId] = $module->getModulePath();
+      }
+      else
+      {
+        $this->modulesByEntityClassname[$entityManager->getClass()][] = $module->getModulePath();
+      }
+    }
+    $module->setEntityManager($entityManager);
 
     /**
      * Init security granted and path
      */
-    $securityKey = $moduleKey !== "austral_admin_dashboard" ? "ROLE_".strtoupper(u($modulePath)->snake()) : "ROLE_ADMIN_ACCESS";
+    $securityKey = $module->getModuleKey() !== "austral_admin_dashboard" ? "ROLE_".strtoupper(u($module->getModulePath())->snake()) : "ROLE_ADMIN_ACCESS";
     $grantedByActionKeys = array();
-    if($actionName == "entity")
+    if($module->isEntityModule())
     {
       $actionsEntites = $this->adminConfiguration->getConfig("actions_entities");
-      $disabledActions = AustralTools::getValueByKey($moduleParameters, "disabledActions", array());
+      $disabledActions = $module->getDisabledActions();
       foreach($actionsEntites as $actionKey => $routes)
       {
         $grantedByActionKey = $securityKey.($actionKey != "list" ? "_".strtoupper($actionKey) : "");
-        $grantedByActionKeys[$actionKey == "list" ? "default" : $actionKey] = $this->authorizationChecker ? $this->authorizationChecker->isGranted($grantedByActionKey) : false;
+        $grantedByActionKeys[$actionKey == "list" ? "default" : $actionKey] = $this->authorizationChecker && $this->authorizationChecker->isGranted($grantedByActionKey);
         if(in_array($actionKey, $disabledActions))
         {
           $grantedByActionKeys[$actionKey == "list" ? "default" : $actionKey] = false;
         }
       }
-      if(array_key_exists("extendActions", $moduleParameters))
+      if($module->getExtendActions())
       {
-        $module->setExtendActions($moduleParameters["extendActions"]);
-        foreach($moduleParameters["extendActions"] as $action => $extendAction)
+        foreach($module->getExtendActions() as $action => $extendAction)
         {
           $grantedByActionKey = $securityKey."_".strtoupper($action);
-          $grantedByActionKeys[$action] = $this->authorizationChecker ? $this->authorizationChecker->isGranted($grantedByActionKey) : false;
+          $grantedByActionKeys[$action] = $this->authorizationChecker && $this->authorizationChecker->isGranted($grantedByActionKey);
           $actionsEntites[$action] = array(
             "default"     =>  "austral_admin_module_action_extend",
             "language"    =>  "austral_admin_module_action_extend_language"
           );
         }
       }
-
-      if(array_key_exists("downloadFormats", $moduleParameters))
-      {
-        $module->setDownloadFormats($moduleParameters['downloadFormats']);
-      }
-
       $module->setPathActions($actionsEntites);
       $module->setEntityTranslateEnabled($this->adminConfiguration->get('language.enabled_multi'));
     }
     else
     {
-      if(array_key_exists("role", $actionParameters))
+      if(array_key_exists("role", $module->getActionParameters()))
       {
-        $securityKey .= "_".strtoupper($actionParameters["role"]);
+        $securityKey .= "_".strtoupper($module->getActionParameters()["role"]);
       }
       $grantedByActionKeys['default'] = $this->authorizationChecker && $this->authorizationChecker->isGranted($securityKey);
     }
     $module->setGrantedByActionKey($grantedByActionKeys);
-    $module->setTruncateEnabled(array_key_exists("truncate", $moduleParameters) ? $moduleParameters["truncate"] : false);
-    $this->modules[$modulePath] = $module;
-    $this->modulesPathByKey[$moduleKey] = $modulePath;
-    $entityClassName = ($module->getEntityManager() instanceof EntityManagerInterface)  ? (new \ReflectionClass($module->getEntityManager()->getClass()))->getShortName() : null;
-    if($entityClassName)
-    {
-      $this->modulesByEntityClassname[$entityClassName] = $modulePath;
+    $module->setModuleParameters($moduleParameters);
+
+    return $module;
+  }
+
+
+  /**
+   * @param Module $module
+   * @param bool $dispatchEvent
+   *
+   * @return $this
+   */
+  public function addModule(Module $module, bool $dispatchEvent = false): Modules
+  {
+    $this->modules[$module->getModulePath()] = $module;
+    $this->modulesPathByKey[$module->getModuleKey()] = $module->getModulePath();
+
+    if($dispatchEvent && $this->dispatchEvent) {
+      $moduleEvent = new ModuleEvent($this, $module);
+      $this->eventDispatcher->dispatch($moduleEvent, ModuleEvent::EVENT_AUSTRAL_MODULE_ADD);
     }
-    $moduleEvent = new ModuleEvent($this, $module, $moduleParameters);
-    $this->eventDispatcher->dispatch($moduleEvent, ModuleEvent::EVENT_AUSTRAL_MODULE_ADD);
+    return $this;
+  }
+
+  /**
+   * @param Module $module
+   * @param bool $dispatchEvent
+   *
+   * @return Modules
+   */
+  public function removeModule(Module $module, bool $dispatchEvent = false): Modules
+  {
+    if($module->getChildren())
+    {
+      /** @var Module $child */
+      foreach($module->getChildren() as $child)
+      {
+        $this->removeModule($child);
+      }
+    }
+    if($module->getParent())
+    {
+      $module->getParent()->removeChildren($module);
+    }
+    if(array_key_exists($module->getModulePath(), $this->modules))
+    {
+      unset($this->modules[$module->getModulePath()]);
+    }
+    if(array_key_exists($module->getModuleKey(), $this->modules))
+    {
+      unset($this->modulesPathByKey[$module->getModuleKey()]);
+    }
+
+    if($dispatchEvent && $this->dispatchEvent) {
+      $moduleEvent = new ModuleEvent($this, $module);
+      $this->eventDispatcher->dispatch($moduleEvent, ModuleEvent::EVENT_AUSTRAL_MODULE_REMOVE);
+    }
+    return $this;
+  }
+
+
+  /**
+   * @param string $moduleKey
+   * @param array $moduleParameters
+   * @param DomainInterface|null $domain
+   * @param Module|null $parentModule
+   *
+   * @return $this
+   * @throws \Exception
+   */
+  public function generateModuleByDomain(string $moduleKey, array $moduleParameters, ?DomainInterface $domain = null, ?Module $parentModule = null): Modules
+  {
+    $this->dispatchEvent = false;
+    if($domain)
+    {
+      $moduleKey = "$moduleKey-{$domain->getDomain()}";
+      $moduleParameters["route"] = "{$domain->getDomain()}";
+      $moduleParameters["name"] = "{$moduleParameters["name"]} - {$domain->getName()}";
+    }
+    else
+    {
+      $moduleKey = "$moduleKey-for-all-domains";
+      $moduleParameters["route"] = "for-all-domains";
+      $moduleParameters["name"] = "{$moduleParameters["name"]} - For All Domains";
+    }
+    $moduleParameters["austral_filter_by_domain"] = $domain ? $domain->getId() : "for-all-domains";
+    $this->generateModule($moduleKey, $moduleParameters, false, 0, $parentModule);
+    $module = $this->getModuleByKey($moduleKey);
+
+    $keyTranslate = $domain ? "ByDomain" : "ForAllDomain";
+    $module->setTranslates(array(
+      'singular'  =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}.singular", array('%domainName%' => $domain ? $domain->getName() : "")),
+      'plural'    =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}.plural", array('%domainName%' => $domain ? $domain->getName() : "")),
+      "type"      =>  AustralTools::getValueByKey($parentModule->getParameters(), "translate", "default"),
+      "key"       =>  "{$parentModule->translateKey()}{$keyTranslate}"
+    ));
+
+    $countPages = null;
+    if($module->isEntityModule())
+    {
+      $module->setQueryBuilder(clone $parentModule->getQueryBuilder());
+      if($domain)
+      {
+        $module->getQueryBuilder()
+          ->andWhere("root.domainId = :domainId")
+          ->setParameter("domainId", $domain->getId());
+      }
+      else
+      {
+        $module->getQueryBuilder()
+          ->andWhere("root.domainId IS NULL");
+      }
+      $countPages = $module->getEntityManager()->countByQueryBuilder(clone $module->getQueryBuilder());
+    }
+    $module->addParameters("austral_filter_by_domain", $domain ? $domain->getId() : "");
+    $module->addParameters("tile", array(
+      "subEntitled"   =>  $this->trans("pages.names.{$parentModule->translateKey()}ByDomain.subTitle", array('%count%'=>$countPages)),
+      "img"           =>  $domain ? $this->container->get('austral.entity_file.link.generator')->image($domain, "favicon") : ""
+    ));
+
+    /** @var Module $child */
+    foreach ($module->getChildren() as $child)
+    {
+      $child->addParameters("austral_filter_by_domain", $domain ? $domain->getId() : "");
+      $child->addParameters("tile", array(
+        "subEntitled"   =>  $this->trans("pages.names.{$parentModule->translateKey()}ByDomain.subTitle", array('%count%'=>$countPages)),
+        "img"           =>  $domain ? $this->container->get('austral.entity_file.link.generator')->image($domain, "favicon") : ""
+      ));
+      $keyTranslate = $domain ? "ByDomain" : "ForAllDomain";
+      $keyTranslateAction = ucfirst($child->getActionName());
+      $child->setTranslates(array(
+        'singular'  =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}{$keyTranslateAction}.singular", array('%domainName%' => $domain ? $domain->getName() : "")),
+        'plural'    =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}{$keyTranslateAction}.plural", array('%domainName%' => $domain ? $domain->getName() : "")),
+        "type"      =>  AustralTools::getValueByKey($parentModule->getParameters(), "translate", "default"),
+        "key"       =>  "{$parentModule->translateKey()}{$keyTranslate}{$keyTranslateAction}"
+      ));
+    }
+
+    $this->dispatchEvent = true;
     return $this;
   }
 
@@ -444,24 +534,30 @@ class Modules
 
 
   /**
-   * @param string $key
+   * @param string $moduleKey
    *
    * @return Module|null
    */
-  public function getModuleByKey(string $key): ?Module
+  public function getModuleByKey(string $moduleKey): ?Module
   {
-    return AustralTools::getValueByKey($this->modules, AustralTools::getValueByKey($this->modulesPathByKey, $key, null), null);
+    return $this->getModuleByPath(AustralTools::getValueByKey($this->modulesPathByKey, $moduleKey, null));
   }
 
 
   /**
    * @param string $entityClassname
+   * @param int|string $key
    *
    * @return Module|null
    */
-  public function getModuleByEntityClassname(string $entityClassname): ?Module
+  public function getModuleByEntityClassname(string $entityClassname, $key = 0): ?Module
   {
-    return AustralTools::getValueByKey($this->modules, AustralTools::getValueByKey($this->modulesByEntityClassname, $entityClassname, null), null);
+    $modulePaths = AustralTools::getValueByKey($this->modulesByEntityClassname, $entityClassname, array());
+    if($modulePath = AustralTools::getValueByKey($modulePaths, $key, null))
+    {
+      return $this->getModuleByPath($modulePath);
+    }
+    return null;
   }
 
   /**
@@ -491,11 +587,11 @@ class Modules
     /**
      * @var Module $module
      */
-    foreach($this->modules as $url => $module)
+    foreach($this->modules as $module)
     {
       if($module->navigationEnabled() === true && $module->isGranted())
       {
-        $navigation["{$module->navigationPosition()}-{$url}"] = $module;
+        $navigation["{$module->navigationPosition()}-{$module->getModulePath()}"] = $module;
       }
     }
     ksort($navigation, SORT_NUMERIC);

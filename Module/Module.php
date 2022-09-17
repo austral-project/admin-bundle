@@ -12,14 +12,13 @@ namespace Austral\AdminBundle\Module;
 
 use Austral\AdminBundle\Admin\AdminInterface;
 use Austral\AdminBundle\Admin\AdminModuleInterface;
-
 use Austral\EntityBundle\EntityManager\EntityManagerORMInterface;
 use Austral\ListBundle\Model\ModuleInterface;
 use Austral\ToolsBundle\AustralTools;
+use Austral\EntityBundle\Entity\Interfaces\TranslateMasterInterface;
 
-use Austral\EntityTranslateBundle\Entity\Interfaces\EntityTranslateMasterInterface;
 use Doctrine\ORM\EntityManagerInterface as DoctrineEntityManagerInterface;
-
+use Doctrine\ORM\QueryBuilder;
 use Exception;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -59,24 +58,6 @@ class Module implements ModuleInterface
   /**
    * @var string
    */
-  protected string $moduleKey;
-
-  /**
-   * @var array
-   */
-  protected array $children = array();
-
-  /**
-   * @var array
-   */
-  protected array $navigation = array(
-    "enabled"   =>  false,
-    "position"  =>  0
-  );
-
-  /**
-   * @var string
-   */
   protected string $name;
 
   /**
@@ -93,6 +74,29 @@ class Module implements ModuleInterface
    * @var string
    */
   protected string $modulePath;
+
+  /**
+   * @var string
+   */
+  protected string $moduleKey;
+
+  /**
+   * @var array
+   */
+  protected array $moduleParameters = array();
+
+  /**
+   * @var array
+   */
+  protected array $children = array();
+
+  /**
+   * @var array
+   */
+  protected array $navigation = array(
+    "enabled"   =>  false,
+    "position"  =>  0
+  );
 
   /**
    * @var array
@@ -170,6 +174,21 @@ class Module implements ModuleInterface
   protected ?string $dataHydrateClass = null;
 
   /**
+   * @var array
+   */
+  protected array $actionParameters = array();
+
+  /**
+   * @var array
+   */
+  protected array $disabledActions = array();
+
+  /**
+   * @var QueryBuilder|null
+   */
+  protected ?QueryBuilder $queryBuilder = null;
+
+  /**
    * Module constructor.
    *
    * @throws Exception
@@ -192,7 +211,7 @@ class Module implements ModuleInterface
    */
   public function setEntityTranslateEnabled(bool $enabled = false): Module
   {
-    if(AustralTools::usedImplements($this->entityManager->getClass(), EntityTranslateMasterInterface::class))
+    if(AustralTools::usedImplements($this->entityManager->getClass(), TranslateMasterInterface::class))
     {
       $this->entityTranslateEnabled = $enabled;
     }
@@ -439,6 +458,7 @@ class Module implements ModuleInterface
   public function setEntityManager($entityManager = null): Module
   {
     $this->entityManager = $entityManager;
+    $this->queryBuilder = $this->entityManager->createQueryBuilder();
     return $this;
   }
 
@@ -652,6 +672,14 @@ class Module implements ModuleInterface
   {
     $this->extendActions = $extendActions;
     return $this;
+  }
+
+  /**
+   * @return array
+   */
+  public function getExtendActions(): array
+  {
+    return $this->extendActions;
   }
 
   /**
@@ -884,6 +912,82 @@ class Module implements ModuleInterface
   public function getParametersByKey(string $key, $default = null)
   {
     return array_key_exists($key, $this->getParameters()) ? $this->parameters[$key] : $default;
+  }
+
+  /**
+   * @return array
+   */
+  public function getActionParameters(): array
+  {
+    return $this->actionParameters;
+  }
+
+  /**
+   * @param array $actionParameters
+   *
+   * @return $this
+   */
+  public function setActionParameters(array $actionParameters): Module
+  {
+    $this->actionParameters = $actionParameters;
+    return $this;
+  }
+
+  /**
+   * @return array
+   */
+  public function getDisabledActions(): array
+  {
+    return $this->disabledActions;
+  }
+
+  /**
+   * @param array $disabledActions
+   *
+   * @return $this
+   */
+  public function setDisabledActions(array $disabledActions): Module
+  {
+    $this->disabledActions = $disabledActions;
+    return $this;
+  }
+
+  /**
+   * @return QueryBuilder|null
+   */
+  public function getQueryBuilder(): ?QueryBuilder
+  {
+    return $this->queryBuilder;
+  }
+
+  /**
+   * @param QueryBuilder|null $queryBuilder
+   *
+   * @return $this
+   */
+  public function setQueryBuilder(?QueryBuilder $queryBuilder): Module
+  {
+    $this->queryBuilder = $queryBuilder;
+    return $this;
+  }
+
+  /**
+   * @return array
+   */
+  public function getModuleParameters(): array
+  {
+    return $this->moduleParameters;
+  }
+
+  /**
+   * @param array $moduleParameters
+   *
+   * @return $this
+   */
+  public function setModuleParameters(array $moduleParameters): Module
+  {
+    $this->moduleParameters = $moduleParameters;
+    return $this;
   }
 
 }

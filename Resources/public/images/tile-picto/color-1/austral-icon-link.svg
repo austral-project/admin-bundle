@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.481" y1="0.615" x2="0.654" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#d9edfa"/>
+      <stop offset="1" stop-color="#ecf6fd"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="0.379" y1="1" x2="0.377" y2="0.189" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ecf6fd"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-3" x1="0.376" y1="1" x2="0.568" y2="0.4" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient-4" x1="0.217" y1="-0.189" x2="0.956" y2="-2.234" xlink:href="#linear-gradient"/>
+    <clipPath id="clip-austral-icon-link">
+      <rect width="200" height="200"/>
+    </clipPath>
+  </defs>
+  <g id="austral-icon-link" clip-path="url(#clip-austral-icon-link)">
+    <g id="Groupe_72" data-name="Groupe 72">
+      <rect id="BG" width="200" height="200" fill="none"/>
+      <path id="Union_6" data-name="Union 6" d="M-201.965-790.147l0,0a34.531,34.531,0,0,1-10.147-24.5,34.83,34.83,0,0,1,.441-5.523A74.645,74.645,0,0,1-223.113-860a75.423,75.423,0,0,1,1.2-13.433l-5.381-1.442A5,5,0,0,1-230.83-881a5,5,0,0,1,6.124-3.536l5.23,1.4a74.587,74.587,0,0,1,6.616-14.741l-6.508-4.557A5,5,0,0,1-220.6-909.4a5,5,0,0,1,6.964-1.228l6.394,4.477a75.491,75.491,0,0,1,11.356-11.674l-2.758-3.938a5,5,0,0,1,1.228-6.964,5,5,0,0,1,6.964,1.228l2.679,3.826A74.638,74.638,0,0,1-148.112-935a75.706,75.706,0,0,1,10.3.7,34.658,34.658,0,0,1,43.55,4.444l0,0a34.6,34.6,0,0,1,9.706,30.018A74.644,74.644,0,0,1-73.112-860a75,75,0,0,1-75,75,75.639,75.639,0,0,1-10.3-.7,34.572,34.572,0,0,1-19.052,5.7A34.534,34.534,0,0,1-201.965-790.147Z" transform="translate(262.112 974)" fill="#bedefa" stroke="rgba(0,0,0,0)" stroke-miterlimit="10" stroke-width="1"/>
+      <g id="Groupe_69" data-name="Groupe 69">
+        <rect id="Rectangle_1" data-name="Rectangle 1" width="150" height="150" rx="75" transform="translate(25 25)" fill="#fff"/>
+        <g id="Groupe_65" data-name="Groupe 65">
+          <path id="Tracé_68" data-name="Tracé 68" d="M163.265,363.925,132.552,394.64a34.643,34.643,0,0,0,0,48.991l0,0a34.642,34.642,0,0,0,48.993,0l30.713-30.713a34.64,34.64,0,0,0,0-48.991l0,0A34.645,34.645,0,0,0,163.265,363.925ZM143.516,432.67h0a19.141,19.141,0,0,1,0-27.07l30.711-30.711a19.139,19.139,0,0,1,27.068,0h0a19.139,19.139,0,0,1,0,27.068L170.584,432.67A19.141,19.141,0,0,1,143.516,432.67Z" transform="translate(-58.406 -333.779)" fill="url(#linear-gradient)"/>
+          <path id="Tracé_69" data-name="Tracé 69" d="M163.265,363.925,132.552,394.64a34.643,34.643,0,0,0,0,48.991l0,0a34.642,34.642,0,0,0,48.993,0l30.713-30.713a34.64,34.64,0,0,0,0-48.991l0,0A34.645,34.645,0,0,0,163.265,363.925ZM143.516,432.67h0a19.141,19.141,0,0,1,0-27.07l30.711-30.711a19.139,19.139,0,0,1,27.068,0h0a19.139,19.139,0,0,1,0,27.068L170.584,432.67A19.141,19.141,0,0,1,143.516,432.67Z" transform="translate(-86.406 -273.779)" fill="url(#linear-gradient-2)"/>
+          <path id="Tracé_71" data-name="Tracé 71" d="M163.265,363.925,132.552,394.64a34.643,34.643,0,0,0,0,48.991l0,0a34.642,34.642,0,0,0,48.993,0l30.713-30.713a34.64,34.64,0,0,0,0-48.991l0,0A34.645,34.645,0,0,0,163.265,363.925ZM143.516,432.67h0a19.141,19.141,0,0,1,0-27.07l30.711-30.711a19.139,19.139,0,0,1,27.068,0h0a19.139,19.139,0,0,1,0,27.068L170.584,432.67A19.141,19.141,0,0,1,143.516,432.67Z" transform="translate(-86.406 -273.779)" fill="url(#linear-gradient-3)"/>
+          <path id="Intersection_1" data-name="Intersection 1" d="M-196.4-857.723a19.134,19.134,0,0,0,4.578-3.386l13.695-13.7,10.963,10.962-13.7,13.7a34.888,34.888,0,0,1-4.3,3.66Z" transform="translate(304 960)" stroke="rgba(0,0,0,0)" stroke-miterlimit="10" stroke-width="1" fill="url(#linear-gradient-4)"/>
+        </g>
+        <g id="Groupe_66" data-name="Groupe 66" transform="matrix(0.574, -0.819, 0.819, 0.574, -2.717, 74.604)">
+          <rect id="Rectangle_44" data-name="Rectangle 44" width="10" height="30" rx="5" transform="translate(32 11)" fill="#0569f5"/>
+          <rect id="Rectangle_45" data-name="Rectangle 45" width="10" height="30" rx="5" transform="translate(61.432 17.195) rotate(20)" fill="#0569f5"/>
+          <rect id="Rectangle_46" data-name="Rectangle 46" width="10" height="30" rx="5" transform="translate(3.171 20.615) rotate(-20)" fill="#0569f5"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

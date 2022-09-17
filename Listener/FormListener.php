@@ -14,11 +14,12 @@ namespace Austral\AdminBundle\Listener;
 use Austral\AdminBundle\Configuration\AdminConfiguration;
 use Austral\EntityBundle\Entity\EntityInterface;
 use Austral\EntityBundle\EntityManager\EntityManager;
-use Austral\EntityTranslateBundle\Entity\Interfaces\EntityTranslateMasterInterface;
+use Austral\EntityBundle\Entity\Interfaces\TranslateMasterInterface;
 use Austral\FormBundle\Event\FormEvent;
 use Austral\FormBundle\Mapper\Fieldset;
 use Austral\FormBundle\Field as Field;
 use Austral\ToolsBundle\AustralTools;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Router;
@@ -74,11 +75,11 @@ class FormListener
    */
   public function formAddAutoFields(FormEvent $formEvent)
   {
-    if(AustralTools::usedImplements($formEvent->getFormMapper()->getObject(),EntityTranslateMasterInterface::class) && $this->adminConfiguration)
+    if(AustralTools::usedImplements($formEvent->getFormMapper()->getObject(),TranslateMasterInterface::class) && $this->adminConfiguration)
     {
       if($this->adminConfiguration->get('language.enabled_multi'))
       {
-        /** @var EntityTranslateMasterInterface|EntityInterface $object */
+        /** @var TranslateMasterInterface|EntityInterface $object */
         $object = $formEvent->getFormMapper()->getObject();
         $languagesAvailable = array();
         $objectLanguages = $this->entityManager->getRepository(get_class($object))->selectArrayLanguages($object);

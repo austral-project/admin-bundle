@@ -40,8 +40,8 @@ pages:
 dashboard:
   configuration:
     https:
-      entitled:    HTTPS
-      description: "Le protocole HTTPS permet la sécurisation des échanges sur internet."
+      entitled:                                 HTTPS
+      description:                              "Le protocole HTTPS permet la sécurisation des échanges sur internet."
 
   choiceLanguage:
     entitled:                                   Selectionnez la langue
@@ -217,6 +217,9 @@ form:
     exception:                                  Une erreur est survenue.
     success:                                    L'objet a été enregistré avec succès
     error:                                      Une erreur est présente dans votre formulaire
+    multi:
+      success:                                  Les objets ont été enregistré avec succès
+
 
 summernote:
   popin:

@@ -1,12 +1,9 @@
 class AustralLinks  {
   constructor() {
     this.links = {
-      {% if pages is defined %}
-        {%- for class, pagesByClass in pages -%}
-          {%- set loopMasterLast = loop.last -%}
-          {%- for page in pagesByClass -%}
-          "{{ class }}:{{ page.id }}": "{{ page.__toString() }}"{% if loop.last and loopMasterLast%}{% else %},{% endif %}
-          {%- endfor -%}
+      {% if objectKeyLinkNames is defined %}
+        {%- for keyLink, KeyLinkName in objectKeyLinkNames -%}
+          "{{ keyLink}}": "{{ KeyLinkName }}"{% if loop.last %}{% else %},{% endif %}
         {%- endfor -%}
       {% endif %}
     };

@@ -41,7 +41,7 @@
                         "update":   "#"~popin.popinKeyId|replace({'__name__': form.view.vars.data.id})
                       }|json_encode,
                       "data-view-by-choice-element": ""
-                    }
+                    }|merge(popin.button.data)
                   }
                 )
               }}

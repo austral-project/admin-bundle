@@ -5,7 +5,7 @@
   "keywords":                                 ["Austral", "Admin", "Symfony", "vendor"],
   "license":                                  "MIT",
   "homepage":                                 "https://austral.dev",
-  "version":                                  "3.0",
+  "version":                                  "3.1",
   "authors": [
     {
       "name":                                 "Matthieu Beurel",
@@ -20,14 +20,14 @@
   ],
   "require": {
     "php":                                    "^7.4 || ^8.0",
-    "austral/tools-bundle":                   "^3.0",
-    "austral/security-bundle":                "^3.0",
-    "austral/design-bundle":                  "^3.0",
-    "austral/http-bundle":                    "^3.0",
-    "austral/entity-bundle":                  "^3.0",
-    "austral/list-bundle":                    "^3.0",
-    "austral/form-bundle":                    "^3.0",
-    "austral/filter-bundle":                  "^3.0",
+    "austral/tools-bundle":                   "^3.1",
+    "austral/security-bundle":                "^3.1",
+    "austral/design-bundle":                  "^3.1",
+    "austral/http-bundle":                    "^3.1",
+    "austral/entity-bundle":                  "^3.1",
+    "austral/list-bundle":                    "^3.1",
+    "austral/form-bundle":                    "^3.1",
+    "austral/filter-bundle":                  "^3.1",
 
     "symfony/framework-bundle":               "^5.4",
     "symfony/runtime":                        "^5.4",

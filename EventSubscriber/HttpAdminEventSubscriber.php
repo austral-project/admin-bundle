@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-
 namespace Austral\AdminBundle\EventSubscriber;
 
 use Austral\AdminBundle\Event\AdminHttpEvent;
@@ -107,10 +106,10 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
       }
     }
 
-
     /** @var Modules $modules */
     $modules = $this->container->get('austral.admin.modules')
       ->setLanguageDefault($language);
+
     $modules->setAuthorizationChecker($this->container->get("security.authorization_checker"))->init();
 
     if(strpos($requestRoute, "austral_admin_my_account") !== false)
@@ -132,6 +131,11 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
     $module->getAdmin()
       ->setContainer($this->container)
       ->setTranslator($this->container->get('translator'));
+
+    if($filterDomainId = $module->getParametersByKey("austral_filter_by_domain"))
+    {
+      $this->container->get('austral.http.domains.management')->initialize()->setFilterDomainId($filterDomainId);
+    }
 
     if(AustralTools::usedImplements(get_class($module->getEntityManager()), EntityManagerInterface::class))
     {
@@ -191,16 +195,10 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
       $requestAttributes->set("id", $adminHandler->getUser()->getId());
     }
 
-    if($this->container->has('austral.entity_seo.pages')) {
-      $homepageId = null;
-      if($domain = $module->getParametersByKey("domain"))
-      {
-        $homepageId = $domain->getHomepage() ? $domain->getHomepage()->getId() : null;
-      }
-      $templateParameters->addParameters("pages", $this->container->get('austral.entity_seo.pages')
-        ->setHomepageId($homepageId)
-        ->setByStatus(false)
-        ->getObjectsByEntity());
+    if($this->container->has('austral.seo.url_parameter.management')) {
+      $urlParameterManagement = $this->container->get('austral.seo.url_parameter.management');
+      $templateParameters->addParameters("urlsByDomains", $urlParameterManagement->getUrlParametersByDomainsWithTree());
+      $templateParameters->addParameters("objectKeyLinkNames", $urlParameterManagement->getObjectKeyLinkNames());
     }
     if($this->container->has('austral.entity_manager.config')) {
       $templateParameters->addParameters("variables", $this->container->get('austral.entity_manager.config')->selectAll());

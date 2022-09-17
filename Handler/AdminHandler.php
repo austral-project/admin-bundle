@@ -16,7 +16,6 @@ use Austral\AdminBundle\Admin\Event\DownloadAdminEvent;
 use Austral\AdminBundle\Admin\Event\FilterEventInterface;
 use Austral\AdminBundle\Admin\Event\SortableAdminEvent;
 use Austral\AdminBundle\Admin\Event\TruncateAdminEvent;
-
 use Austral\AdminBundle\Event\DashboardEvent;
 use Austral\AdminBundle\Services\Download;
 use Austral\AdminBundle\Handler\Interfaces\AdminHandlerInterface;
@@ -26,25 +25,20 @@ use Austral\AdminBundle\Admin\Event\DuplicateAdminEvent;
 use Austral\AdminBundle\Admin\Event\FormAdminEvent;
 use Austral\AdminBundle\Admin\Event\ListAdminEvent;
 use Austral\AdminBundle\Admin\AdminModuleInterface;
-
-use Austral\ContentBlockBundle\Entity\Interfaces\EntityContentBlockInterface;
+use Austral\EntityBundle\Entity\Interfaces\ComponentsInterface;
 use Austral\EntityBundle\Entity\EntityInterface;
-
 use Austral\FilterBundle\Filter\Filter;
 use Austral\FilterBundle\Mapper\FilterMapper;
 use Austral\FormBundle\Form\Type\FormTypeInterface;
 use Austral\FormBundle\Mapper\FormMapper;
 use Austral\FormBundle\Event\FormEvent;
-
 use Austral\ListBundle\DataHydrate\DataHydrateInterface;
 use Austral\ListBundle\Filter\FilterMapperInterface;
 use Austral\ListBundle\Mapper\ListMapper;
-
 use Austral\ListBundle\Section\Section;
 use Austral\NotifyBundle\Notification\Push;
 use Austral\ToolsBundle\AustralTools;
-
-use Austral\EntityTranslateBundle\Entity\Interfaces\EntityTranslateMasterInterface;
+use Austral\EntityBundle\Entity\Interfaces\TranslateMasterInterface;
 
 use \Exception;
 use Symfony\Component\Form\Form;
@@ -199,7 +193,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
     $dataHydrate->setDispatcher($this->dispatcher);
     if(method_exists($dataHydrate, "setEntityManager"))
     {
-      $dataHydrate->setEntityManager($this->module->getEntityManager());
+      $dataHydrate->setEntityManager($this->module->getEntityManager(), $this->module->getQueryBuilder());
     }
     $listMapper->setDataHydrate($dataHydrate);
     return $listMapper;
@@ -297,7 +291,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
     $object = $this->retreiveObjectOrCreate($id, ($formTypeAction === "create"));
 
     $this->debug->stopWatchStop("austral.admin.handler.form.retreive_object");
-    if($object instanceof EntityTranslateMasterInterface)
+    if($object instanceof TranslateMasterInterface)
     {
       $object->setCurrentLanguage($this->request->attributes->get('language', $this->request->getLocale()));
       if(!$object->getTranslateByLanguage($object->getLanguageCurrent()) && !$object->getIsCreate())
@@ -319,7 +313,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
       }
     }
 
-    if($object instanceof EntityContentBlockInterface)
+    if($object instanceof ComponentsInterface)
     {
       $this->debug->stopWatchStart("austral.admin.handler.form.content_block_container", $this->debugContainer);
       $this->container->get('austral.content_block.content_block_container')
@@ -338,7 +332,8 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
       ->setObject($object)
       ->setFormTypeAction($formTypeAction)
       ->setTranslateDomain("austral")
-      ->setRequestMethod($this->request->getMethod());
+      ->setRequestMethod($this->request->getMethod())
+      ->setModule($this->module);
     $this->debug->stopWatchStop("austral.admin.handler.form.mapper.init");
 
     if($this->getSession()->has("austral_form"))
@@ -613,7 +608,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
 
       /** @var FilterMapperInterface|Filter|null $filter */
       $filter = $filterMapper->filter("default");
-      if($filter->hasFilterValue())
+      if($filter->hasFilterValue() || $this->module->getParametersByKey("austral_filter_by_domain"))
       {
         $listMapper->generate();
         /** @var Section $section */

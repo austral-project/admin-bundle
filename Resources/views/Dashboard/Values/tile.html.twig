@@ -17,6 +17,6 @@
   </div>
   <div class="value-content">
     <span class="value">{{ dashboardValue.value }}</span>
-    <span class="entitled">{{ dashboardValue.isTranslatableText ? dashboardValue.entitled|trans({}, "austral") : dashboardValue.entitled }}</span>
+    <span class="entitled">{{ dashboardValue.isTranslatableText ? dashboardValue.entitled|trans({"%count%": dashboardValue.value}, "austral") : dashboardValue.entitled }}</span>
   </div>
 </{{ url is defined and url ? "a" : "div" }}>

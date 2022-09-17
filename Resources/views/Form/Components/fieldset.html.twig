@@ -2,43 +2,67 @@
 {% set classFieldset = class|default(null) %}
 {% set class = null %}
 {# end #}
-{% if fieldset.positionName != "none" %}
-  <fieldset id="{{ fieldset.fieldsetId }}" class="fieldset-content{{ (classFieldset|default(null)) ? " "~classFieldset }} {{ fieldset.attr.class ?? "" }}">
-    {%- if fieldset.viewName -%}
-      <h2 class="h2-title fieldset-title">{% if fieldsetName is defined %} {{ fieldsetName }}{% else %}{{ fieldset.name|trans({}, form.mapper.translateDomain) }}{% endif %}</h2>
-    {%- endif -%}
+{% if fieldset.positionName != "none" and fieldset.positionName != "bottom"%}
+<div class="row">
+  <div class="col col--xs-12">
+    <fieldset id="{{ fieldset.fieldsetId(form.mapper.hasParentFormMapper ? form.view.vars.data.id : null) }}" class="fieldset-content{{ (classFieldset|default(null)) ? " "~classFieldset }} {{ fieldset.attr.class ?? "" }}" {% for key, value in fieldset.attr %}{{ key != "class" ? key~'='~value : "" }}{% endfor %}>
+      {% if fieldset.collapse %}
+        <div data-collapse="{{ form.view.vars.data.id }}">
+      {%- endif -%}
+      {%- if fieldset.viewName -%}
+        <h2 class="h2-title fieldset-title" {% if fieldset.collapse %}data-collapse-trigger="{{ form.view.vars.data.id }}"{% endif %}>{% if fieldsetName is defined %} {{ fieldsetName }}{% else %}{{ fieldset.entitled|trans(fieldset.translateArguments(form.view.vars.data), form.mapper.translateDomain) }}{% endif %}</h2>
+      {%- endif -%}
+      {% if fieldset.collapse %}
+        <div data-collapse-trigger="{{ form.view.vars.data.id }}" class="picto-content">
+          <span class="picto font-austral-20-grey austral-picto-simply-down"></span>
+        </div>
+        <div class="collapse-content">
+      {% endif %}
 {% endif %}
-  <div class="fields-content">
-    {%- for field in fieldset.fields -%}
+
+    {%- for field in fieldset.fieldsSortable -%}
       {%- if field is instanceof("Austral\\FormBundle\\Mapper\\GroupFields") -%}
-        {{ include("@AustralAdmin/Form/Components/group-fields.html.twig", {fields: field.fields}) }}
+        {{ include("@AustralAdmin/Form/Components/group-fields.html.twig", {fields: field.fieldsSortable}) }}
       {% elseif field is instanceof("Austral\\FormBundle\\Field\\TemplateField") %}
-        {{ include(field.templatePath, {field: field}) }}
+        <div class="fields-content">
+          {{ include(field.templatePath, {field: field}) }}
+        </div>
       {% elseif field is instanceof("Austral\\FormBundle\\Field\\CollectionEmbedField")  %}
         {{ include(field.templatePath, {field: field, init: true}) }}
       {% elseif field is instanceof("Austral\\FormBundle\\Field\\FormTypeField") %}
-        {{ include(field.templatePath, {field: field, init: true}) }}
+        <div class="fields-content">
+          {{ include(field.templatePath, {field: field, init: true}) }}
+        </div>
       {% elseif field is instanceof("Austral\\FormBundle\\Mapper\\Popin") %}
         {{ include("@AustralAdmin/Form/Components/popin.html.twig", {fields: field.fields}) }}
       {% elseif field is instanceof("Austral\\FormBundle\\Field\\MultiField") %}
-        {{ include(field.templatePath, {field: field}) }}
+        <div class="fields-content">
+          {{ include(field.templatePath, {field: field}) }}
+        </div>
       {%- else -%}
-        {% if form.view[field.fieldname()].rendered != true %}
-          {%- include '@AustralAdmin/Form/Components/field.html.twig' with {
-            field: {
-              name:         field.fieldname(),
-              type:         field,
-              required:     field.required(),
-              input:        field.widgetInput == false ? "" : form_widget(form.view[field.fieldname()], {fieldMapper:field}),
-              label:        form_label(form.view[field.fieldname()], null, {fieldMapper:field}),
-              errors:       form_errors(form.view[field.fieldname()], {fieldMapper:field}),
-            },
-            form:           form,
-          } only -%}
-        {% endif %}
+        <div class="fields-content">
+          {% if form.view[field.fieldname()].rendered != true %}
+            {%- include '@AustralAdmin/Form/Components/field.html.twig' with {
+              field: {
+                name:         field.fieldname(),
+                type:         field,
+                required:     field.required(),
+                input:        field.widgetInput == false ? "" : form_widget(form.view[field.fieldname()], {fieldMapper:field}),
+                label:        form_label(form.view[field.fieldname()], null, {fieldMapper:field}),
+                errors:       form_errors(form.view[field.fieldname()], {fieldMapper:field}),
+              },
+              form:           form,
+            } only -%}
+          {% endif %}
+        </div>
       {%- endif -%}
     {%- endfor -%}
+{% if fieldset.positionName != "none" and fieldset.positionName != "bottom" %}
+      {% if fieldset.collapse %}
+          </div>
+        </div>
+      {% endif %}
+    </fieldset>
   </div>
-{% if fieldset.positionName != "none" %}
-  </fieldset>
+</div>
 {% endif %}

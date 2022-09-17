@@ -16,7 +16,7 @@ composer require austral/admin-bundle
 ```
 
 ## Documentation
-See documentation on the [official website](https://austral.dev/bundles/admin-bundle)
+See documentation on the [official website](https://austral.dev/en/bundles/admin-bundle)
 
 ## Commit Messages
 

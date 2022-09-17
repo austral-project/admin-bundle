@@ -17,13 +17,12 @@ use Austral\AdminBundle\Admin\Event\FormAdminEvent;
 use Austral\AdminBundle\Admin\Event\ListAdminEvent;
 use Austral\AdminBundle\Admin\Event\SortableAdminEvent;
 use Austral\AdminBundle\Module\Module;
-
 use Austral\EntityBundle\Entity\EntityInterface;
-
-use Austral\EntityTranslateBundle\Entity\Interfaces\EntityTranslateMasterInterface;
+use Austral\EntityBundle\Entity\Interfaces\TranslateMasterInterface;
 use Austral\ListBundle\Column\Action;
 use Austral\ListBundle\Column\Actions;
 use Austral\ToolsBundle\AustralTools;
+
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -317,7 +316,7 @@ abstract class Admin implements AdminInterface
       {
         $listMapper->addColumnAction(new Action("duplicate", "actions.duplicate",
             $this->module->generateUrl("duplicate"),
-      "austral-picto-stack",
+          "austral-picto-stack",
             array(
               "attr"  =>  array(
                 "data-click-actions"        =>  "reload",
@@ -466,7 +465,7 @@ abstract class Admin implements AdminInterface
         );
       }
 
-      if(AustralTools::usedImplements($this->module->getEntityManager()->getClass(), "Austral\EntitySeoBundle\Entity\Interfaces\EntitySeoInterface"))
+      if(AustralTools::usedImplements($this->module->getEntityManager()->getClass(), "Austral\EntityBundle\Entity\Interfaces\SeoInterface"))
       {
         try {
           $listMapper->addColumnAction(new Action("goTo", "actions.goTo",
@@ -621,7 +620,7 @@ abstract class Admin implements AdminInterface
     {
       $object->$setter($changeValueAdminEvent->getValue());
     }
-    elseif($object instanceof EntityTranslateMasterInterface)
+    elseif($object instanceof TranslateMasterInterface)
     {
       if(method_exists($object->getTranslateCurrent(), $setter))
       {
@@ -665,7 +664,7 @@ abstract class Admin implements AdminInterface
     {
       $object->$setter($position+1);
     }
-    elseif($object instanceof EntityTranslateMasterInterface)
+    elseif($object instanceof TranslateMasterInterface)
     {
       if(method_exists($object->getTranslateCurrent(), $setter))
       {

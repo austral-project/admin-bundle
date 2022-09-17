@@ -23,255 +23,253 @@ austral_admin_index:
   path: /
   controller: Austral\AdminBundle\Controller\AdminController::index
   defaults:
-    _granted:         true
-    _austral_admin:   true
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
 
 ##### Index
 austral_admin_module_filter_delete:
   path: /{modulePath}/filter-delete/{filterName}/{filterElement}
   controller: Austral\AdminBundle\Controller\AdminController::index
   defaults:
-    _granted:         true
-    _austral_admin:   true
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
   requirements:
-    modulePath:       ".*"
+    modulePath:             ".*"
 
 ##### Index
 austral_admin_index_language:
   path: /dashboard/{language}
   controller: Austral\AdminBundle\Controller\AdminController::index
   defaults:
-    _granted:         true
-    _austral_admin:   true
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
   requirements:
-    language:         ".*"
+    language:               ".*"
 
 ##### My Account
 austral_admin_my_account:
   path: /me
   controller: Austral\AdminBundle\Controller\AdminController::form
   defaults:
-    _granted:         true
-    _austral_admin:   true
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
 
 ##### My Account
 austral_admin_my_account_change_value:
   path: /me/change-value/{fieldname}/{value}
   controller: Austral\AdminBundle\Controller\AdminController::changeValue
   defaults:
-    _granted:         true
-    _austral_admin:   true
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
 
 ##### Guideline
 austral_admin_guideline:
   path: /_guideline
   controller: Austral\AdminBundle\Controller\AdminController::guideline
   defaults:
-    _granted:         true
-    _austral_admin:   false
+    _granted:               true
 
 ##### Guideline Fonts
 austral_admin_guideline_by_type:
   path: /_guideline/{type}
   controller: Austral\AdminBundle\Controller\AdminController::guideline
   defaults:
-    _granted:         true
-    _austral_admin:   false
+    _granted:               true
 
 ##### Module Download
 austral_admin_module_download:
   path: /{modulePath}/download/{format}
   controller: Austral\AdminBundle\Controller\AdminController::download
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "DOWNLOAD"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "DOWNLOAD"
   requirements:
-    modulePath:       ".*"
-    format:           "_FORMAT_|csv|xlsx|json"
+    modulePath:             ".*"
+    format:                 "_FORMAT_|csv|xlsx|json"
 
 ##### Module Change Value
 austral_admin_module_change_value_language:
   path: /{modulePath}/{id}/change-value/{fieldname}/{value}/{language}
   controller: Austral\AdminBundle\Controller\AdminController::changeValue
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "CHANGE"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "CHANGE"
   requirements:
-    language:         ".*"
-    modulePath:       ".*"
-    id:               ".*"
-    fieldname:        ".*"
-    value:            ".*"
+    language:               ".*"
+    modulePath:             ".*"
+    id:                     ".*"
+    fieldname:              ".*"
+    value:                  ".*"
 
 ##### Module Change Value
 austral_admin_module_change_value:
   path: /{modulePath}/{id}/change-value/{fieldname}/{value}
   controller: Austral\AdminBundle\Controller\AdminController::changeValue
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "CHANGE"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "CHANGE"
   requirements:
-    modulePath:       ".*"
-    id:               ".*"
-    fieldname:        ".*"
-    value:            ".*"
+    modulePath:             ".*"
+    id:                     ".*"
+    fieldname:              ".*"
+    value:                  ".*"
 
 ##### Module Duplicate
 austral_admin_module_duplicate_language:
   path: /{modulePath}/{id}/duplicate/{language}
   controller: Austral\AdminBundle\Controller\AdminController::duplicate
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "DUPLICATE"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "DUPLICATE"
   requirements:
-    language:         ".*"
-    modulePath:       ".*"
-    id:               ".*"
+    language:               ".*"
+    modulePath:             ".*"
+    id:                     ".*"
 
 ##### Module Duplicate
 austral_admin_module_duplicate:
   path: /{modulePath}/{id}/duplicate
   controller: Austral\AdminBundle\Controller\AdminController::duplicate
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "DUPLICATE"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "DUPLICATE"
   requirements:
-    modulePath:       ".*"
-    id:               ".*"
+    modulePath:             ".*"
+    id:                     ".*"
 
 ##### Module Delete
 austral_admin_module_delete_language:
   path: /{modulePath}/{id}/delete/{language}
   controller: Austral\AdminBundle\Controller\AdminController::delete
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "DELETE"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "DELETE"
   requirements:
-    language:         ".*"
-    modulePath:       ".*"
-    id:               ".*"
+    language:               ".*"
+    modulePath:             ".*"
+    id:                     ".*"
 
 ##### Module Delete
 austral_admin_module_delete:
   path: /{modulePath}/{id}/delete
   controller: Austral\AdminBundle\Controller\AdminController::delete
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "DELETE"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "DELETE"
   requirements:
-    modulePath:       ".*"
-    id:               ".*"
+    modulePath:             ".*"
+    id:                     ".*"
 
 ##### Module Truncate
 austral_admin_module_truncate:
   path: /{modulePath}/truncate
   controller: Austral\AdminBundle\Controller\AdminController::truncate
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "TRUNCATE"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "TRUNCATE"
   requirements:
-    modulePath:       ".*"
+    modulePath:             ".*"
 
 ##### Module Sortable
 austral_admin_module_sortable:
   path: /{modulePath}/sortable
   controller: Austral\AdminBundle\Controller\AdminController::sortable
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "CHANGE|EDIT"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "CHANGE|EDIT"
   requirements:
-    modulePath:       ".*"
+    modulePath:             ".*"
 
 ##### Module Form Create with Language
 austral_admin_module_form_create_language:
   path: /{modulePath}/create/form/{language}
   controller: Austral\AdminBundle\Controller\AdminController::form
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "CREATE"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "CREATE"
   requirements:
-    language:         ".*"
-    modulePath:       ".*"
+    language:               ".*"
+    modulePath:             ".*"
 
 ##### Module Form Create
 austral_admin_module_form_create:
   path: /{modulePath}/create/form
   controller: Austral\AdminBundle\Controller\AdminController::form
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "CREATE"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "CREATE"
   requirements:
-    modulePath:       ".*"
+    modulePath:             ".*"
 
 ##### Module Form Edit with Language
 austral_admin_module_form_edit_language:
   path: /{modulePath}/{id}/form/{language}
   controller: Austral\AdminBundle\Controller\AdminController::form
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "EDIT"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "EDIT"
   requirements:
-    language:         ".*"
-    modulePath:       ".*"
-    id:               ".*"
+    language:               ".*"
+    modulePath:             ".*"
+    id:                     ".*"
 
 ##### Module Form Edit
 austral_admin_module_form_edit:
   path: /{modulePath}/{id}/form
   controller: Austral\AdminBundle\Controller\AdminController::form
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "EDIT"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "EDIT"
   requirements:
-    modulePath:       ".*"
-    id:               ".*"
+    modulePath:             ".*"
+    id:                     ".*"
 
 ##### Module Action Extend Edit
 austral_admin_module_action_extend_language:
   path: /{modulePath}/{id}/action/{actionKey}/{language}
   controller: Austral\AdminBundle\Controller\AdminController::action
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "ACTION_NAME"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "ACTION_NAME"
   requirements:
-    language:         ".*"
-    modulePath:       ".*"
-    actionKey:        ".*"
-    id:               ".*"
+    language:               ".*"
+    modulePath:             ".*"
+    actionKey:              ".*"
+    id:                     ".*"
 
 ##### Module Action Extend Edit
 austral_admin_module_action_extend:
   path: /{modulePath}/{id}/action/{actionKey}
   controller: Austral\AdminBundle\Controller\AdminController::action
   defaults:
-    _granted:         true
-    _austral_admin:   true
-    _role_prefix:     "ACTION_NAME"
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "ACTION_NAME"
   requirements:
-    modulePath:       ".*"
-    actionKey:        ".*"
-    id:               ".*"
+    modulePath:             ".*"
+    actionKey:              ".*"
+    id:                     ".*"
 
 ##### Index
 austral_admin_module_index:
   path: /{modulePath}
   controller: Austral\AdminBundle\Controller\AdminController::index
   defaults:
-    _granted:         true
-    _austral_admin:   true
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
   requirements:
-    modulePath:       ".*"
+    modulePath:             ".*"

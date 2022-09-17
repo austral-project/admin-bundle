@@ -105,19 +105,22 @@
           {% endfor %}
 
           {% set embedFieldsLength = embedFieldsLength+1 %}
-          {% set embedFields = embedFields|merge({
-            (field.fieldname): include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
-              classEmbedElement: field.fieldname~" init-form",
-              parentData: {id: "__name__"},
-              collectionForm: field,
-              collectionObjects: {},
-              form: {
-                mapper: subFormMapper,
-                view: form.view[field.fieldname].vars.prototype
-              }
-            })
-          })
-          %}
+
+          {% if form.view[field.fieldname].vars.prototype is defined %}
+            {% set embedFields = embedFields|merge({
+                (field.fieldname): include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
+                  classEmbedElement: field.fieldname~" init-form",
+                  parentData: {id: "__name__"},
+                  collectionForm: field,
+                  collectionObjects: {},
+                  form: {
+                    mapper: subFormMapper,
+                    view: form.view[field.fieldname].vars.prototype
+                  }
+                })
+              })
+            %}
+          {% endif %}
         {% endif %}
         {% set colorKey = field.options.color ?? 0 %}
       {% endif %}
@@ -135,7 +138,7 @@
       {% endif %}
 
       <div class="collection-embed-forms" data-replace-id="{{ field.options.prototype.name }}" {% if sortableEnabled %}data-sortable="" data-sortable-draggable=".collection-embed-element"  data-sortable-handle=".sortable-handle" data-sortable-input="*[data-collection-sortabled]"{% endif %}>
-        {% if isMasterEmbedForm != true and field.options.allow.add%}
+        {% if isMasterEmbedForm != true and field.options.allow.add %}
           {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig")}}
         {% endif %}
         {% for childForm in childrenForm|ksort %}

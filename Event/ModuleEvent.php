@@ -22,6 +22,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 class ModuleEvent extends Event
 {
   const EVENT_AUSTRAL_MODULE_ADD = "austral.event.module.admin.add";
+  const EVENT_AUSTRAL_MODULE_REMOVE = "austral.event.module.admin.remove";
 
   /**
    * @var Modules
@@ -33,17 +34,11 @@ class ModuleEvent extends Event
    */
   private Module $module;
 
-  /**
-   * @var array
-   */
-  private array $moduleParameters;
 
-
-  public function __construct(Modules $modules, Module $module, array $moduleParameters = array())
+  public function __construct(Modules $modules, Module $module)
   {
     $this->modules = $modules;
     $this->module = $module;
-    $this->moduleParameters = $moduleParameters;
   }
 
   /**
@@ -60,14 +55,6 @@ class ModuleEvent extends Event
   public function getModule(): Module
   {
     return $this->module;
-  }
-
-  /**
-   * @return array
-   */
-  public function getModuleParameters(): array
-  {
-    return $this->moduleParameters;
   }
 
 }
