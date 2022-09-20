@@ -1,7 +1,12 @@
 ##### Translation
 austral_admin_translation_json:
-  path: /translation-{_locale}.js
-  controller: Austral\AdminBundle\Controller\AdminController::translationJson
+  path:                     /translation-{_locale}.js
+  controller:               Austral\AdminBundle\Controller\AdminController::translationJson
+
+##### Popin Select Links
+austral_admin_popin_select_links:
+  path:                     /popin-select-links
+  controller:               Austral\AdminBundle\Controller\AdminController::popinSelectLinks
 
 ##### Ping Or Pong
 austral_admin_ping:

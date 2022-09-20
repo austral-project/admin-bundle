@@ -79,6 +79,14 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
    */
   public function onRequest(HttpEventInterface $httpEvent)
   {
+    $this->debug->stopWatchStart("austral.admin.http.event.request", "austral.admin.event.subscriber");
+
+    if($this->container->has('austral.seo.url_parameter.management')) {
+      $urlParameterManagement = $this->container->get('austral.seo.url_parameter.management');
+      $urlParameterManagement->initialize();
+    }
+
+
     /** @var AttributeBagInterface $requestAttributes */
     $requestAttributes = $httpEvent->getKernelEvent()->getRequest()->attributes;
 
@@ -94,6 +102,8 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
       $modulePath = $requestRoute;
     }
 
+    $this->debug->stopWatchLap("austral.admin.http.event.request");
+
     $language = $httpEvent->getKernelEvent()->getRequest()->getLocale();
     if($this->configuration->get('language.enabled_multi') && $requestAttributes->has('language'))
     {
@@ -105,6 +115,8 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
         );
       }
     }
+
+    $this->debug->stopWatchLap("austral.admin.http.event.request");
 
     /** @var Modules $modules */
     $modules = $this->container->get('austral.admin.modules')
@@ -128,13 +140,15 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
     {
       throw new HttpException(404, "The module not exist with path {$modulePath}.");
     }
+
     $module->getAdmin()
       ->setContainer($this->container)
       ->setTranslator($this->container->get('translator'));
 
+    $this->debug->stopWatchLap("austral.admin.http.event.request");
     if($filterDomainId = $module->getParametersByKey("austral_filter_by_domain"))
     {
-      $this->container->get('austral.http.domains.management')->initialize()->setFilterDomainId($filterDomainId);
+      $this->domainsManagement->setFilterDomainId($filterDomainId);
     }
 
     if(AustralTools::usedImplements(get_class($module->getEntityManager()), EntityManagerInterface::class))
@@ -153,6 +167,8 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
         throw new HttpException(404, "The action key {$actionKey} in module {$modulePath} not exist.");
       }
     }
+
+    $this->debug->stopWatchLap("austral.admin.http.event.request");
 
     /**
      * Check Granted to access module
@@ -195,14 +211,11 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
       $requestAttributes->set("id", $adminHandler->getUser()->getId());
     }
 
-    if($this->container->has('austral.seo.url_parameter.management')) {
-      $urlParameterManagement = $this->container->get('austral.seo.url_parameter.management');
-      $templateParameters->addParameters("urlsByDomains", $urlParameterManagement->getUrlParametersByDomainsWithTree());
-      $templateParameters->addParameters("objectKeyLinkNames", $urlParameterManagement->getObjectKeyLinkNames());
-    }
     if($this->container->has('austral.entity_manager.config')) {
       $templateParameters->addParameters("variables", $this->container->get('austral.entity_manager.config')->selectAll());
     }
+
+    $this->debug->stopWatchLap("austral.admin.http.event.request");
 
     $templateParameters->addParameters("language", array(
       "current" =>  $language,
@@ -225,6 +238,12 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
     }
     $templateParameters->addParameters("mercure", $mercureParameters);
     $httpEvent->setHandler($adminHandler);
+
+    if($this->container->has('austral.seo.url_parameter.management')) {
+      $templateParameters->addParameters("objectKeyLinkNames", $urlParameterManagement->getObjectKeyLinkNames());
+    }
+
+    $event = $this->debug->stopWatchStop("austral.admin.http.event.request");
   }
 
   /**
@@ -244,12 +263,14 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
    */
   public function onResponse(HttpEventInterface $httpEvent)
   {
+    $this->debug->stopWatchStart("austral.admin.http.event.response", "austral.admin.event.subscriber");
     $response = $httpEvent->getKernelEvent()->getResponse();
     if($this->editMyAccount && $response instanceof RedirectResponse)
     {
       $response = new RedirectResponse($this->container->get('router')->generate("austral_admin_my_account"));
     }
     $httpEvent->getKernelEvent()->setResponse($response);
+    $this->debug->stopWatchStop("austral.admin.http.event.response");
   }
 
   /**

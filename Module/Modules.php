@@ -16,6 +16,7 @@ use Austral\EntityBundle\EntityManager\EntityManagerInterface;
 use Austral\HttpBundle\Entity\Interfaces\DomainInterface;
 use Austral\ToolsBundle\AustralTools;
 
+use Austral\ToolsBundle\Services\Debug;
 use ErrorException;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -62,6 +63,11 @@ class Modules
    * @var AdminConfiguration
    */
   protected AdminConfiguration $adminConfiguration;
+
+  /**
+   * @var Debug
+   */
+  protected Debug $debug;
 
   /**
    * @var array
@@ -116,12 +122,14 @@ class Modules
    * @param RouterInterface $router
    * @param TranslatorInterface $translator
    * @param AdminConfiguration $adminConfiguration
+   * @param Debug $debug
    */
   public function __construct(ContainerInterface $container,
     EventDispatcherInterface $eventDispatcher,
     RouterInterface $router,
     TranslatorInterface $translator,
-    AdminConfiguration $adminConfiguration
+    AdminConfiguration $adminConfiguration,
+    Debug $debug
   )
   {
     $this->container = $container;
@@ -129,6 +137,7 @@ class Modules
     $this->router = $router;
     $this->translator = $translator;
     $this->adminConfiguration = $adminConfiguration;
+    $this->debug = $debug;
   }
 
   /**
@@ -169,6 +178,7 @@ class Modules
    */
   public function init(): Modules
   {
+    $this->debug->stopWatchStart("austral.admin.modules.init", "austral.admin.modules");
     /**
      * @var string $moduleKey
      * @var array $moduleParameters
@@ -180,6 +190,7 @@ class Modules
         $this->generateModule($moduleKey, $moduleParameters);
       }
     }
+    $this->debug->stopWatchStop("austral.admin.modules.init");
     return $this;
   }
 
@@ -194,6 +205,7 @@ class Modules
    */
   protected function generateModule(string $moduleKey, array $moduleParameters, bool $defaultNavigationEnabled = true, int $defaultNavigationPosition = 0, Module $parent = null)
   {
+    $this->debug->stopWatchStart("austral.admin.modules.generate.module.{$moduleKey}", "austral.admin.modules");
     $actions = AustralTools::getValueByKey($moduleParameters, "actions", array());
     $actionName = null;
     if(count($actions) <= 0 || array_key_exists("entity", $actions) === true)
@@ -253,6 +265,7 @@ class Modules
       }
     }
     $this->addModule($module, true);
+    $this->debug->stopWatchStop("austral.admin.modules.generate.module.{$moduleKey}");
   }
 
   /**
@@ -266,6 +279,7 @@ class Modules
    */
   public function createModule(string $moduleKey, array $moduleParameters, string $modulePath, ?string $actionName = null): Module
   {
+    $this->debug->stopWatchStart("austral.admin.modules.module.create", "austral.admin.modules");
     $actionName = $actionName ?  : "listChildrenModules";
     $module = new Module($this->router, $moduleKey,
       AustralTools::getValueByKey($moduleParameters,
@@ -283,9 +297,10 @@ class Modules
       ->setLanguageDefault($this->languageDefault)
       ->setDisabledActions(AustralTools::getValueByKey($moduleParameters, "disabledActions", array()))
       ->setExtendActions(AustralTools::getValueByKey($moduleParameters, "extendActions", array()))
-      ->setDownloadFormats(AustralTools::getValueByKey($moduleParameters, "downloadFormats", array()));
+      ->setDownloadFormats(AustralTools::getValueByKey($moduleParameters, "downloadFormats", array()))
+      ->setEnableMultiDomain(AustralTools::getValueByKey($moduleParameters, 'enable_multi_domain', true));
 
-    if(!array_key_exists("translate_disabled", $moduleParameters) || $moduleParameters["translate_disabled"] === false) {
+    if((!array_key_exists("translate_disabled", $moduleParameters) || $moduleParameters["translate_disabled"] === false) && !array_key_exists("austral_filter_by_domain", $moduleParameters)) {
       /**
        * Generate Translate Key and init value
        */
@@ -369,6 +384,7 @@ class Modules
     }
     $module->setGrantedByActionKey($grantedByActionKeys);
     $module->setModuleParameters($moduleParameters);
+    $this->debug->stopWatchStop("austral.admin.modules.module.create");
 
     return $module;
   }
@@ -453,6 +469,7 @@ class Modules
       $moduleParameters["route"] = "for-all-domains";
       $moduleParameters["name"] = "{$moduleParameters["name"]} - For All Domains";
     }
+
     $moduleParameters["austral_filter_by_domain"] = $domain ? $domain->getId() : "for-all-domains";
     $this->generateModule($moduleKey, $moduleParameters, false, 0, $parentModule);
     $module = $this->getModuleByKey($moduleKey);
@@ -505,7 +522,6 @@ class Modules
         "key"       =>  "{$parentModule->translateKey()}{$keyTranslate}{$keyTranslateAction}"
       ));
     }
-
     $this->dispatchEvent = true;
     return $this;
   }
@@ -543,6 +559,13 @@ class Modules
     return $this->getModuleByPath(AustralTools::getValueByKey($this->modulesPathByKey, $moduleKey, null));
   }
 
+  /**
+   * @return array
+   */
+  public function getModulesByEntityClassname(): array
+  {
+    return $this->modulesByEntityClassname;
+  }
 
   /**
    * @param string $entityClassname
@@ -553,6 +576,10 @@ class Modules
   public function getModuleByEntityClassname(string $entityClassname, $key = 0): ?Module
   {
     $modulePaths = AustralTools::getValueByKey($this->modulesByEntityClassname, $entityClassname, array());
+    if(count($modulePaths) === 1)
+    {
+      $key = 0;
+    }
     if($modulePath = AustralTools::getValueByKey($modulePaths, $key, null))
     {
       return $this->getModuleByPath($modulePath);

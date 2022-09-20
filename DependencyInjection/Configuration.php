@@ -128,6 +128,7 @@ class Configuration implements ConfigurationInterface
     $node = $node
       ->children()
         ->scalarNode('enabled')->isRequired()->end()
+        ->scalarNode('enable_multi_domain')->end()
         ->booleanNode('truncate')->end()
         ->arrayNode('navigation')
           ->children()

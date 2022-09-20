@@ -20,7 +20,7 @@ services:
 
   austral.admin.http.event_subscriber:
     class:          Austral\AdminBundle\EventSubscriber\HttpAdminEventSubscriber
-    arguments:      [ "@service_container", "@austral.admin.config", "@austral.tools.debug" ]
+    arguments:      [ "@service_container", "@austral.admin.config", "@austral.http.domains.management","@austral.tools.debug" ]
     tags:
       - { name: kernel.event_subscriber }
 
@@ -38,7 +38,13 @@ services:
 ##### Modules
   austral.admin.modules:
     class:          Austral\AdminBundle\Module\Modules
-    arguments:      [ "@service_container", "@event_dispatcher","@router", "@translator", "@austral.admin.config"]
+    arguments:
+      - "@service_container"
+      - "@event_dispatcher"
+      - "@router"
+      - "@translator"
+      - "@austral.admin.config"
+      - "@austral.tools.debug"
 
 ##### Handler
   austral.admin.handler:

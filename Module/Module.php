@@ -189,6 +189,11 @@ class Module implements ModuleInterface
   protected ?QueryBuilder $queryBuilder = null;
 
   /**
+   * @var bool
+   */
+  protected bool $enableMultiDomain = true;
+
+  /**
    * Module constructor.
    *
    * @throws Exception
@@ -987,6 +992,25 @@ class Module implements ModuleInterface
   public function setModuleParameters(array $moduleParameters): Module
   {
     $this->moduleParameters = $moduleParameters;
+    return $this;
+  }
+
+  /**
+   * @return bool
+   */
+  public function getEnableMultiDomain(): bool
+  {
+    return $this->enableMultiDomain;
+  }
+
+  /**
+   * @param bool $enableMultiDomain
+   *
+   * @return Module
+   */
+  public function setEnableMultiDomain(bool $enableMultiDomain): Module
+  {
+    $this->enableMultiDomain = $enableMultiDomain;
     return $this;
   }
 

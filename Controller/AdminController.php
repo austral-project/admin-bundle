@@ -326,4 +326,17 @@ class AdminController extends HttpController
     );
   }
 
+  /**
+   * @return Response
+   */
+  public function popinSelectLinks(): Response
+  {
+    $this->container->get('austral.http.domains.management')->initialize();
+    $urlParameterManagement = $this->container->get('austral.seo.url_parameter.management')->initialize();
+    return $this->render("@AustralDesign/Components/Popin/templates/select-links-content.html.twig", array(
+      "urlsByDomains" => $urlParameterManagement->getUrlParametersByDomainsWithTree()
+    ));
+  }
+
+
 }

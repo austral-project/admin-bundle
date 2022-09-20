@@ -55,7 +55,7 @@ class ModuleEventSubscriber implements EventSubscriberInterface
   public static function getSubscribedEvents(): array
   {
     return [
-      ModuleEvent::EVENT_AUSTRAL_MODULE_ADD     =>  ["moduleAdd", 0],
+      ModuleEvent::EVENT_AUSTRAL_MODULE_ADD     =>  ["moduleAdd", 1024],
     ];
   }
 
@@ -65,7 +65,6 @@ class ModuleEventSubscriber implements EventSubscriberInterface
    * @param Generator $fileLinkGenerator
    * @param AdminConfiguration $adminConfiguration
    *
-   * @throws QueryException
    */
   public function __construct(TranslatorInterface $translator,
     DomainsManagement $domains,
@@ -73,7 +72,7 @@ class ModuleEventSubscriber implements EventSubscriberInterface
     AdminConfiguration $adminConfiguration)
   {
     $this->translator = $translator;
-    $this->domains = $domains->initialize();
+    $this->domains = $domains;
     $this->fileLinkGenerator = $fileLinkGenerator;
     $this->adminConfiguration = $adminConfiguration;
   }
@@ -85,27 +84,23 @@ class ModuleEventSubscriber implements EventSubscriberInterface
    */
   public function moduleAdd(ModuleEvent $moduleEvent)
   {
-    if($moduleEvent->getModule()->isEntityModule())
+    if($moduleEvent->getModule()->isEntityModule() && $moduleEvent->getModule()->getEnableMultiDomain())
     {
       $entityManager = $moduleEvent->getModule()->getEntityManager();
       if(AustralTools::usedImplements($entityManager->getClass(), FilterByDomainInterface::class))
       {
         if($this->domains->getEnabledDomainWithoutVirtual() > 1) {
           $moduleChange = false;
-          $domains = $this->domains->getDomains();
           /** @var DomainInterface $domain */
-          foreach($domains as $domain)
+          foreach($this->domains->getDomainsWithoutVirtual() as $domain)
           {
-            if(!$domain->getIsVirtual())
-            {
-              $moduleChange = true;
-              $moduleEvent->getModules()->generateModuleByDomain(
-                $moduleEvent->getModule()->getModuleKey(),
-                $moduleEvent->getModule()->getModuleParameters(),
-                $domain,
-                $moduleEvent->getModule()
-              );
-            }
+            $moduleChange = true;
+            $moduleEvent->getModules()->generateModuleByDomain(
+              $moduleEvent->getModule()->getModuleKey(),
+              $moduleEvent->getModule()->getModuleParameters(),
+              $domain,
+              $moduleEvent->getModule()
+            );
           }
           if($moduleChange)
           {
