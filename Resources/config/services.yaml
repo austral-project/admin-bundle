@@ -26,7 +26,7 @@ services:
 
   austral.admin.module.event_subscriber:
     class:          Austral\AdminBundle\EventSubscriber\ModuleEventSubscriber
-    arguments:      [ "@translator", "@austral.http.domains.management", "@austral.entity_file.link.generator", "@austral.admin.config" ]
+    arguments:      [ "@austral.entity.mapping", "@translator", "@austral.http.domains.management", "@austral.entity_file.link.generator", "@austral.admin.config" ]
     tags:
       - { name: kernel.event_subscriber }
 

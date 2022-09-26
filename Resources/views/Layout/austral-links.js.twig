@@ -1,9 +1,9 @@
 class AustralLinks  {
   constructor() {
     this.links = {
-      {% if objectKeyLinkNames is defined %}
-        {%- for keyLink, KeyLinkName in objectKeyLinkNames -%}
-          "{{ keyLink}}": "{{ KeyLinkName }}"{% if loop.last %}{% else %},{% endif %}
+      {% if nameByKeysLinks is defined %}
+        {%- for keyLink, KeyLinkName in nameByKeysLinks -%}
+          "{{ keyLink }}": "{{ KeyLinkName }}"{% if loop.last %}{% else %},{% endif %}
         {%- endfor -%}
       {% endif %}
     };

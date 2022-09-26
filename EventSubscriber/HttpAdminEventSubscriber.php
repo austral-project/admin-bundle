@@ -81,6 +81,7 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
   {
     $this->debug->stopWatchStart("austral.admin.http.event.request", "austral.admin.event.subscriber");
 
+    $urlParameterManagement = null;
     if($this->container->has('austral.seo.url_parameter.management')) {
       $urlParameterManagement = $this->container->get('austral.seo.url_parameter.management');
       $urlParameterManagement->initialize();
@@ -239,10 +240,9 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
     $templateParameters->addParameters("mercure", $mercureParameters);
     $httpEvent->setHandler($adminHandler);
 
-    if($this->container->has('austral.seo.url_parameter.management')) {
-      $templateParameters->addParameters("objectKeyLinkNames", $urlParameterManagement->getObjectKeyLinkNames());
+    if($urlParameterManagement) {
+      $templateParameters->addParameters("nameByKeysLinks", $urlParameterManagement->getNameByKeyLinks());
     }
-
     $event = $this->debug->stopWatchStop("austral.admin.http.event.request");
   }
 

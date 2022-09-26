@@ -14,6 +14,7 @@ use Austral\AdminBundle\Configuration\AdminConfiguration;
 use Austral\AdminBundle\Event\ModuleEvent;
 use Austral\EntityBundle\EntityManager\EntityManagerInterface;
 use Austral\HttpBundle\Entity\Interfaces\DomainInterface;
+use Austral\HttpBundle\Services\DomainsManagement;
 use Austral\ToolsBundle\AustralTools;
 
 use Austral\ToolsBundle\Services\Debug;
@@ -454,70 +455,66 @@ class Modules
    * @return $this
    * @throws \Exception
    */
-  public function generateModuleByDomain(string $moduleKey, array $moduleParameters, ?DomainInterface $domain = null, ?Module $parentModule = null): Modules
+  public function generateModuleByDomain(string $moduleKey, array $moduleParameters, ?DomainInterface $domain, ?Module $parentModule = null): Modules
   {
     $this->dispatchEvent = false;
-    if($domain)
+    $domainName = $domainImg = "";
+    if($domain->getId() !== DomainsManagement::DOMAIN_ID_FOR_ALL_DOMAINS)
     {
       $moduleKey = "$moduleKey-{$domain->getDomain()}";
       $moduleParameters["route"] = "{$domain->getDomain()}";
       $moduleParameters["name"] = "{$moduleParameters["name"]} - {$domain->getName()}";
+      $domainName = $domain->getName();
+      $domainImg = $this->container->get('austral.entity_file.link.generator')->image($domain, "favicon");
+      $keyTranslate = "ByDomain";
     }
     else
     {
-      $moduleKey = "$moduleKey-for-all-domains";
-      $moduleParameters["route"] = "for-all-domains";
+      $moduleKey = "$moduleKey-{$domain->getId()}";
+      $moduleParameters["route"] = $domain->getId();
       $moduleParameters["name"] = "{$moduleParameters["name"]} - For All Domains";
+      $keyTranslate = "ForAllDomain";
     }
 
-    $moduleParameters["austral_filter_by_domain"] = $domain ? $domain->getId() : "for-all-domains";
+    $moduleParameters["austral_filter_by_domain"] = $domain->getId();
     $this->generateModule($moduleKey, $moduleParameters, false, 0, $parentModule);
     $module = $this->getModuleByKey($moduleKey);
 
-    $keyTranslate = $domain ? "ByDomain" : "ForAllDomain";
     $module->setTranslates(array(
-      'singular'  =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}.singular", array('%domainName%' => $domain ? $domain->getName() : "")),
-      'plural'    =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}.plural", array('%domainName%' => $domain ? $domain->getName() : "")),
+      'singular'  =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}.singular", array('%domainName%' => $domainName)),
+      'plural'    =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}.plural", array('%domainName%' => $domainName)),
       "type"      =>  AustralTools::getValueByKey($parentModule->getParameters(), "translate", "default"),
       "key"       =>  "{$parentModule->translateKey()}{$keyTranslate}"
     ));
 
+    // TODO Add count pages if module parent is enabled
     $countPages = null;
     if($module->isEntityModule())
     {
       $module->setQueryBuilder(clone $parentModule->getQueryBuilder());
-      if($domain)
-      {
-        $module->getQueryBuilder()
-          ->andWhere("root.domainId = :domainId")
-          ->setParameter("domainId", $domain->getId());
-      }
-      else
-      {
-        $module->getQueryBuilder()
-          ->andWhere("root.domainId IS NULL");
-      }
-      $countPages = $module->getEntityManager()->countByQueryBuilder(clone $module->getQueryBuilder());
+      $module->getQueryBuilder()
+        ->andWhere("root.domainId = :domainId")
+        ->setParameter("domainId", $domain->getId());
+      //$countPages = $module->getEntityManager()->countByQueryBuilder(clone $module->getQueryBuilder());
     }
-    $module->addParameters("austral_filter_by_domain", $domain ? $domain->getId() : "");
+    $module->addParameters("austral_filter_by_domain", $domain->getId());
     $module->addParameters("tile", array(
-      "subEntitled"   =>  $this->trans("pages.names.{$parentModule->translateKey()}ByDomain.subTitle", array('%count%'=>$countPages)),
-      "img"           =>  $domain ? $this->container->get('austral.entity_file.link.generator')->image($domain, "favicon") : ""
+      //"subEntitled"   =>  $this->trans("pages.names.{$parentModule->translateKey()}ByDomain.subTitle", array('%count%'=>$countPages)),
+      "img"           =>  $domainImg
     ));
 
     /** @var Module $child */
     foreach ($module->getChildren() as $child)
     {
-      $child->addParameters("austral_filter_by_domain", $domain ? $domain->getId() : "");
+      $child->addParameters("austral_filter_by_domain", $domain->getId());
       $child->addParameters("tile", array(
-        "subEntitled"   =>  $this->trans("pages.names.{$parentModule->translateKey()}ByDomain.subTitle", array('%count%'=>$countPages)),
-        "img"           =>  $domain ? $this->container->get('austral.entity_file.link.generator')->image($domain, "favicon") : ""
+        //"subEntitled"   =>  $this->trans("pages.names.{$parentModule->translateKey()}ByDomain.subTitle", array('%count%'=>$countPages)),
+        "img"           =>  $domainImg
       ));
-      $keyTranslate = $domain ? "ByDomain" : "ForAllDomain";
       $keyTranslateAction = ucfirst($child->getActionName());
       $child->setTranslates(array(
-        'singular'  =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}{$keyTranslateAction}.singular", array('%domainName%' => $domain ? $domain->getName() : "")),
-        'plural'    =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}{$keyTranslateAction}.plural", array('%domainName%' => $domain ? $domain->getName() : "")),
+        'singular'  =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}{$keyTranslateAction}.singular", array('%domainName%' => $domainName)),
+        'plural'    =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}{$keyTranslateAction}.plural", array('%domainName%' => $domainName)),
         "type"      =>  AustralTools::getValueByKey($parentModule->getParameters(), "translate", "default"),
         "key"       =>  "{$parentModule->translateKey()}{$keyTranslate}{$keyTranslateAction}"
       ));

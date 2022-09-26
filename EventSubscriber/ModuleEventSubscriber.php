@@ -12,12 +12,11 @@ namespace Austral\AdminBundle\EventSubscriber;
 
 use Austral\AdminBundle\Configuration\AdminConfiguration;
 use Austral\AdminBundle\Event\ModuleEvent;
-use Austral\EntityBundle\Entity\Interfaces\FilterByDomainInterface;
+use Austral\EntityBundle\Mapping\Mapping;
 use Austral\EntityFileBundle\File\Link\Generator;
 use Austral\HttpBundle\Entity\Interfaces\DomainInterface;
+use Austral\HttpBundle\Mapping\DomainFilterMapping;
 use Austral\HttpBundle\Services\DomainsManagement;
-use Austral\ToolsBundle\AustralTools;
-use Doctrine\ORM\Query\QueryException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -30,6 +29,11 @@ class ModuleEventSubscriber implements EventSubscriberInterface
 {
 
   /**
+   * @var Mapping
+   */
+  protected Mapping $mapping;
+
+  /**
    * @var TranslatorInterface
    */
   protected TranslatorInterface $translator;
@@ -37,7 +41,7 @@ class ModuleEventSubscriber implements EventSubscriberInterface
   /**
    * @var DomainsManagement
    */
-  protected DomainsManagement $domains;
+  protected DomainsManagement $domainsManagement;
 
   /**
    * @var AdminConfiguration
@@ -60,19 +64,21 @@ class ModuleEventSubscriber implements EventSubscriberInterface
   }
 
   /**
+   * @param Mapping $mapping
    * @param TranslatorInterface $translator
-   * @param DomainsManagement $domains
+   * @param DomainsManagement $domainsManagement
    * @param Generator $fileLinkGenerator
    * @param AdminConfiguration $adminConfiguration
-   *
    */
-  public function __construct(TranslatorInterface $translator,
-    DomainsManagement $domains,
+  public function __construct(Mapping $mapping,
+    TranslatorInterface $translator,
+    DomainsManagement $domainsManagement,
     Generator $fileLinkGenerator,
     AdminConfiguration $adminConfiguration)
   {
+    $this->mapping = $mapping;
     $this->translator = $translator;
-    $this->domains = $domains;
+    $this->domainsManagement = $domainsManagement;
     $this->fileLinkGenerator = $fileLinkGenerator;
     $this->adminConfiguration = $adminConfiguration;
   }
@@ -87,29 +93,41 @@ class ModuleEventSubscriber implements EventSubscriberInterface
     if($moduleEvent->getModule()->isEntityModule() && $moduleEvent->getModule()->getEnableMultiDomain())
     {
       $entityManager = $moduleEvent->getModule()->getEntityManager();
-      if(AustralTools::usedImplements($entityManager->getClass(), FilterByDomainInterface::class))
+
+      /** @var DomainFilterMapping $domainFilterMapping */
+      if($domainFilterMapping = $this->mapping->getEntityClassMapping($entityManager->getClass(), DomainFilterMapping::class))
       {
-        if($this->domains->getEnabledDomainWithoutVirtual() > 1) {
+        if($this->domainsManagement->getEnabledDomainWithoutVirtual() && $domainFilterMapping->getAutoDomainId()) {
           $moduleChange = false;
           /** @var DomainInterface $domain */
-          foreach($this->domains->getDomainsWithoutVirtual() as $domain)
+          foreach($this->domainsManagement->getDomainsWithoutVirtual() as $domain)
+          {
+            if($domain->getId() !== DomainsManagement::DOMAIN_ID_MASTER)
+            {
+              if($domainFilterMapping->getForAllDomainEnabled() || $domain->getId() !== DomainsManagement::DOMAIN_ID_FOR_ALL_DOMAINS)
+              {
+                $moduleChange = true;
+                $moduleEvent->getModules()->generateModuleByDomain(
+                  $moduleEvent->getModule()->getModuleKey(),
+                  $moduleEvent->getModule()->getModuleParameters(),
+                  $domain,
+                  $moduleEvent->getModule()
+                );
+              }
+            }
+          }
+          if($domainFilterMapping->getForAllDomainEnabled())
           {
             $moduleChange = true;
             $moduleEvent->getModules()->generateModuleByDomain(
               $moduleEvent->getModule()->getModuleKey(),
               $moduleEvent->getModule()->getModuleParameters(),
-              $domain,
+              $this->domainsManagement->getDomainForAll(),
               $moduleEvent->getModule()
             );
           }
           if($moduleChange)
           {
-            $moduleEvent->getModules()->generateModuleByDomain(
-              $moduleEvent->getModule()->getModuleKey(),
-              $moduleEvent->getModule()->getModuleParameters(),
-              null,
-              $moduleEvent->getModule()
-            );
             $moduleEvent->getModule()->setActionName("listChildrenModules");
             $moduleEvent->getModule()->setPathActions(array());
           }
