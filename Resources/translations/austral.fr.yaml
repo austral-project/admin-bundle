@@ -16,6 +16,8 @@ authenticated:
     message:                                    Vous êtes perdu ?
     link:                                       Retour au site
 
+
+
 pages:
   filter:
     title:                                      "%module_name% filter"
@@ -248,6 +250,9 @@ popin:
   editor:
     title:                                      Edition de fichier
     file:                                       Fichier importé
+domain:
+  virtual:
+    for-all-domains:                          Pour tous les domaines
 
 aside:
   australVars:

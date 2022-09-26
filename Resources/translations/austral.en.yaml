@@ -244,6 +244,9 @@ popin:
   editor:
     title:                                      File editor
     file:                                       Imported File
+domain:
+  virtual:
+    for-all-domains:                          Pour tous les domaines
 
 aside:
   australVars:
