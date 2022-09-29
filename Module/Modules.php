@@ -244,7 +244,7 @@ class Modules
       $module->setExtendActions($actions);
       foreach($actions as $actionKey => $actionName)
       {
-        $moduleAction = $this->createModule("{$moduleKey}_{$actionKey}", $moduleParameters, "{$modulePath}/{$actionKey}", $actionName);
+        $moduleAction = $this->createModule("{$moduleKey}_{$actionKey}", $moduleParameters, "{$modulePath}/{$actionKey}", $actionName, $domainFilterId);
         $moduleAction->setIsViewParentPage(false);
         $moduleAction->setParent($module);
         $module->addChildren($moduleAction);
@@ -262,7 +262,7 @@ class Modules
       foreach($children as $childModuleKey => $childModuleParameters)
       {
         $defaultNavigationPositionChild++;
-        $this->generateModule($childModuleKey, $childModuleParameters, false, $defaultNavigationPositionChild, $module);
+        $this->generateModule($childModuleKey, $childModuleParameters, false, $defaultNavigationPositionChild, $module, $domainFilterId);
       }
     }
     $this->addModule($module, true);
@@ -274,6 +274,7 @@ class Modules
    * @param array $moduleParameters
    * @param string $modulePath
    * @param string|null $actionName
+   * @param string|null $domainFilterId
    *
    * @return Module
    * @throws ErrorException
@@ -331,9 +332,9 @@ class Modules
       }
       $moduleParameters["entity_manager"] = $entityManagerClass;
 
-      if($module->getFilterDomainId())
+      if($domainFilterId)
       {
-        $this->modulesByEntityClassname[$entityManager->getClass()][$module->getFilterDomainId()] = $module->getModulePath();
+        $this->modulesByEntityClassname[$entityManager->getClass()][$domainFilterId] = $module->getModulePath();
       }
       else
       {
