@@ -17,6 +17,7 @@ use Austral\AdminBundle\Admin\Event\FilterEventInterface;
 use Austral\AdminBundle\Admin\Event\SortableAdminEvent;
 use Austral\AdminBundle\Admin\Event\TruncateAdminEvent;
 use Austral\AdminBundle\Event\DashboardEvent;
+use Austral\AdminBundle\Module\Module;
 use Austral\AdminBundle\Services\Download;
 use Austral\AdminBundle\Handler\Interfaces\AdminHandlerInterface;
 use Austral\AdminBundle\Handler\Base\BaseAdminHandler;
@@ -32,6 +33,7 @@ use Austral\FilterBundle\Mapper\FilterMapper;
 use Austral\FormBundle\Form\Type\FormTypeInterface;
 use Austral\FormBundle\Mapper\FormMapper;
 use Austral\FormBundle\Event\FormEvent;
+use Austral\HttpBundle\Mapping\DomainFilterMapping;
 use Austral\ListBundle\DataHydrate\DataHydrateInterface;
 use Austral\ListBundle\Filter\FilterMapperInterface;
 use Austral\ListBundle\Mapper\ListMapper;
@@ -445,8 +447,26 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
   {
     try {
       $duplicateManagerEvent = $this->duplicateObject($this->retreiveObjectOrCreate($id));
+      $moduleObject = $this->module;
+      /** @var DomainFilterMapping $domainFilter */
+      if($domainFilter = $this->container->get("austral.entity.mapping")->getEntityClassMapping($duplicateManagerEvent->getDuplicateObject()->getClassnameForMapping(), DomainFilterMapping::class))
+      {
+        if($domainFilter->getAutoDomainId())
+        {
+          $children = $moduleObject->getParent()->getChildren();
+          /** @var Module $child */
+          foreach($children as $child)
+          {
+            if($child->getFilterDomainId() === $duplicateManagerEvent->getDuplicateObject()->getDomainId())
+            {
+              $moduleObject = $child;
+            }
+          }
+        }
+      }
+
       $this->redirectUrl = $this->generateUrl("austral_admin_module_form_edit", array(
-          'modulePath'  =>  $this->module->getModulePath(),
+          'modulePath'  =>  $moduleObject->getModulePath(),
           "id"  =>  $duplicateManagerEvent->getDuplicateObject()->getId()
         )
       );
@@ -608,7 +628,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
 
       /** @var FilterMapperInterface|Filter|null $filter */
       $filter = $filterMapper->filter("default");
-      if($filter->hasFilterValue() || $this->module->getParametersByKey("austral_filter_by_domain"))
+      if($filter->hasFilterValue() || $this->module->getFilterDomainId())
       {
         $listMapper->generate();
         /** @var Section $section */

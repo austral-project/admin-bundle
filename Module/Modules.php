@@ -174,7 +174,6 @@ class Modules
   /**
    * @return $this
    * @throws ErrorException
-   * @throws ReflectionException
    * @throws \Exception
    */
   public function init(): Modules
@@ -201,10 +200,11 @@ class Modules
    * @param bool $defaultNavigationEnabled
    * @param int $defaultNavigationPosition
    * @param Module|null $parent
+   * @param string|null $domainFilterId
    *
-   * @throws \Exception
+   * @throws ErrorException
    */
-  protected function generateModule(string $moduleKey, array $moduleParameters, bool $defaultNavigationEnabled = true, int $defaultNavigationPosition = 0, Module $parent = null)
+  protected function generateModule(string $moduleKey, array $moduleParameters, bool $defaultNavigationEnabled = true, int $defaultNavigationPosition = 0, Module $parent = null, ?string $domainFilterId = null)
   {
     $this->debug->stopWatchStart("austral.admin.modules.generate.module.{$moduleKey}", "austral.admin.modules");
     $actions = AustralTools::getValueByKey($moduleParameters, "actions", array());
@@ -223,7 +223,7 @@ class Modules
     $navigation = AustralTools::getValueByKey($moduleParameters, "navigation", array());
     $modulePath = ($parent ? $parent->getModulePath()."/" : null).$moduleParameters["route"];
 
-    $module = $this->createModule($moduleKey, $moduleParameters, $modulePath, $actionName);
+    $module = $this->createModule($moduleKey, $moduleParameters, $modulePath, $actionName, $domainFilterId);
     if($parent)
     {
       $module->setParent($parent);
@@ -278,7 +278,7 @@ class Modules
    * @return Module
    * @throws ErrorException
    */
-  public function createModule(string $moduleKey, array $moduleParameters, string $modulePath, ?string $actionName = null): Module
+  public function createModule(string $moduleKey, array $moduleParameters, string $modulePath, ?string $actionName = null, ?string $domainFilterId = null): Module
   {
     $this->debug->stopWatchStart("austral.admin.modules.module.create", "austral.admin.modules");
     $actionName = $actionName ?  : "listChildrenModules";
@@ -301,7 +301,7 @@ class Modules
       ->setDownloadFormats(AustralTools::getValueByKey($moduleParameters, "downloadFormats", array()))
       ->setEnableMultiDomain(AustralTools::getValueByKey($moduleParameters, 'enable_multi_domain', true));
 
-    if((!array_key_exists("translate_disabled", $moduleParameters) || $moduleParameters["translate_disabled"] === false) && !array_key_exists("austral_filter_by_domain", $moduleParameters)) {
+    if((!array_key_exists("translate_disabled", $moduleParameters) || $moduleParameters["translate_disabled"] === false) && !$domainFilterId) {
       /**
        * Generate Translate Key and init value
        */
@@ -331,9 +331,9 @@ class Modules
       }
       $moduleParameters["entity_manager"] = $entityManagerClass;
 
-      if($domainId = AustralTools::getValueByKey($moduleParameters, "austral_filter_by_domain"))
+      if($module->getFilterDomainId())
       {
-        $this->modulesByEntityClassname[$entityManager->getClass()][$domainId] = $module->getModulePath();
+        $this->modulesByEntityClassname[$entityManager->getClass()][$module->getFilterDomainId()] = $module->getModulePath();
       }
       else
       {
@@ -476,10 +476,9 @@ class Modules
       $keyTranslate = "ForAllDomain";
     }
 
-    $moduleParameters["austral_filter_by_domain"] = $domain->getId();
-    $this->generateModule($moduleKey, $moduleParameters, false, 0, $parentModule);
+    $this->generateModule($moduleKey, $moduleParameters, false, 0, $parentModule, $domain->getId());
     $module = $this->getModuleByKey($moduleKey);
-
+    $module->setFilterDomainId($domain->getId());
     $module->setTranslates(array(
       'singular'  =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}.singular", array('%domainName%' => $domainName)),
       'plural'    =>  $this->trans("pages.names.{$parentModule->translateKey()}{$keyTranslate}.plural", array('%domainName%' => $domainName)),
@@ -497,7 +496,6 @@ class Modules
         ->setParameter("domainId", $domain->getId());
       //$countPages = $module->getEntityManager()->countByQueryBuilder(clone $module->getQueryBuilder());
     }
-    $module->addParameters("austral_filter_by_domain", $domain->getId());
     $module->addParameters("tile", array(
       //"subEntitled"   =>  $this->trans("pages.names.{$parentModule->translateKey()}ByDomain.subTitle", array('%count%'=>$countPages)),
       "img"           =>  $domainImg
@@ -506,7 +504,7 @@ class Modules
     /** @var Module $child */
     foreach ($module->getChildren() as $child)
     {
-      $child->addParameters("austral_filter_by_domain", $domain->getId());
+      $child->setFilterDomainId($domain->getId());
       $child->addParameters("tile", array(
         //"subEntitled"   =>  $this->trans("pages.names.{$parentModule->translateKey()}ByDomain.subTitle", array('%count%'=>$countPages)),
         "img"           =>  $domainImg

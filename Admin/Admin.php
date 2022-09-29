@@ -19,6 +19,8 @@ use Austral\AdminBundle\Admin\Event\SortableAdminEvent;
 use Austral\AdminBundle\Module\Module;
 use Austral\EntityBundle\Entity\EntityInterface;
 use Austral\EntityBundle\Entity\Interfaces\TranslateMasterInterface;
+use Austral\HttpBundle\Entity\Domain;
+use Austral\HttpBundle\Services\DomainsManagement;
 use Austral\ListBundle\Column\Action;
 use Austral\ListBundle\Column\Actions;
 use Austral\ToolsBundle\AustralTools;
@@ -329,6 +331,33 @@ abstract class Admin implements AdminInterface
             )
           )
         );
+
+        if($this->module->getEnableMultiDomain())
+        {
+          /** @var Domain $domain */
+          foreach($listAdminEvent->getAdminHandler()->getDomainsManagement()->getDomainsWithoutVirtual() as $domain)
+          {
+            if($domain->getId() !== $this->module->getFilterDomainId())
+            {
+              $listMapper->addColumnAction(new Action("duplicate", "actions.duplicate_by_domain",
+                  $this->module->generateUrl("duplicate", array('domainId' => $domain->getId())),
+                  "austral-picto-stack",
+                  array(
+                    "attr"  =>  array(
+                      "data-click-actions"        =>  "reload",
+                      "data-reload-elements-key"  =>  "container"
+                    ),
+                    "translateParameters" => array(
+                      "module_name"     =>  $this->module->translateSingular(),
+                      "module_gender"   =>  $this->module->translateGenre(),
+                      "%domainName%"    =>  $domain->getName()
+                    )
+                  )
+                )
+              );
+            }
+          }
+        }
       }
 
       if($this->module->isGranted("delete"))

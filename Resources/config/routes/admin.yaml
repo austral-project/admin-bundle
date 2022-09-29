@@ -123,6 +123,33 @@ austral_admin_module_change_value:
     value:                  ".*"
 
 ##### Module Duplicate
+austral_admin_module_duplicate_other_domain:
+  path: /{modulePath}/{id}/duplicate/domain-{domainId}
+  controller: Austral\AdminBundle\Controller\AdminController::duplicate
+  defaults:
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "DUPLICATE"
+  requirements:
+    domainId:               ".*"
+    modulePath:             ".*"
+    id:                     ".*"
+
+##### Module Duplicate
+austral_admin_module_duplicate:
+  path: /{modulePath}/{id}/duplicate
+  controller: Austral\AdminBundle\Controller\AdminController::duplicate
+  defaults:
+    _granted:               true
+    _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
+    _role_prefix:           "DUPLICATE"
+  requirements:
+    modulePath:             ".*"
+    id:                     ".*"
+
+
+
+##### Module Duplicate
 austral_admin_module_duplicate_language:
   path: /{modulePath}/{id}/duplicate/{language}
   controller: Austral\AdminBundle\Controller\AdminController::duplicate
@@ -136,14 +163,16 @@ austral_admin_module_duplicate_language:
     id:                     ".*"
 
 ##### Module Duplicate
-austral_admin_module_duplicate:
-  path: /{modulePath}/{id}/duplicate
+austral_admin_module_duplicate_language_other_domain:
+  path: /{modulePath}/{id}/duplicate/domain-{domainId}/{language}
   controller: Austral\AdminBundle\Controller\AdminController::duplicate
   defaults:
     _granted:               true
     _austral_http_event:    Austral\AdminBundle\Event\AdminHttpEvent
     _role_prefix:           "DUPLICATE"
   requirements:
+    domainId:               ".*"
+    language:               ".*"
     modulePath:             ".*"
     id:                     ".*"
 

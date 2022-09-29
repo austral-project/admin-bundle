@@ -147,7 +147,7 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
       ->setTranslator($this->container->get('translator'));
 
     $this->debug->stopWatchLap("austral.admin.http.event.request");
-    if($filterDomainId = $module->getParametersByKey("austral_filter_by_domain"))
+    if($filterDomainId = $module->getFilterDomainId())
     {
       $this->domainsManagement->setFilterDomainId($filterDomainId);
     }
@@ -204,7 +204,10 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
 
     /** @var HttpHandlerInterface|AdminHandlerInterface $adminHandler */
     $adminHandler = $this->container->get("austral.admin.handler");
-    $adminHandler->setModule($module)->setTemplateParameters($templateParameters);
+    $adminHandler->setModules($modules)
+      ->setModule($module)
+      ->setDomainsManagement($this->domainsManagement)
+      ->setTemplateParameters($templateParameters);
 
     $templateParameters->addParameters("user", $adminHandler->getUser());
     if($this->editMyAccount)

@@ -61,6 +61,7 @@ actions:
   cancel:                                       Cancel
   edit:                                         Edit
   duplicate:                                    Duplicate
+  duplicate_by_domain:                          "Duplicate for %domainName%"
   truncate:                                     Deletes all
   delete:                                       Delete
   deleteThis:                                   Delete %entitled%

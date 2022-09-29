@@ -194,6 +194,11 @@ class Module implements ModuleInterface
   protected bool $enableMultiDomain = true;
 
   /**
+   * @var string|null
+   */
+  protected ?string $filterDomainId = null;
+
+  /**
    * Module constructor.
    *
    * @throws Exception
@@ -720,8 +725,15 @@ class Module implements ModuleInterface
       {
         $parameters["modulePath"] = $this->modulePath;
         $route = ($this->entityTranslateEnabled && array_key_exists("language", $routes)) ? $routes['language'] : $routes["default"];
+
+        if(array_key_exists("domainId", $parameters))
+        {
+          $route .= "_other_domain";
+        }
+
         $routeCollection = $this->router->getRouteCollection()->get($route);
         $parametersRequired = $routeCollection->getRequirements();
+
 
         if(array_key_exists("actionKey", $parametersRequired))
         {
@@ -750,6 +762,7 @@ class Module implements ModuleInterface
             $parameters[$key] = "__{$key}__";
           }
         }
+
         $url = $this->router->generate($route, $parameters, $referenceType);
       }
       else
@@ -1011,6 +1024,25 @@ class Module implements ModuleInterface
   public function setEnableMultiDomain(bool $enableMultiDomain): Module
   {
     $this->enableMultiDomain = $enableMultiDomain;
+    return $this;
+  }
+
+  /**
+   * @return string|null
+   */
+  public function getFilterDomainId(): ?string
+  {
+    return $this->filterDomainId;
+  }
+
+  /**
+   * @param string|null $filterDomainId
+   *
+   * @return Module
+   */
+  public function setFilterDomainId(?string $filterDomainId): Module
+  {
+    $this->filterDomainId = $filterDomainId;
     return $this;
   }
 
