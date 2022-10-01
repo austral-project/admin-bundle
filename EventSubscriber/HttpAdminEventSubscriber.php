@@ -65,11 +65,16 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
   public function onRequestInitialise(HttpEventInterface $httpEvent)
   {
     $currentLocal = $httpEvent->getKernelEvent()->getRequest()->getSession()->get("austral_language_interface");
+    if($httpEvent->getKernelEvent()->getRequest()->attributes->has("language"))
+    {
+      $currentLocal = $httpEvent->getKernelEvent()->getRequest()->attributes->get("language");
+    }
+    $httpEvent->getHttpRequest()->setLanguage($currentLocal ? : $this->container->getParameter('locale'));
+
     if(!$httpEvent->getKernelEvent()->getRequest()->attributes->has("language"))
     {
-      $httpEvent->getKernelEvent()->getRequest()->attributes->set("language", $this->container->getParameter('locale'));
+      $httpEvent->getKernelEvent()->getRequest()->attributes->set("language", $httpEvent->getHttpRequest()->getLanguage());
     }
-    $httpEvent->getHttpRequest()->setLanguage($currentLocal);
   }
 
   /**
