@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-### Version 3.0.1 (2021-02-10)
+### Version 3.0.1 (2022-10-01)
 * Remove auto generate admin with multi domain
 * Fix redirect website
 
