@@ -1,6 +1,11 @@
 Changelog
 =========
 
+
+### Version 3.0.1 (2021-02-10)
+* Remove auto generate admin with multi domain
+* Fix redirect website
+
 ### Version 3.0.0 (2021-02-10)
 * Created new repository and new branch in to Github
 * Changed the project License to the MIT
