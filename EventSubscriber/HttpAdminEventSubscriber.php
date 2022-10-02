@@ -225,10 +225,13 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
     {
       /** @var Mercure $mercure */
       $mercure = $this->container->get('austral.notify.mercure');
-      $mercure->addSubscribe("{$httpEvent->getKernelEvent()->getRequest()->getPathInfo()}");
-      $mercure->setUserTabId($tabUuid);
-      $mercureParameters["url"] = $mercure->getHub()->getPublicUrl();
-      $mercureParameters["subscribes"] = $mercure->getSubscribes();
+      if($mercure->getEnabled())
+      {
+        $mercure->addSubscribe("{$httpEvent->getKernelEvent()->getRequest()->getPathInfo()}");
+        $mercure->setUserTabId($tabUuid);
+        $mercureParameters["url"] = $mercure->getHub()->getPublicUrl();
+        $mercureParameters["subscribes"] = $mercure->getSubscribes();
+      }
     }
     $templateParameters->addParameters("mercure", $mercureParameters);
     $httpEvent->setHandler($adminHandler);
