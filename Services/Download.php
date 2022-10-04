@@ -362,6 +362,11 @@ Class Download
       {
         $columnValue = $columnValue ? "true" : "false";
         $columnValue = $this->translate("boolean_value.{$columnValue}");
+
+      }
+      elseif($column->withLanguage())
+      {
+        $columnValue = $this->translate($columnValue);
       }
       return u($columnValue)
         ->trim()
