@@ -14,7 +14,7 @@
       {% set actionsParameters = {"__language__": objectTranslate.language} %}
       {% set current = objectTranslate|value_by_key(col.fieldname)  %}
     {% else %}
-      {% set current = object|value_by_key(col.fieldname) %}
+      {% set current = col.value %}
     {% endif %}
 
     {% set elements = {} %}

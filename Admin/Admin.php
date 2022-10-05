@@ -20,9 +20,9 @@ use Austral\AdminBundle\Module\Module;
 use Austral\EntityBundle\Entity\EntityInterface;
 use Austral\EntityBundle\Entity\Interfaces\TranslateMasterInterface;
 use Austral\HttpBundle\Entity\Domain;
-use Austral\HttpBundle\Services\DomainsManagement;
 use Austral\ListBundle\Column\Action;
 use Austral\ListBundle\Column\Actions;
+use Austral\SeoBundle\Entity\Interfaces\UrlParameterInterface;
 use Austral\ToolsBundle\AustralTools;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -644,16 +644,29 @@ abstract class Admin implements AdminInterface
   protected function adminEventChangeValueStart(ChangeValueAdminEvent $changeValueAdminEvent)
   {
     $object = $changeValueAdminEvent->getObject();
-    $setter = AustralTools::createSetterFunction($changeValueAdminEvent->getFieldname());
-    if(method_exists($object, $setter))
+
+    if($changeValueAdminEvent->getFieldname() === UrlParameterInterface::CHOICE_VALUE_FIELDNAME)
     {
-      $object->$setter($changeValueAdminEvent->getValue());
-    }
-    elseif($object instanceof TranslateMasterInterface)
-    {
-      if(method_exists($object->getTranslateCurrent(), $setter))
+      $urlParameters = $this->container->get('austral.seo.url_parameter.management')->getUrlParametersByObject($object);
+      /** @var UrlParameterInterface $urlParameter */
+      foreach ($urlParameters as $urlParameter)
       {
-        $object->getTranslateCurrent()->$setter($changeValueAdminEvent->getValue());
+        $urlParameter->setStatus($changeValueAdminEvent->getValue());
+      }
+    }
+    else
+    {
+      $setter = AustralTools::createSetterFunction($changeValueAdminEvent->getFieldname());
+      if(method_exists($object, $setter))
+      {
+        $object->$setter($changeValueAdminEvent->getValue());
+      }
+      elseif($object instanceof TranslateMasterInterface)
+      {
+        if(method_exists($object->getTranslateCurrent(), $setter))
+        {
+          $object->getTranslateCurrent()->$setter($changeValueAdminEvent->getValue());
+        }
       }
     }
   }
