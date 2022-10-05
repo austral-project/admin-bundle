@@ -346,7 +346,9 @@ class Modules
     /**
      * Init security granted and path
      */
-    $securityKey = $module->getModuleKey() !== "austral_admin_dashboard" ? "ROLE_".strtoupper(u($module->getModulePath())->snake()) : "ROLE_ADMIN_ACCESS";
+
+    $securityKey = array_key_exists("security_key", $moduleParameters) ? $moduleParameters["security_key"] : $module->getModulePath();
+    $securityKey = $module->getModuleKey() !== "austral_admin_dashboard" ? "ROLE_".strtoupper(u($securityKey)->snake()) : "ROLE_ADMIN_ACCESS";
     $grantedByActionKeys = array();
     if($module->isEntityModule())
     {
@@ -476,6 +478,7 @@ class Modules
       $moduleParameters["name"] = "{$moduleParameters["name"]} - For All Domains";
       $keyTranslate = "ForAllDomain";
     }
+    $moduleParameters["security_key"] = $parentModule->getModulePath();
 
     $this->generateModule($moduleKey, $moduleParameters, false, 0, $parentModule, $domain->getId());
     $module = $this->getModuleByKey($moduleKey);
