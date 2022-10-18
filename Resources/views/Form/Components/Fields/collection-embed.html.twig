@@ -1,8 +1,8 @@
 {% if field.usedGeneratedForm %}
-  {% set betweenInsertAccepted = false %}
-  {% set sortableEnabled = false %}
   {% set isMasterEmbedForm = isMasterEmbedForm is defined ? false : true %}
   {% if form.mapper.hasSubFormMapperByKey(field.fieldname) %}
+    {% set betweenInsertAccepted = false %}
+    {% set sortableEnabled = false %}
     {% set subFormMapper = form.mapper.getSubFormMapperByKey(field.fieldname) %}
     {% if subFormMapper %}
       {% if field.masterChildren != true %}
@@ -144,6 +144,7 @@
         {% for childForm in childrenForm|ksort %}
           {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
               collectionForm: childForm.collectionForm,
+              sortableEnabled: sortableEnabled,
               parentData: childForm.data,
               form: childForm.form,
               childrenForm: value_by_key(childrenFormByParentIds, childForm.data.id, {}),

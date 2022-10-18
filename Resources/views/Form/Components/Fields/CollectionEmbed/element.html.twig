@@ -6,6 +6,6 @@
     {% include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/form.html.twig") with {parent: parentData} %}
   </div>
   {% if collectionForm.allowChild and collectionForm.masterChildren %}
-    {% include("@AustralAdmin/Form/Components/Fields/collection-embed.html.twig") with {field: collectionForm, parent: parentData} %}
+    {% include("@AustralAdmin/Form/Components/Fields/collection-embed.html.twig") with {field: collectionForm, parent: parentData, sortableEnabled: sortableEnabled} %}
   {% endif %}
 </div>
