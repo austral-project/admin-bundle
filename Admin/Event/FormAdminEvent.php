@@ -30,6 +30,7 @@ class FormAdminEvent extends AdminEvent
   CONST EVENT_AUSTRAL_FORM_VALIDATE = "austral.admin.event.form.validate.form";
   CONST EVENT_UPDATE_BEFORE = "austral.admin.event.form.update.before";
   CONST EVENT_UPDATE_AFTER = "austral.admin.event.form.update.after";
+  CONST EVENT_FLUSH_AFTER = "austral.admin.event.form.flush.after";
   CONST EVENT_END = "austral.admin.event.form.end";
 
   /**

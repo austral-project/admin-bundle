@@ -404,6 +404,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
           {
             $this->module->getEntityManager()->flush();
           }
+          $this->module->getAdmin()->dispatch(FormAdminEvent::EVENT_FLUSH_AFTER, $formAdminEvent);
         }
         else
         {
