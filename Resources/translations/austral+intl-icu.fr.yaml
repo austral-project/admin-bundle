@@ -15,17 +15,17 @@ pages:
       title: >-
         {module_gender, select,
           female_c  { Édition de la { module_name }}
-          female_v  { Édition de l'{ module_name }}
+          female_v  { Édition de l' { module_name }}
           male_c    { Édition du { module_name }}
-          male_v    { Édition de l'{ module_name }}
+          male_v    { Édition de l' { module_name }}
           other     { Édition }
         }
     create:
       title: >-
         {module_gender, select,
           female_c  { Création de la { module_name }}
-          female_v  { Création de l'{ module_name }}
+          female_v  { Création de l' { module_name }}
           male_c    { Création du { module_name }}
-          male_v    { Création de l'{ module_name }}
+          male_v    { Création de l' { module_name }}
           other     { Création }
         }
