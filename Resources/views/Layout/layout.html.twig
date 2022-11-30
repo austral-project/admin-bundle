@@ -29,7 +29,7 @@
     {% include 'Admin/Layout/head.html.twig' ignore missing %}
     {% if user is defined %}<style type="text/css">:root { --color-user: {{ user.avatarColor ?? "#6FA8DC" }}; }</style>{% endif %}
   </head>
-  <body id="body-master" class="{{ user is defined ? user.interfaceTheme : "" }}" data-uri="{{ app.request.pathInfo }}" {% if app.debug is defined and app.debug %}data-debug{% endif%} data-reload-elements="{{ config.data_reload_js|json_encode }}" {% if mercure.url is defined -%}data-mercure="{{ mercure|json_encode }}"{% endif %}>
+  <body id="body-master" class="{{ user is defined ? user.interfaceTheme : "" }} {% block body_class %}{% endblock %}" data-uri="{{ app.request.pathInfo }}" {% if app.debug is defined and app.debug %}data-debug{% endif%} data-reload-elements="{{ config.data_reload_js|json_encode }}" {% if mercure.url is defined -%}data-mercure="{{ mercure|json_encode }}"{% endif %}>
 
     {% if user is defined %}
       <header id="header-master" class="aside-left">
