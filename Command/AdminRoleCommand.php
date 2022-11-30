@@ -152,8 +152,7 @@ EOF
         $this->viewMessage("Roles Generates successfully [Role Add : {$nbRolesAdd}] - [Role Update : {$nbRolesUpdate}] !!!", "success");
       }
       catch (Exception $e) {
-
-        $this->viewMessage("Roles Generate error -> {$e->getMessage()} !!!", "error");
+        throw new \Exception("Roles Generate error -> {$e->getMessage()} !!!");
       }
     }
   }
