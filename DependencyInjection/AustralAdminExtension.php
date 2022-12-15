@@ -14,6 +14,7 @@ use Austral\ToolsBundle\AustralTools;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 use \Exception;
@@ -23,7 +24,7 @@ use \Exception;
  * @author Matthieu Beurel <matthieu@austral.dev>
  * @final
  */
-class AustralAdminExtension extends Extension
+class AustralAdminExtension extends Extension implements PrependExtensionInterface
 {
   /**
    * {@inheritdoc}
@@ -55,6 +56,11 @@ class AustralAdminExtension extends Extension
 
 
     $this->loadConfigToAustralBundle($container, $loader);
+  }
+
+  public function prepend(ContainerBuilder $container)
+  {
+    $container->setParameter("austral.admin.path", "austral-admin");
   }
 
   /**

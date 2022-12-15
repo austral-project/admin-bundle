@@ -114,11 +114,12 @@ class AdminController extends HttpController
   }
 
   /**
+   * @param AuthenticationUtils $authenticationUtils
    * @param Request $request
    *
    * @return RedirectResponse|Response
    */
-  public function authenticated(Request $request)
+  public function authenticated(AuthenticationUtils $authenticationUtils, Request $request)
   {
     if ($this->getUser())
     {
@@ -128,9 +129,12 @@ class AdminController extends HttpController
     /** @var TemplateParameters $templateParameters */
     $templateParameters = $this->container->get('austral.admin.template');
 
+    $error = $authenticationUtils->getLastAuthenticationError();
+    $lastUsername = $authenticationUtils->getLastUsername();
+
     $templateParameters->addParameters("project", $this->container->get("austral.admin.config")->getConfig("project"))
-      ->addParameters("last_username", "")
-      ->addParameters("error", "");
+      ->addParameters("last_username", $lastUsername)
+      ->addParameters("error", $error);
     /** @var AuthenticationUtils $authenticationUtils */
     return $this->render('@AustralAdmin/Authenticated/login.html.twig',
       $templateParameters->__serialize()

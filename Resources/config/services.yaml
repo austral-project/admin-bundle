@@ -1,8 +1,12 @@
 services:
   _defaults:
-    autowire: true
-    autoconfigure: true
-    public:        true
+    autowire:       true
+    autoconfigure:  true
+    public:         true
+
+  Austral\AdminBundle\Controller\:
+    resource: '../../Controller/'
+    tags: [ 'controller.service_arguments' ]
 
 
 ##### Event Subscriber
@@ -49,7 +53,12 @@ services:
 ##### Handler
   austral.admin.handler:
     class:          Austral\AdminBundle\Handler\AdminHandler
-    arguments:      [ "@service_container", "@request_stack", "@event_dispatcher", "@austral.tools.debug"]
+    arguments:
+      - "@service_container"
+      - "@request_stack"
+      - "@event_dispatcher"
+      - "@security.token_storage"
+      - "@austral.tools.debug"
 
 ##### Downlaod
   austral.admin.download:

@@ -2,6 +2,8 @@ parameters:
 
 ##### Defined Class
 
+
+  austral.admin.path:                                       "austral-admin"
   austral.admin.project:
     name:                                                   "Austral"
     background:                                             "/bundles/australadmin/images/austral.jpg"
