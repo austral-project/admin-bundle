@@ -128,9 +128,11 @@ EOF
         /** @var Module $module */
         foreach($modules as $module)
         {
-          if($moduleKey = $module->getModulePath())
+          $moduleParameters = $module->getModuleParameters();
+          $securityKey = array_key_exists("security_key", $moduleParameters) ? $moduleParameters["security_key"] : $module->getModulePath();
+          if($securityKey)
           {
-            $securityKey = u("ROLE_$moduleKey")->snake()->upper()->__toString();
+            $securityKey = u("ROLE_$securityKey")->snake()->upper()->__toString();
             if($actionName = $module->getActionName())
             {
               $actionName = $actionName != "index" ? " - {$actionName}" : "";
@@ -177,6 +179,7 @@ EOF
           "role"  =>  $role
         )
       );
+      $this->rolesExists[$role] = $objectRole;
       $nbRolesAdd++;
     }
     else
