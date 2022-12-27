@@ -681,12 +681,12 @@ abstract class Admin implements AdminInterface
     $setter = AustralTools::createSetterFunction($sortableAdminEvent->getFieldname());
     $objects = $sortableAdminEvent->getEntityManager()->selectAll("id", "ASC", $sortableAdminEvent->getQueryBuilder());
 
-    foreach($sortableAdminEvent->getPositions() as $poition => $value)
+    foreach($sortableAdminEvent->getPositions() as $position => $value)
     {
       /** @var EntityInterface $object */
       if($object = AustralTools::getValueByKey($objects, $value, null))
       {
-        $this->changePositionByValue($object, $setter, $poition);
+        $this->changePositionByValue($object, $setter, $position);
         $sortableAdminEvent->getEntityManager()->update($object, false);
       }
     }
