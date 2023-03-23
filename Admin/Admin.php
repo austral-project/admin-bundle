@@ -462,6 +462,7 @@ abstract class Admin implements AdminInterface
             $this->module->generateUrl("create"),
             null,
             array(
+              "keybord-shortcut"            =>  "CTRL+MAJ+N",
               "attr"    =>  array(
                 "data-click-actions"    =>  "reload",
                 "data-reload-elements-key"  =>  "container"
@@ -560,6 +561,7 @@ abstract class Admin implements AdminInterface
           $this->module->generateUrl("duplicate", array('id'=>$formAdminEvent->getFormMapper()->getObject()->getId())),
           "austral-picto-stack",
           array(
+            "keybord-shortcut"            =>  "CTRL+MAJ+D",
             "attr"    =>  array(
               "data-click-actions"        =>  "reload",
               "data-reload-elements-key"  =>  "container",
@@ -578,6 +580,7 @@ abstract class Admin implements AdminInterface
         $this->module->generateUrl("delete", array('id'=>$formAdminEvent->getFormMapper()->getObject()->getId())),
         "austral-picto-trash",
         array(
+          "keybord-shortcut"            =>  "CTRL+MAJ+DELETE",
           "attr"    =>  array(
             "data-click-actions"        =>  "reload, confirm",
             "data-reload-elements-key"  =>  "container",
@@ -597,6 +600,7 @@ abstract class Admin implements AdminInterface
         $this->module->generateUrl("create"),
         "austral-picto-square-plus",
           array(
+            "keybord-shortcut"            =>  "CTRL+MAJ+N",
             "attr"    =>  array(
               "data-click-actions"        =>  "reload",
               "data-reload-elements-key"  =>  "container"
