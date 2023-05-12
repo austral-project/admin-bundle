@@ -4,9 +4,11 @@
   "size":           uploadFileParametersFile.infos.sizeHuman,
   "mime-type":      uploadFileParametersFile.infos.extension,
   "dimensions":     uploadFileParametersFile.infos.imageSize ? uploadFileParametersFile.infos.imageSize~"px" : null,
-  "reel-filename":  uploadFileParametersFile.file.reelFilename
+  "reel-filename":  uploadFileParametersFile.file.reelFilename,
+  "download-path": uploadFileParametersFile.file.path.download
 } %}
 
+{% dump(uploadFileParametersFile) %}
 {% set uploadFileOptions = {
   "max-size": field.type.maxSize(true),
   "mime-types": field.type.mimeTypes,
@@ -16,6 +18,7 @@
   "fieldname": field.type.fieldname,
   "cropper": field.type.cropper,
   "file-path": uploadFileParametersFile.file.path.view,
+  "download-path": uploadFileParametersFile.file.path.download,
   "fileValues": popinValues,
 } %}
 

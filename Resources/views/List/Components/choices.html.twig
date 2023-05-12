@@ -8,13 +8,13 @@
   {% set actionsParameters = {} %}
   <div class="list-objects_content-choices">
     {% if objectTranslate is defined %}
-      <span class="content-language">
+      {% set actionsParameters = {"__language__": objectTranslate.language, "id": row.object.id} %}
+      <a data-click-actions="reload" data-reload-elements-key="container" href="{{ module.generateUrl("edit", actionsParameters) }}" class="content-language link">
         {{ objectTranslate.language }}
-      </span>
-      {% set actionsParameters = {"__language__": objectTranslate.language} %}
-      {% set current = objectTranslate|value_by_key(col.fieldname)  %}
+      </a>
+      {% set current = col.value[objectTranslate.language] %}
     {% else %}
-      {% set current = col.value %}
+      {% set current = col.value is iterable ? col.value|first : col.value %}
     {% endif %}
 
     {% set elements = {} %}
