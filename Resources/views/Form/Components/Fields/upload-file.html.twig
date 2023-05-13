@@ -8,7 +8,6 @@
   "download-path": uploadFileParametersFile.file.path.download
 } %}
 
-{% dump(uploadFileParametersFile) %}
 {% set uploadFileOptions = {
   "max-size": field.type.maxSize(true),
   "mime-types": field.type.mimeTypes,
