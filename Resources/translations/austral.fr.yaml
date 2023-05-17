@@ -63,6 +63,7 @@ errors:
     int:                                        La valeur {{ value }} n'est pas un {{ type }} valide.
     float:                                      La valeur {{ value }} n'est pas un {{ type }} valide.
   required:                                     La valeur est obligatoire.
+  not_null:                                     Cette valeur ne doit pas être nulle.
 
 actions:
   cancel:                                       Annuler
