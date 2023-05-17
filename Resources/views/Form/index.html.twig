@@ -59,9 +59,17 @@
       </div>
     </div>
 
+    <div class="central-container grid grid--container master-fieldset">
+      {% for field in form.mapper.getFieldsetByPosition("master") %}
+        {{ include("@AustralAdmin/Form/Components/fieldset.html.twig", {fieldset: field, class:"fieldset-content-parent"}) }}
+      {% endfor %}
+      {% for field in form.mapper.getFieldsetByPosition("none") %}
+        {{ include("@AustralAdmin/Form/Components/fieldset.html.twig", {fieldset: field, class:"fieldset-content-parent"}) }}
+      {% endfor %}
+    </div>
     <div class="central-container grid grid--container">
       {% for field in form.mapper.getFields() %}
-        {% if field.isView and (field.positionName is not defined or (field.positionName != "right" and field.positionName != "bottom")) %}
+        {% if field.isView and (field.positionName is not defined or (field.positionName != "right" and field.positionName != "none" and field.positionName != "master" and field.positionName != "bottom")) %}
           {% if field is instanceof("Austral\\FormBundle\\Mapper\\Fieldset") %}
             {{ include("@AustralAdmin/Form/Components/fieldset.html.twig", {fieldset: field, class:"fieldset-content-parent"}) }}
           {% else %}
