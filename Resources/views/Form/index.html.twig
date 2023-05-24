@@ -67,7 +67,7 @@
         {{ include("@AustralAdmin/Form/Components/fieldset.html.twig", {fieldset: field, class:"fieldset-content-parent"}) }}
       {% endfor %}
     </div>
-    <div class="central-container grid grid--container">
+    <div class="central-after-container grid grid--container">
       {% for field in form.mapper.getFields() %}
         {% if field.isView and (field.positionName is not defined or (field.positionName != "right" and field.positionName != "none" and field.positionName != "master" and field.positionName != "bottom")) %}
           {% if field is instanceof("Austral\\FormBundle\\Mapper\\Fieldset") %}

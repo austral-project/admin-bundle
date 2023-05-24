@@ -109,8 +109,8 @@
     <script src="{{ path('austral_admin_translation_json', { _locale: app.request.locale }) }}"></script>
 
     <script>{{ include('@AustralAdmin/Layout/austral-links.js.twig') }}</script>
-    <script>{{ include('@AustralDesign/Components/Popin/templates.js.twig') }}</script>
     <script>{{ include('@AustralAdmin/Layout/austral-variables.js.twig') }}</script>
+    <script>{{ include('@AustralDesign/Components/Popin/templates.js.twig') }}</script>
 
     {% block javascripts %}
       {{ encore_entry_script_tags('austral', null, "austral-design") }}

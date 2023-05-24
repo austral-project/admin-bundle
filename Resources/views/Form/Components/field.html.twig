@@ -59,8 +59,8 @@
           }
         )}}
       {% endif %}
-      {% if field.type.options.attr["data-austral-tag"] is defined and false %}
-        <div class="view-helper-tag" data-aside-container="#aside-select-austral-vars" >
+      {% if field.type.options.attr["data-austral-tag"] is defined %}
+        <div class="view-helper-tag">
           <span class="char">%</span>
           {{ "helper.australVars"|trans({}, form.mapper.translateDomain) }}
         </div>
