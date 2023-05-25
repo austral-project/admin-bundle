@@ -14,14 +14,13 @@ use Austral\AdminBundle\Module\Module;
 use Austral\EntityFileBundle\File\Mapping\FieldFileMapping;
 use Austral\ToolsBundle\AustralTools;
 use Austral\ToolsBundle\Command\Base\Command;
-use Austral\ToolsBundle\Command\Exception\CommandException;
 
 use Composer\Autoload\ClassLoader;
-use Doctrine\ORM\NonUniqueResultException;
 use Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Austral Modules Command.
@@ -75,6 +74,7 @@ EOF
    */
   protected function executeCommand(InputInterface $input, OutputInterface $output)
   {
+    $filesystem = new Filesystem();
     if($input->getOption("generate"))
     {
       $this->composerLoader = require 'vendor/autoload.php';
@@ -149,6 +149,11 @@ EOF
           $formMapperLines[] = "->end()";
 
           $filePath = $this->getFilePathByClassname($module->getAdminClass());
+          $pathInfo = pathinfo($filePath);
+          if(!file_exists($pathInfo['dirname']))
+          {
+            $filesystem->mkdir($pathInfo['dirname']);
+          }
           $searchReplaceValues = array(
             "##php##"                 =>  "<?php",
             "##NAMESPACE##"           =>  $this->getNamespace($module->getAdminClass()),
