@@ -224,6 +224,10 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
       $templateParameters->addParameters("variables", $this->container->get('austral.entity_manager.config')->selectAll());
     }
 
+    if($this->container->has('austral.graphic_items.management')) {
+      $templateParameters->addParameters("graphicItems", $this->container->get('austral.graphic_items.management')->getIcons());
+    }
+
     $this->debug->stopWatchLap("austral.admin.http.event.request");
 
     $templateParameters->addParameters("language", array(
