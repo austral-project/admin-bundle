@@ -223,7 +223,10 @@ class Modules
     $navigation = AustralTools::getValueByKey($moduleParameters, "navigation", array());
     $modulePath = ($parent ? $parent->getModulePath()."/" : null).$moduleParameters["route"];
 
-    $module = $this->createModule($moduleKey, $moduleParameters, $modulePath, $actionName, $domainFilterId);
+    if(!$module = $this->getModuleByPath($modulePath))
+    {
+      $module = $this->createModule($moduleKey, $moduleParameters, $modulePath, $actionName, $domainFilterId);
+    }
     if($parent)
     {
       $module->setParent($parent);
