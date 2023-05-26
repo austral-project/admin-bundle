@@ -1,0 +1,27 @@
+{% if field.type.popinId and field.type.formMapper %}
+  {% set popin = field.type.formMapper.popinByKey(field.type.popinId) %}
+  {% if popin %}
+    <div class="button-edit-content">
+      {% set popinData = {
+        "data-popin-container": "#popin-editor-upload-master",
+        "data-popin-options": {
+          "id":       popin.popin.id,
+          "class":    popin.popin.class,
+          "template": popin.popin.template,
+          "update":   "#"~popin.popinKeyId|replace({'__name__': form.view.vars.data.id}),
+        }|json_encode,
+        "data-view-by-choice-element": ""
+      } %}
+      {{ include("@AustralDesign/Components/Button/action.html.twig",
+        {
+          tag:            "button",
+          title:          popin.button.entitled|trans({}, form.mapper.translateDomain),
+          picto:          popin.button.picto,
+          full:           true,
+          data:           popinData
+        }
+      )
+      }}
+    </div>
+  {% endif %}
+{% endif %}
