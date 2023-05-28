@@ -3,10 +3,10 @@
   {% if popin %}
     <div class="button-edit-content">
       {% set popinData = {
-        "data-popin-container": "#popin-editor-upload-master",
+        "data-popin-container": "#popin-editor-master",
         "data-popin-options": {
           "id":       popin.popin.id,
-          "class":    popin.popin.class,
+          "class":    "graphic-items-choice",
           "template": popin.popin.template,
           "update":   "#"~popin.popinKeyId|replace({'__name__': form.view.vars.data.id}),
         }|json_encode,
