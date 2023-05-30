@@ -1,27 +1,45 @@
-{% if field.type.popinId and field.type.formMapper %}
-  {% set popin = field.type.formMapper.popinByKey(field.type.popinId) %}
-  {% if popin %}
-    <div class="button-edit-content">
-      {% set popinData = {
-        "data-popin-container": "#popin-editor-master",
-        "data-popin-options": {
-          "id":       popin.popin.id,
-          "class":    "graphic-items-choice",
-          "template": popin.popin.template,
-          "update":   "#"~popin.popinKeyId|replace({'__name__': form.view.vars.data.id}),
-        }|json_encode,
-        "data-view-by-choice-element": ""
-      } %}
-      {{ include("@AustralDesign/Components/Button/action.html.twig",
-        {
-          tag:            "button",
-          title:          popin.button.entitled|trans({}, form.mapper.translateDomain),
-          picto:          popin.button.picto,
-          full:           true,
-          data:           popinData
-        }
-      )
-      }}
-    </div>
-  {% endif %}
-{% endif %}
+<div id="field-{{ form.view[field.name].vars.id }}-content" class="field-content {{ field.type.attrClass }} {% if field.required %} is-required{% endif %}
+    {% if field.errors %} is-error{% endif %}" {% if field.type.style is defined %}style="{{ field.type.style }}"{% endif %}>
+  {{ field.label|raw() }}
+  <div class="field field-{{ field.type.symfonyFormTypeClass }}">
+    {{ field.input|raw() }}
+    {% if field.type.popinId and field.type.formMapper %}
+      {% set popin = field.type.formMapper.popinByKey(field.type.popinId) %}
+      {% if popin %}
+        <div class="graphic-item">
+          <div class="preview">
+            {% if form.view[field.name].vars.data%}
+              <div class="image-content">
+                {{ form.view[field.name].vars.data|graphic_item_render|raw() }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="button-edit-content">
+            {% set popinData = {
+              "data-popin-container": "#popin-editor-master",
+              "data-popin-options": {
+                "id":       popin.popin.id,
+                "class":    "graphic-items-choice",
+                "template": popin.popin.template,
+                "field":    "#"~form.view[field.name].vars.id,
+              }|json_encode,
+              "data-view-by-choice-element": ""
+            } %}
+            {{ include("@AustralDesign/Components/Button/action.html.twig",
+              {
+                tag:            "button",
+                title:          popin.button.entitled|trans({}, form.mapper.translateDomain),
+                picto:          popin.button.picto,
+                full:           true,
+                data:           popinData
+              }
+            )
+            }}
+          </div>
+
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>

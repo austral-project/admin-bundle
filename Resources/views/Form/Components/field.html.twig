@@ -1,12 +1,8 @@
 {% if field.type.symfonyFormTypeName == "HiddenType" %}
-  {{ field.input|raw() }}
   {%- if field.type.templatePath is defined and field.type.templatePath -%}
-    <div id="field-{{ form.view[field.name].vars.id }}-content" class="field-content {{ field.type.attrClass }} {% if field.required %} is-required{% endif %}
-    {% if field.errors %} is-error{% endif %}" {% if field.type.style is defined %}style="{{ field.type.style }}"{% endif %}>
-      <div class="{% if field.type.symfonyFormTypeClass != "repeatedType"  %}field{% endif%} field-{{ field.type.symfonyFormTypeClass }}">
-        {% include [field.type.templatePath, '@AustralAdmin/Form/Components/Fields/default.html.twig'] %}
-      </div>
-    </div>
+    {% include [field.type.templatePath, '@AustralAdmin/Form/Components/Fields/default.html.twig'] %}
+  {%- else -%}
+    {{ field.input|raw() }}
   {%- endif -%}
 {% else %}
 
