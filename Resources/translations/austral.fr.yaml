@@ -83,6 +83,9 @@ actions:
   file:
     add:                                        Ajouter un fichier
     edit:                                       Éditer le fichier
+  picto:
+    add:                                        Ajouter un picto
+    edit:                                       Éditer le picto
   download:
     default:                                    Télécharger
     xlsx:                                       Télécharger au format Xlsx

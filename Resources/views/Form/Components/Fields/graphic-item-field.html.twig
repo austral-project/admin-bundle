@@ -6,7 +6,26 @@
     {% if field.type.popinId and field.type.formMapper %}
       {% set popin = field.type.formMapper.popinByKey(field.type.popinId) %}
       {% if popin %}
-        <div class="graphic-item">
+
+        {% set popinData = {
+          "data-popin-container": "#popin-editor-master",
+          "data-popin-options": {
+            "id":       popin.popin.id,
+            "class":    "graphic-items-choice",
+            "template": popin.popin.template,
+            "field":    "#"~form.view[field.name].vars.id,
+          }|json_encode,
+          "data-view-by-choice-element": ""
+        } %}
+        <div class="graphic-item {% if form.view[field.name].vars.data%}edit{% endif%}" {% for key, value in popinData %}{{ key }}="{{ value }}"{% endfor %}>
+          <div class="label-content">
+            <div class="picto-content">
+              {{ include("@AustralDesign/SVG/graphic-items.svg.twig") }}
+            </div>
+            <span class="label-add">{{ ("actions.picto.add")|trans({}, form.mapper.translateDomain) }}</span>
+          </div>
+
+
           <div class="preview">
             {% if form.view[field.name].vars.data%}
               <div class="image-content">
@@ -16,27 +35,16 @@
           </div>
 
           <div class="button-edit-content">
-            {% set popinData = {
-              "data-popin-container": "#popin-editor-master",
-              "data-popin-options": {
-                "id":       popin.popin.id,
-                "class":    "graphic-items-choice",
-                "template": popin.popin.template,
-                "field":    "#"~form.view[field.name].vars.id,
-              }|json_encode,
-              "data-view-by-choice-element": ""
-            } %}
             {{ include("@AustralDesign/Components/Button/action.html.twig",
-              {
-                tag:            "button",
-                title:          popin.button.entitled|trans({}, form.mapper.translateDomain),
-                picto:          popin.button.picto,
-                full:           true,
-                data:           popinData
-              }
-            )
+                {
+                  tag:            "button",
+                  title:          "actions.picto.edit"|trans({}, form.mapper.translateDomain),
+                  full:           true,
+                }
+              )
             }}
           </div>
+
 
         </div>
       {% endif %}

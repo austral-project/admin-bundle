@@ -225,7 +225,7 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
     }
 
     if($this->container->has('austral.graphic_items.management')) {
-      $templateParameters->addParameters("graphicItems", $this->container->get('austral.graphic_items.management')->getIcons());
+      $templateParameters->addParameters("graphicItems", $this->container->get('austral.graphic_items.management')->getPictos(true));
     }
 
     $this->debug->stopWatchLap("austral.admin.http.event.request");
