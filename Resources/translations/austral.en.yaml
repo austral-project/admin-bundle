@@ -73,6 +73,9 @@ actions:
   picture:
     add:                                        Add picture
     edit:                                       Edit picture
+  picto:
+    add:                                        Select picto
+    edit:                                       Edit picto
   file:
     add:                                        Add file
     edit:                                       Edit file

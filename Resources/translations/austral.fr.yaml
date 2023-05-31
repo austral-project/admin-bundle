@@ -84,7 +84,7 @@ actions:
     add:                                        Ajouter un fichier
     edit:                                       Éditer le fichier
   picto:
-    add:                                        Ajouter un picto
+    add:                                        Sélectionner un picto
     edit:                                       Éditer le picto
   download:
     default:                                    Télécharger
