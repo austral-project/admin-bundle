@@ -132,7 +132,7 @@
     {% if field.entitled and form.view[field.fieldname()] is defined %}
       {{ form_label(form.view[field.fieldname()]) }}
     {% endif %}
-    <div id="field-{{ field.fieldname }}-content-embed" class="collection-embed-fields {{ field.options.class }} color-{{ colorKey }} {{ isMasterEmbedForm ? "collection-embed-fields-master" : "collection-embed-fields-children" }} {{ field.options.attr.class }}" data-color="{{ colorKey }}" {% if field.options.allow.add %}data-collection-embed="" {% if field.masterChildren != true %}data-collection-embed-fields-template="{{ embedFields|json_encode }}"{% endif %}{% endif %}>
+    <div id="field-{{ field.fieldname }}-content-embed" class="collection-embed-fields {{ field.options.class }} color-{{ colorKey }} {{ isMasterEmbedForm ? "collection-embed-fields-master" : "collection-embed-fields-children" }} {{ field.options.attr.class }}" data-color="{{ colorKey }}" {% if field.options.allow.add %}data-collection-embed="" {% if field.masterChildren != true %}data-collection-embed-fields-template="{{ embedFields|json_encode }}"{% endif %}{% endif %} data-collection-embed-children-parameters="{{ field.childrenParameters()|json_encode }}">
       {% if isMasterEmbedForm and field.options.allow.add %}
         {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig")}}
       {% endif %}
