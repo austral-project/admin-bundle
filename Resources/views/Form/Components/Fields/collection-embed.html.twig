@@ -128,7 +128,7 @@
   {% endif %}
 
   {% set colorKey = (colorKey != "__COLOR__") ? colorKey+1 : colorKey %}
-  <div id="field-{{ field.fieldname }}-content" class="field-content">
+  <div id="field-{{ field.fieldname }}-content" class="field-content field-collection-embed-content {{ field.options.container.class|default() }}">
     {% if field.entitled and form.view[field.fieldname()] is defined %}
       {{ form_label(form.view[field.fieldname()]) }}
     {% endif %}
