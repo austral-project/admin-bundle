@@ -65,6 +65,7 @@
                     {{ include('@AustralDesign/Components/Button/picto.html.twig', {
                       picto:          choice.picto ?? "",
                       image:          choice.image ?? "",
+                      graphicItem:    choice.graphicItem ?? "",
                       withEntitled:   true,
                       title:          ("." in choice.entitled ? choice.entitled|trans({}, form.mapper.translateDomain) : choice.entitled),
                       data: {
