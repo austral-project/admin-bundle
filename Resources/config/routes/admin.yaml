@@ -8,6 +8,11 @@ austral_admin_popin_select_links:
   path:                     /popin-select-links
   controller:               Austral\AdminBundle\Controller\AdminController::popinSelectLinks
 
+##### Popin Select Links
+austral_admin_popin_graphic_items:
+  path:                     /popin-graphic-items
+  controller:               Austral\AdminBundle\Controller\AdminController::popinGraphicItems
+
 ##### Ping Or Pong
 austral_admin_ping:
   path: /ping

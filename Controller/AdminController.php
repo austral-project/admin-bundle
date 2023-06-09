@@ -343,5 +343,20 @@ class AdminController extends HttpController
     ));
   }
 
+  /**
+   * popinIcons
+   * @return Response
+   */
+  public function popinGraphicItems(): Response
+  {
+    if($this->container->has('austral.graphic_items.management'))
+    {
+      $graphicItemsManagement = $this->container->get('austral.graphic_items.management')->init();
+      $graphicItems = $graphicItemsManagement->getPictos(true);
+    }
+    return $this->render("@AustralDesign/Components/Popin/templates/graphic-items.html.twig", array(
+      "graphicItems"  =>  $graphicItems
+    ));
+  }
 
 }
