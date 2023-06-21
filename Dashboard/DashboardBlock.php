@@ -29,6 +29,9 @@ class DashboardBlock
   const TYPE_ON_OFF = "onOff";
   const TYPE_ACTION = "action";
 
+  const DIRECTION_ROW = "row";
+  const DIRECTION_COLUMN = "column";
+
   /**
    * @var string
    */
@@ -53,6 +56,11 @@ class DashboardBlock
    * @var bool
    */
   protected bool $withBackground = true;
+
+  /**
+   * @var string
+   */
+  protected string $direction = self::DIRECTION_ROW;
 
   /**
    * @var string|null
@@ -371,6 +379,25 @@ class DashboardBlock
   public function setWithBackground(bool $withBackground): DashboardBlock
   {
     $this->withBackground = $withBackground;
+    return $this;
+  }
+
+  /**
+   * @return string
+   */
+  public function getDirection(): string
+  {
+    return $this->direction;
+  }
+
+  /**
+   * @param string $direction
+   *
+   * @return $this
+   */
+  public function setDirection(string $direction): DashboardBlock
+  {
+    $this->direction = $direction;
     return $this;
   }
 

@@ -11,7 +11,7 @@
     {% endif %}
 
     {% if dashboardBlock.values %}
-      <div class="dashboard-values {% if dashboardBlock.isWithBackground %}background{% endif %} children-{{ dashboardBlock.values|length }} {{ dashboardBlock.values|length is odd ? "odd" : "even" }} dashboard-values-type-{{ dashboardBlock.type }}">
+      <div class="dashboard-values {% if dashboardBlock.isWithBackground %}background{% endif %} {{ dashboardBlock.direction }} children-{{ dashboardBlock.values|length }} {{ dashboardBlock.values|length is odd ? "odd" : "even" }} dashboard-values-type-{{ dashboardBlock.type }}">
         {% set color = 1 %}
         {% for dashboardValue in dashboardBlock.valuesByPosition %}
           {# @var dashboardValue \Austral\AdminBundle\Dashboard\Values\Interfaces\DashboardValueInterface #}
