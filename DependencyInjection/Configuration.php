@@ -55,7 +55,7 @@ class Configuration implements ConfigurationInterface
     $node->arrayNode("download")
         ->children()
           ->scalarNode("creator")->end()
-          ->scalarNode("title_defore")->end()
+          ->scalarNode("title_before")->end()
           ->scalarNode("trans_domain")->end()
           ->scalarNode("encode")->end()
           ->arrayNode("xlsTheme")

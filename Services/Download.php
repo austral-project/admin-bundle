@@ -120,7 +120,7 @@ Class Download
   public function getFilename(): string
   {
     $now = new \DateTime();
-    $before = $this->adminConfiguration->get('download.title_defore');
+    $before = $this->adminConfiguration->get('download.title_before');
     $before = $before ? $before." - " : "";
     $filename = u($this->filename)->lower();
     return "{$before}{$filename} - {$now->format("Y-m-d")}.{$this->extension}";

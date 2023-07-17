@@ -12,7 +12,7 @@ parameters:
 
   austral.admin.download:
     creator:                                                "Austral"
-    title_defore:                                           "austral"
+    title_before:                                           "austral"
     trans_domain:                                           "austral"
     encode:                                                 "UTF-8"
     xlsTheme:
