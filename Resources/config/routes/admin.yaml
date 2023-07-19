@@ -13,6 +13,11 @@ austral_admin_popin_graphic_items:
   path:                     /popin-graphic-items
   controller:               Austral\AdminBundle\Controller\AdminController::popinGraphicItems
 
+##### Deployement Alert
+austral_admin_deployment_push:
+  path: /deployment/push
+  controller: Austral\AdminBundle\Controller\AdminController::deploymentPush
+
 ##### Ping Or Pong
 austral_admin_ping:
   path: /ping

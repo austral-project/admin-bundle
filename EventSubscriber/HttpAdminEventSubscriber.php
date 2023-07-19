@@ -252,6 +252,11 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
     $templateParameters->addParameters("mercure", $mercureParameters);
     $httpEvent->setHandler($adminHandler);
 
+    if($this->configuration->get('project.deployment_api_key'))
+    {
+      $this->container->get('austral.admin.deployment')->isStarted();
+    }
+
     if($urlParameterManagement) {
       $templateParameters->addParameters("nameByKeysLinks", $urlParameterManagement->getNameByKeyLinks());
     }

@@ -1,5 +1,8 @@
 austral:
   name:                                         Austral - Admin
+  deployment:
+    start:                                      Le project est en cours de deployement, merci de ne plus toucher au BO jusqu'à la fin de la mise à jour.
+    stop:                              Le project a correctement été mise à jour, vous pouvez reprendre vos modifications.
 
 links:
   logout:                                       Déconnexion

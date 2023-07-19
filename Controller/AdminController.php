@@ -19,6 +19,7 @@ use Austral\HttpBundle\Handler\Interfaces\HttpHandlerInterface;
 use Austral\NotifyBundle\Mercure\Mercure;
 use Austral\NotifyBundle\Notification\Push;
 
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,6 +41,25 @@ class AdminController extends HttpController
    * @var HttpHandlerInterface|AdminHandlerInterface
    */
   protected HttpHandlerInterface $handlerManager;
+
+  /**
+   * deploymentPush
+   * @param Request $request
+   * @return Response
+   * @throws Exception
+   */
+  public function deploymentPush(Request $request): Response
+  {
+    $status = "Unauthorized";
+    if($deploymentApiKey = $this->container->get('austral.admin.config')->get('project.deployment_api_key'))
+    {
+      if($request->headers->get("x-austral-deployment-api-key") === $deploymentApiKey)
+      {
+        $status = $this->container->get('austral.admin.deployment')->execute();
+      }
+    }
+    return new JsonResponse(array('status'=>$status));
+  }
 
   /**
    * @param Request $request

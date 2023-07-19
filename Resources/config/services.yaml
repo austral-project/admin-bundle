@@ -74,6 +74,11 @@ services:
     class:          Austral\AdminBundle\Template\TemplateParameters
     arguments:      [ "@austral.admin.config" ]
 
+##### Deployment
+  austral.admin.deployment:
+    class:          Austral\AdminBundle\Services\Deployment
+    arguments:      ["@austral.admin.template", "@translator", "%kernel.project_dir%", "@?austral.notify.push"]
+
 ##### Conflict Detect
   austral.admin.conflict_detect:
     class:          Austral\AdminBundle\Services\ConflictDetect

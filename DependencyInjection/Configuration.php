@@ -50,6 +50,7 @@ class Configuration implements ConfigurationInterface
           ->scalarNode("background")->end()
           ->booleanNode("forgot_enabled")->end()
           ->scalarNode("copyright")->end()
+          ->scalarNode('deployment_api_key')->end()
         ->end()
       ->end();
     $node->arrayNode("download")
