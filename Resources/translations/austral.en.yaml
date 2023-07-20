@@ -1,5 +1,8 @@
 austral:
   name:                                         Austral - Admin
+  deployment:
+    start:                                      The project is currently being deployed, please refrain from making any changes to the backend until the update is completed.
+    stop:                                       The project has been successfully updated, you can resume your modifications.
 
 links:
   logout:                                       Logout
