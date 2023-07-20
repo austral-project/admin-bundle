@@ -70,32 +70,51 @@ Class Deployment
 
   /**
    * execute
+   * @param string|null $forceStatus
    * @return string
    * @throws \Exception
    */
-  public function execute(): string
+  public function execute(?string $forceStatus = null): string
   {
     $status = "no-push";
     if($this->push)
     {
-      if(!$this->isStarted())
+      $deploymentStatus = null;
+      $isStarted = $this->isStarted();
+      if(!$isStarted || $forceStatus === "start")
+      {
+        $deploymentStatus = "start";
+      }
+      if($forceStatus === "stop" || !$deploymentStatus)
+      {
+        $deploymentStatus = "stop";
+      }
+
+      if($deploymentStatus === "start")
       {
         file_put_contents($this->deploymentFilePath, "started");
         $status = "deployment-start";
         $message = "austral.deployment.start";
       }
-      else
+      elseif($deploymentStatus === "stop")
       {
-        unlink($this->deploymentFilePath);
+        if($isStarted) {
+          unlink($this->deploymentFilePath);
+        }
         $status = "deployment-stop";
         $message = "austral.deployment.stop";
       }
-      $this->push->add(Push::TYPE_MERCURE, array('topics'=>array(
-        "authenticated"
-      ), "values" => array(
-        'type'            =>  $status,
-        "message"         =>  $this->translator->trans($message, array(), 'austral')
-      )))->push(true, false);
+
+      if($deploymentStatus)
+      {
+        $this->push->add(Push::TYPE_MERCURE, array('topics'=>array(
+          "authenticated"
+        ), "values" => array(
+          'type'            =>  $status,
+          "message"         =>  $this->translator->trans($message, array(), 'austral')
+        )))->push(true, false);
+      }
+
     }
     return $status;
   }

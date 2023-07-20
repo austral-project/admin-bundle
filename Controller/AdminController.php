@@ -55,7 +55,7 @@ class AdminController extends HttpController
     {
       if($request->headers->get("x-austral-deployment-api-key") === $deploymentApiKey)
       {
-        $status = $this->container->get('austral.admin.deployment')->execute();
+        $status = $this->container->get('austral.admin.deployment')->execute($request->query->get('status', null));
       }
     }
     return new JsonResponse(array('status'=>$status));
