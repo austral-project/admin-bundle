@@ -122,7 +122,8 @@ Class Download
     $now = new \DateTime();
     $before = $this->adminConfiguration->get('download.title_before');
     $before = $before ? $before." - " : "";
-    $filename = u($this->filename)->lower();
+    $filename = u($this->filename)->lower()->toString();
+    $filename = AustralTools::removeAccents($filename);
     return "{$before}{$filename} - {$now->format("Y-m-d")}.{$this->extension}";
   }
 
