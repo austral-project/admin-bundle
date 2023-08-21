@@ -176,7 +176,7 @@ Class Download
       /** @var ColumnInterface $headerColumn */
       foreach($section->headerColumns() as $headerColumn)
       {
-        $headerColumns[$headerColumn->getFieldname()] = $this->translate($headerColumn->getEntitled());
+        $headerColumns[$headerColumn->getFieldname()] = $this->translate($headerColumn->getEntitled(), $headerColumn->getTranslateParameters());
       }
       $valuesColumns = array();
       /** @var Row $row */
@@ -214,7 +214,7 @@ Class Download
       /** @var ColumnInterface $headerColumn */
       foreach($section->headerColumns() as $headerColumn)
       {
-        $headerColumns[] = $this->translate($headerColumn->getEntitled());
+        $headerColumns[] = $this->translate($headerColumn->getEntitled(), $headerColumn->getTranslateParameters());
       }
       fputcsv($file, $headerColumns);
       /** @var Row $row */
@@ -274,7 +274,7 @@ Class Download
         $colName = $this->colName($col);
         $spreadsheet->getActiveSheet()->getColumnDimension($colName)->setAutoSize(true);
 
-        $value = $this->translate($headerColumn->getEntitled());
+        $value = $this->translate($headerColumn->getEntitled(), $headerColumn->getTranslateParameters());
         $spreadsheet->getActiveSheet()->setCellValue($colName.$row, $value);
         $spreadsheet->getActiveSheet()->getRowDimension($row)->setRowHeight(40);
         $col++;

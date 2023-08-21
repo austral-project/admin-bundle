@@ -1,7 +1,7 @@
 <thead>
   <tr>
     {% for col in section.headerColumns %}
-      <th class="{{ col.fieldname }}-field {{ col.size }} {{ col.align }} {{ col.options.class is defined ? col.options.class : "" }}" {{ col.attr ? : "" }}>{{ col.entitled|trans({}, section.translateDomain )|raw() }}</th>
+      <th class="{{ col.fieldname }}-field {{ col.size }} {{ col.align }} {{ col.options.class is defined ? col.options.class : "" }}" {{ col.attr ? : "" }}>{{ col.entitled|trans(col.translateParameters, section.translateDomain )|raw() }}</th>
     {% endfor %}
 
     {% if section.columnActionsDefined %}

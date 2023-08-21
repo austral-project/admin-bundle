@@ -255,7 +255,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
       $this,
       $this->templateParameters,
       $actionKey,
-      $this->retreiveObjectOrCreate($id)
+      $id !== "list" ? $this->retreiveObjectOrCreate($id) : null
     );
     $this->debug->stopWatchLap("austral.admin.handler.action");
     $this->module->getAdmin()->dispatch(ActionAdminEvent::EVENT_START, $actionAdminEvent);
