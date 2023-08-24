@@ -1,7 +1,7 @@
 {%- if col.type == "template" -%}
   {%- set value = include(col.templateName, {object: row.object}) -%}
 {%- elseif col.type != "value" and (col.isGranted is not defined or col.isGranted) -%}
-  {% set value = include("@AustralAdmin/List/Components/"~col.type~".html.twig", {object: row.object}, ignore_missing = true) -%}
+  {% set value = include(col.templatePath is defined and col.templatePath ? col.templatePath : "@AustralAdmin/List/Components/"~col.type~".html.twig", {object: row.object}, ignore_missing = true) -%}
 {% endif %}
 {%- if value is not defined or value == "" -%}
   {% set value = col.value %}
