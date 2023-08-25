@@ -24,7 +24,7 @@
 <div id="{{ fieldUploadKey}}-container" class="file-upload-content {% if uploadFileParametersFile.file.path.download %}edit{% endif %}" {% if field.type.isInPopin == false %}data-upload-file=""{% endif%} data-upload-file-options="{{ uploadFileOptions|json_encode }}">
   <div class="hidden">
     {{ field.input|raw() }}
-    {% if form.view[field.name~'DeleteFile'] is defined %}
+    {% if form.view[field.name~'DeleteFile'] is defined and form.view[field.name~'DeleteFile'].rendered == false %}
       {{ form_widget(form.view[field.name~'DeleteFile'], {fieldMapper:field}) }}
     {% endif %}
   </div>
