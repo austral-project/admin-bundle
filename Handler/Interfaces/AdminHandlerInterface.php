@@ -10,7 +10,9 @@
  
 namespace Austral\AdminBundle\Handler\Interfaces;
 
+use Austral\AdminBundle\Handler\AdminHandler;
 use Austral\AdminBundle\Module\Module;
+use Austral\EntityBundle\Entity\EntityInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -74,5 +76,13 @@ interface AdminHandlerInterface
    * @return $this
    */
   public function truncate(): AdminHandlerInterface;
+
+  /**
+   * httpCacheClear
+   *
+   * @param EntityInterface|null $object
+   * @return AdminHandlerInterface
+   */
+  public function httpCacheClear(?EntityInterface $object = null): AdminHandlerInterface;
 
 }

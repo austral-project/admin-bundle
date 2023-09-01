@@ -14,6 +14,7 @@ use Austral\AdminBundle\Admin\Event\ActionAdminEvent;
 use Austral\AdminBundle\Admin\Event\ChangeValueAdminEvent;
 use Austral\AdminBundle\Admin\Event\DownloadAdminEvent;
 use Austral\AdminBundle\Admin\Event\FilterEventInterface;
+use Austral\AdminBundle\Admin\Event\HttpCacheClearAdminEvent;
 use Austral\AdminBundle\Admin\Event\SortableAdminEvent;
 use Austral\AdminBundle\Admin\Event\TruncateAdminEvent;
 use Austral\AdminBundle\Event\DashboardEvent;
@@ -26,6 +27,7 @@ use Austral\AdminBundle\Admin\Event\DuplicateAdminEvent;
 use Austral\AdminBundle\Admin\Event\FormAdminEvent;
 use Austral\AdminBundle\Admin\Event\ListAdminEvent;
 use Austral\AdminBundle\Admin\AdminModuleInterface;
+use Austral\CacheBundle\Event\HttpCacheEvent;
 use Austral\EntityBundle\Entity\Interfaces\ComponentsInterface;
 use Austral\EntityBundle\Entity\EntityInterface;
 use Austral\FilterBundle\Filter\Filter;
@@ -405,6 +407,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
             $this->module->getEntityManager()->flush();
           }
           $this->module->getAdmin()->dispatch(FormAdminEvent::EVENT_FLUSH_AFTER, $formAdminEvent);
+          $this->httpCacheClear($formMapper->getObject());
         }
         else
         {
@@ -586,6 +589,8 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
     $deleteAdminEvent = new DeleteAdminEvent($this, $this->retreiveObjectOrCreate($id));
     $this->module->getAdmin()->dispatch(DeleteAdminEvent::EVENT_START, $deleteAdminEvent);
 
+    $this->httpCacheClear($deleteAdminEvent->getObject());
+
     $this->module->getEntityManager()->delete($deleteAdminEvent->getObject());
     $this->module->getAdmin()->dispatch(DeleteAdminEvent::EVENT_END, $deleteAdminEvent);
     $this->redirectUrl = $this->generateUrl("austral_admin_module_index", array('modulePath'=>$this->module->getModulePath()));
@@ -682,6 +687,9 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
       $this->module->getAdmin()->dispatch(ChangeValueAdminEvent::EVENT_START, $changeValueManagerEvent);
       $this->module->getEntityManager()->update($changeValueManagerEvent->getObject());
       $this->module->getAdmin()->dispatch(ChangeValueAdminEvent::EVENT_END, $changeValueManagerEvent);
+
+      $this->httpCacheClear($changeValueManagerEvent->getObject());
+
       $this->addFlash("success",
         $this->getTranslate()->trans(
           "changeValue.status.success",
@@ -725,6 +733,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
       }
       $this->module->getAdmin()->dispatch(SortableAdminEvent::EVENT_END, $sortableAdminEvent);
 
+      $this->httpCacheClear();
       $this->addFlash("success",
         $this->getTranslate()->trans(
           "sortable.status.success",
@@ -743,6 +752,30 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
     }
     $this->redirectUrl = $this->generateUrl("austral_admin_module_index", array('modulePath'=>$this->module->getModulePath()));
     $this->debug->stopWatchStop("austral.admin.handler.sortable");
+    return $this;
+  }
+
+  /**
+   * httpCacheClear
+   *
+   * @param EntityInterface|null $object
+   * @return AdminHandler
+   */
+  public function httpCacheClear(?EntityInterface $object = null): AdminHandler
+  {
+    if($this->container->get('austral.cache.config')->get('clearAuto'))
+    {
+      $this->debug->stopWatchStart("austral.admin.handler.http_cache.clear", $this->debugContainer);
+      $httpCacheClearAdminEvent = new HttpCacheClearAdminEvent($this, $object);
+      $this->module->getAdmin()->dispatch(HttpCacheClearAdminEvent::EVENT_START, $httpCacheClearAdminEvent);
+      if($httpCacheClearAdminEvent->getEnabled())
+      {
+        $httpCacheEvent = new HttpCacheEvent($httpCacheClearAdminEvent->getUri());
+        $this->dispatcher->dispatch($httpCacheEvent, HttpCacheEvent::EVENT_CLEAR_HTTP_CACHE);
+      }
+      $this->module->getAdmin()->dispatch(HttpCacheClearAdminEvent::EVENT_END, $httpCacheClearAdminEvent);
+      $this->debug->stopWatchStop("austral.admin.handler.http_cache.clear");
+    }
     return $this;
   }
 

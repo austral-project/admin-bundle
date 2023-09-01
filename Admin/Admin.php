@@ -14,6 +14,7 @@ use Austral\AdminBundle\Admin\Event\ActionAdminEvent;
 use Austral\AdminBundle\Admin\Event\ChangeValueAdminEvent;
 use Austral\AdminBundle\Admin\Event\AdminEventInterface;
 use Austral\AdminBundle\Admin\Event\FormAdminEvent;
+use Austral\AdminBundle\Admin\Event\HttpCacheClearAdminEvent;
 use Austral\AdminBundle\Admin\Event\ListAdminEvent;
 use Austral\AdminBundle\Admin\Event\SortableAdminEvent;
 use Austral\AdminBundle\Module\Module;
@@ -718,6 +719,5 @@ abstract class Admin implements AdminInterface
       }
     }
   }
-
 
 }
