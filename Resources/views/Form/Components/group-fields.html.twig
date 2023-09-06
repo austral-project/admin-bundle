@@ -1,4 +1,4 @@
-<div {{ field.attrString|raw()|replace({"__name__": form.view.vars.data.id}) }} class="group-fields-container {{ field.keyname }}-fields-container {{ field.classCss }} {{ field.style }}">
+<div {{ field.attrString|raw()|replace({"__name__": form.view.vars.data.id|default()}) }} class="group-fields-container {{ field.keyname }}-fields-container {{ field.classCss }} {{ field.style }}">
   {%- if field.entitled  -%}
     <span class="group-fields-name">{{ field.entitled|trans({}, form.mapper.translateDomain) }}</span>
   {%- endif -%}
