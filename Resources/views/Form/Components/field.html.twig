@@ -58,7 +58,7 @@
       {% if field.type.options.attr["data-characters-max"] is defined %}
         {{ include("@AustralDesign/Components/Counter/counter.html.twig",
           {
-            "elementKeyup": "#"~form.mapper.name~"_"~field.type.fieldname,
+            "elementKeyup": "#"~form.view[field.name].vars.id,
             "initialNumber": field.type.options.attr["data-characters-max"]
           }
         )}}
