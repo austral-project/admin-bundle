@@ -72,7 +72,7 @@
                 {% else %}
                   {% set positionElement = field.sortable(childrenFormType.vars.data) %}
                   {% if childrenForm["position-"~positionElement] is defined and childrenForm["position-"~positionElement] %}
-                    {% set positionElement = (childrenForm["position-"~positionElement]|length) %}
+                    {% set positionElement = positionElement~"-"~childrenFormType.vars.data.id|default("2") %}
                   {% endif %}
                   {% set childrenForm = childrenForm|merge({
                     ("position-"~positionElement): {
