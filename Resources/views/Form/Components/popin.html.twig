@@ -19,7 +19,7 @@
     )}}
   </div>
 {% endif %}
-<div id="{{ field.popinKeyId|replace({'__name__': form.view.vars.data.id}) }}" class="popin-fields-container hidden" data-popin-clone-fields="popin-fields">
+<div id="{{ field.popinKeyId|replace({'__name__': form.view.vars.data.id|default()}) }}" class="popin-fields-container hidden" data-popin-clone-fields="popin-fields">
   {%- for field in fields -%}
     {%- if field is instanceof("Austral\\FormBundle\\Mapper\\GroupFields") -%}
       {{ include("@AustralAdmin/Form/Components/group-fields.html.twig", {fields: field.fields }) }}

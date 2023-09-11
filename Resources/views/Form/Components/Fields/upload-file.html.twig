@@ -64,7 +64,7 @@
             "id":       popin.popin.id,
             "class":    popin.popin.class,
             "template": popin.popin.template,
-            "update":   "#"~popin.popinKeyId|replace({'__name__': form.view.vars.data.id}),
+            "update":   "#"~popin.popinKeyId|replace({'__name__': form.view.vars.data.id|default()}),
             "upload":   uploadFileOptions,
             "values":   popinValues
           }|json_encode,
