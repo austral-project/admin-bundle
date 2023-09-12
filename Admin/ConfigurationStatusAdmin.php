@@ -44,8 +44,9 @@ class ConfigurationStatusAdmin extends Admin
      */
     $filepermsSuccess = array('0775', "0777");
     $projectDir = $this->container->getParameter("kernel.project_dir");
+    $publicDir = $this->container->hasParameter("austral.file.public.path") ? $this->container->getParameter("austral.file.public.path") : "public";
     $dirsToChecked = array(
-      "public"  => array("uploads", "thumbnail"),
+      "{$publicDir}"  => array("uploads", "thumbnail"),
       "var"     => array("log", "cache", "sessions"),
     );
     foreach($dirsToChecked as $categDirname => $dirnames)
