@@ -652,11 +652,21 @@ abstract class Admin implements AdminInterface
 
     if($changeValueAdminEvent->getFieldname() === "urlParameter.status")
     {
-      $urlParameters = $this->container->get('austral.seo.url_parameter.management')->getUrlParametersByObject($object);
-      /** @var UrlParameterInterface $urlParameter */
-      foreach ($urlParameters as $urlParameter)
+      if($urlParameterId = $changeValueAdminEvent->getRequest()->get('urlParameterId'))
       {
-        $urlParameter->setStatus($changeValueAdminEvent->getValue());
+        if($urlParameter = $this->container->get('austral.seo.url_parameter.management')->getUrlParametersById($urlParameterId))
+        {
+          $urlParameter->setStatus($changeValueAdminEvent->getValue());
+        }
+      }
+      else
+      {
+        $urlParameters = $this->container->get('austral.seo.url_parameter.management')->getUrlParametersByObject($object);
+        /** @var UrlParameterInterface $urlParameter */
+        foreach ($urlParameters as $urlParameter)
+        {
+          $urlParameter->setStatus($changeValueAdminEvent->getValue());
+        }
       }
     }
     else
