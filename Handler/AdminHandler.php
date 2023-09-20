@@ -30,6 +30,7 @@ use Austral\AdminBundle\Admin\AdminModuleInterface;
 use Austral\CacheBundle\Event\HttpCacheEvent;
 use Austral\EntityBundle\Entity\Interfaces\ComponentsInterface;
 use Austral\EntityBundle\Entity\EntityInterface;
+use Austral\EntityBundle\ORM\AustralQueryBuilder;
 use Austral\FilterBundle\Filter\Filter;
 use Austral\FilterBundle\Mapper\FilterMapper;
 use Austral\FormBundle\Form\Type\FormTypeInterface;
@@ -636,13 +637,12 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
       $filter = $filterMapper->filter("default");
       if($filter->hasFilterValue() || $this->module->getFilterDomainId())
       {
-        $listMapper->generate();
-        /** @var Section $section */
-        foreach($listMapper->getSection("default")->getObjects() as $object)
-        {
-          $this->module->getEntityManager()->delete($object, false);
-        }
-        $this->module->getEntityManager()->flush();
+        $australQueryBuilderByFilter = $filter->generateQueryBuilder($listMapper->getDataHydrate()->countAllQueryBuilder());
+        $australQueryBuilderByFilter->delete();
+        $this->module->getEntityManager()->deleteByClosure(function(AustralQueryBuilder $australQueryBuilder) use($australQueryBuilderByFilter){
+          $australQueryBuilder = $australQueryBuilderByFilter;
+          return $australQueryBuilder;
+        });
       }
       else
       {
