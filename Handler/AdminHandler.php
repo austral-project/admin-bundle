@@ -763,18 +763,21 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
    */
   public function httpCacheClear(?EntityInterface $object = null): AdminHandler
   {
-    if($this->container->get('austral.cache.config')->get('clearAuto'))
+    if($this->container->has('austral.cache.config'))
     {
-      $this->debug->stopWatchStart("austral.admin.handler.http_cache.clear", $this->debugContainer);
-      $httpCacheClearAdminEvent = new HttpCacheClearAdminEvent($this, $object);
-      $this->module->getAdmin()->dispatch(HttpCacheClearAdminEvent::EVENT_START, $httpCacheClearAdminEvent);
-      if($httpCacheClearAdminEvent->getEnabled())
+      if($this->container->get('austral.cache.config')->get('clearAuto'))
       {
-        $httpCacheEvent = new HttpCacheEvent($httpCacheClearAdminEvent->getUri());
-        $this->dispatcher->dispatch($httpCacheEvent, HttpCacheEvent::EVENT_CLEAR_HTTP_CACHE);
+        $this->debug->stopWatchStart("austral.admin.handler.http_cache.clear", $this->debugContainer);
+        $httpCacheClearAdminEvent = new HttpCacheClearAdminEvent($this, $object);
+        $this->module->getAdmin()->dispatch(HttpCacheClearAdminEvent::EVENT_START, $httpCacheClearAdminEvent);
+        if($httpCacheClearAdminEvent->getEnabled())
+        {
+          $httpCacheEvent = new HttpCacheEvent($httpCacheClearAdminEvent->getUri());
+          $this->dispatcher->dispatch($httpCacheEvent, HttpCacheEvent::EVENT_CLEAR_HTTP_CACHE);
+        }
+        $this->module->getAdmin()->dispatch(HttpCacheClearAdminEvent::EVENT_END, $httpCacheClearAdminEvent);
+        $this->debug->stopWatchStop("austral.admin.handler.http_cache.clear");
       }
-      $this->module->getAdmin()->dispatch(HttpCacheClearAdminEvent::EVENT_END, $httpCacheClearAdminEvent);
-      $this->debug->stopWatchStop("austral.admin.handler.http_cache.clear");
     }
     return $this;
   }
