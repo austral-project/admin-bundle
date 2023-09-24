@@ -33,8 +33,10 @@ parameters:
 
   austral.admin.modules.data_reload_js:
     all:
+      - "#header-master"
       - "#container-master"
     container:
+      - "#header-master"
       - "#container-master"
     body:
       - "body"

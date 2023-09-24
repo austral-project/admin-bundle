@@ -63,12 +63,19 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
    */
   public function onRequestInitialise(HttpEventInterface $httpEvent)
   {
-    $currentLocal = $httpEvent->getKernelEvent()->getRequest()->getSession()->get("austral_language_interface");
-    if($httpEvent->getKernelEvent()->getRequest()->attributes->has("language"))
+    $australLanguageInterface = $httpEvent->getKernelEvent()->getRequest()->getSession()->get("austral_language_interface");
+
+    if($httpEvent->getHttpRequest()->getRequest()->attributes->get("_route") === "austral_admin_index_language")
     {
-      $currentLocal = $httpEvent->getKernelEvent()->getRequest()->attributes->get("language");
+      if($australLanguageInterface !== $httpEvent->getHttpRequest()->getRequest()->attributes->get("language"))
+      {
+        $australLanguageInterface = $httpEvent->getHttpRequest()->getRequest()->attributes->get("language");
+        $httpEvent->getHttpRequest()->getRequest()->getSession()->set("austral_language_interface", $australLanguageInterface);
+      }
     }
-    $httpEvent->getHttpRequest()->setLanguage($currentLocal ? : $this->container->getParameter('locale'));
+    if($australLanguageInterface) {
+      $httpEvent->getHttpRequest()->setLanguage($australLanguageInterface);
+    }
 
     if(!$httpEvent->getKernelEvent()->getRequest()->attributes->has("language"))
     {
@@ -182,7 +189,7 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
     if($requestAttributes->get('_granted') && !$this->editMyAccount)
     {
       $accessIsAccepted = false;
-      if(strpos($rolePrefix, "|") !== false)
+      if($rolePrefix && str_contains($rolePrefix, "|"))
       {
         $rolesPrefix = explode("|", $rolePrefix);
         foreach($rolesPrefix as $rolePrefix)

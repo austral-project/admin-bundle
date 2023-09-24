@@ -9,6 +9,15 @@ services:
     tags: [ 'controller.service_arguments' ]
 
 
+
+
+##### Listener Security
+  austral.admin.authentication.listener:
+    class:        Austral\AdminBundle\Listener\Security\AuthenticationListener
+    arguments:    ["@request_stack"]
+    tags:
+      - { name: kernel.event_listener, event: "security.authentication.success", method: success }
+
 ##### Event Subscriber
   austral.admin.dashboard.event_subscriber:
     class:          Austral\AdminBundle\EventSubscriber\DashboardSubscriber
