@@ -16,7 +16,6 @@ use Austral\AdminBundle\Dashboard\Values\Base\DashboardValue;
 /**
  * Austral DashboardValue .
  * @author Matthieu Beurel <matthieu@austral.dev>
- * @final
  */
 class Action extends DashboardValue
 {

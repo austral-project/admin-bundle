@@ -210,7 +210,8 @@ class Module implements ModuleInterface
     $this->adminClass = $adminClass;
     if($adminClass && class_exists($adminClass))
     {
-      $this->admin = new $adminClass($this);
+      $this->admin = new $adminClass();
+      $this->admin->setModule($this);
     }
   }
 
@@ -523,7 +524,12 @@ class Module implements ModuleInterface
   public function setAdminClass(?string $adminClass = null): Module
   {
     $this->adminClass = $adminClass;
-    $this->admin = $adminClass && class_exists($adminClass)? new $adminClass($this) : null;
+    $this->admin = $adminClass && class_exists($adminClass) ? (new $adminClass()) : null;
+
+    if($this->admin) {
+      $this->admin->setModule($this);
+    }
+
     return $this;
   }
 

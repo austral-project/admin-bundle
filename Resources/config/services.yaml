@@ -8,9 +8,6 @@ services:
     resource: '../../Controller/'
     tags: [ 'controller.service_arguments' ]
 
-
-
-
 ##### Listener Security
   austral.admin.authentication.listener:
     class:        Austral\AdminBundle\Listener\Security\AuthenticationListener
@@ -63,11 +60,12 @@ services:
   austral.admin.handler:
     class:          Austral\AdminBundle\Handler\AdminHandler
     arguments:
-      - "@service_container"
       - "@request_stack"
       - "@event_dispatcher"
       - "@security.token_storage"
       - "@austral.tools.debug"
+    calls:
+      - [ setContainer, [ "@service_container" ] ]
 
 ##### Downlaod
   austral.admin.download:

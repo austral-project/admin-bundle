@@ -14,7 +14,6 @@ use Austral\AdminBundle\Admin\Event\ActionAdminEvent;
 use Austral\AdminBundle\Admin\Event\ChangeValueAdminEvent;
 use Austral\AdminBundle\Admin\Event\AdminEventInterface;
 use Austral\AdminBundle\Admin\Event\FormAdminEvent;
-use Austral\AdminBundle\Admin\Event\HttpCacheClearAdminEvent;
 use Austral\AdminBundle\Admin\Event\ListAdminEvent;
 use Austral\AdminBundle\Admin\Event\SortableAdminEvent;
 use Austral\AdminBundle\Module\Module;
@@ -74,9 +73,9 @@ abstract class Admin implements AdminInterface
   protected EntityInterface $object;
 
   /**
-   * @var Module
+   * @var Module|null
    */
-  protected Module $module;
+  protected ?Module $module = null;
 
   /**
    * @var bool
@@ -91,13 +90,10 @@ abstract class Admin implements AdminInterface
   /**
    * Admin constructor.
    *
-   * @param Module $module
-   *
    * @final
    */
-  public function __construct(Module $module)
+  public function __construct()
   {
-    $this->module = $module;
     /**
      * @var string $eventName
      * @var string|array $params
@@ -131,6 +127,18 @@ abstract class Admin implements AdminInterface
         }
       }
     }
+  }
+
+  /**
+   * setModule
+   *
+   * @param Module|null $module
+   * @return $this
+   */
+  public function setModule(?Module $module = null): Admin
+  {
+    $this->module = $module;
+    return $this;
   }
 
   /**

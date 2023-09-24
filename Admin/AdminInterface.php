@@ -12,6 +12,7 @@
 namespace Austral\AdminBundle\Admin;
 
 use Austral\AdminBundle\Admin\Event\AdminEventInterface;
+use Austral\AdminBundle\Module\Module;
 use Austral\EntityBundle\Entity\EntityInterface;
 
 /**
@@ -52,5 +53,13 @@ interface AdminInterface
    * @return $this
    */
   public function setObject(EntityInterface $object): AdminInterface;
+
+  /**
+   * setModule
+   *
+   * @param Module $module
+   * @return $this
+   */
+  public function setModule(Module $module): AdminInterface;
 
 }
