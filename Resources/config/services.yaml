@@ -9,6 +9,7 @@ services:
     tags: [ 'controller.service_arguments' ]
 
 ##### Listener Security
+  Austral\AdminBundle\Listener\Security\AuthenticationListener: "@austral.admin.authentication.listener"
   austral.admin.authentication.listener:
     class:        Austral\AdminBundle\Listener\Security\AuthenticationListener
     arguments:    ["@request_stack"]
@@ -16,24 +17,28 @@ services:
       - { name: kernel.event_listener, event: "security.authentication.success", method: success }
 
 ##### Event Subscriber
+  Austral\AdminBundle\EventSubscriber\DashboardSubscriber:  "@austral.admin.dashboard.event_subscriber"
   austral.admin.dashboard.event_subscriber:
     class:          Austral\AdminBundle\EventSubscriber\DashboardSubscriber
     arguments:      ["@request_stack"]
     tags:
       - { name: kernel.event_subscriber }
 
+  Austral\AdminBundle\EventSubscriber\ConfigurationCheckerSubscriber: "@austral.admin.configuration_checker.event_subscriber"
   austral.admin.configuration_checker.event_subscriber:
     class:          Austral\AdminBundle\EventSubscriber\ConfigurationCheckerSubscriber
     arguments:      ["@austral.tools.services.status-checker"]
     tags:
       - { name: kernel.event_subscriber }
 
+  Austral\AdminBundle\EventSubscriber\HttpAdminEventSubscriber: "@austral.admin.http.event_subscriber"
   austral.admin.http.event_subscriber:
     class:          Austral\AdminBundle\EventSubscriber\HttpAdminEventSubscriber
     arguments:      [ "@service_container", "@austral.admin.config", "@austral.http.domains.management","@austral.tools.debug" ]
     tags:
       - { name: kernel.event_subscriber }
 
+  Austral\AdminBundle\EventSubscriber\ModuleEventSubscriber:  "@austral.admin.module.event_subscriber"
   austral.admin.module.event_subscriber:
     class:          Austral\AdminBundle\EventSubscriber\ModuleEventSubscriber
     arguments:      [ "@austral.entity.mapping", "@translator", "@austral.http.domains.management", "@austral.entity_file.link.generator", "@austral.admin.config" ]
