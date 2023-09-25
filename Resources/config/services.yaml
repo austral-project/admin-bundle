@@ -41,11 +41,13 @@ services:
       - { name: kernel.event_subscriber }
 
 ##### Configuration
+  Austral\AdminBundle\Configuration\AdminConfiguration: "@austral.website.config"
   austral.admin.config:
     class:          Austral\AdminBundle\Configuration\AdminConfiguration
     arguments:      ["%austral_admin%"]
 
 ##### Modules
+  Austral\AdminBundle\Module\Modules: "@austral.admin.modules"
   austral.admin.modules:
     class:          Austral\AdminBundle\Module\Modules
     arguments:
@@ -57,6 +59,7 @@ services:
       - "@austral.tools.debug"
 
 ##### Handler
+  Austral\AdminBundle\Handler\AdminHandler: "@austral.admin.handler"
   austral.admin.handler:
     class:          Austral\AdminBundle\Handler\AdminHandler
     arguments:
@@ -68,25 +71,30 @@ services:
       - [ setContainer, [ "@service_container" ] ]
 
 ##### Downlaod
+  Austral\AdminBundle\Services\Download: "@austral.admin.download"
   austral.admin.download:
     class:          Austral\AdminBundle\Services\Download
     arguments:      [ "@austral.admin.config", "@translator" ]
 
 ##### Guideline
+  Austral\AdminBundle\Services\Guideline: "@austral.admin.guideline"
   austral.admin.guideline:
     class:          Austral\AdminBundle\Services\Guideline
 
 ##### Template
+  Austral\AdminBundle\Template\TemplateParameters: "@austral.admin.template"
   austral.admin.template:
     class:          Austral\AdminBundle\Template\TemplateParameters
     arguments:      [ "@austral.admin.config" ]
 
 ##### Deployment
+  Austral\AdminBundle\Services\Deployment:  "@austral.admin.deployment"
   austral.admin.deployment:
     class:          Austral\AdminBundle\Services\Deployment
     arguments:      ["@austral.admin.template", "@translator", "%kernel.project_dir%", "@?austral.notify.push"]
 
 ##### Conflict Detect
+  Austral\AdminBundle\Services\ConflictDetect:  "@austral.admin.conflict_detect"
   austral.admin.conflict_detect:
     class:          Austral\AdminBundle\Services\ConflictDetect
     arguments:      ["@austral.entity_manager.user", "@twig", "@austral.entity_file.link.generator", "@?austral.notify.mercure", "@?austral.notify.push"]
