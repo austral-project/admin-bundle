@@ -46,7 +46,7 @@ services:
       - { name: kernel.event_subscriber }
 
 ##### Configuration
-  Austral\AdminBundle\Configuration\AdminConfiguration: "@austral.website.config"
+  Austral\AdminBundle\Configuration\AdminConfiguration: "@austral.admin.config"
   austral.admin.config:
     class:          Austral\AdminBundle\Configuration\AdminConfiguration
     arguments:      ["%austral_admin%"]
