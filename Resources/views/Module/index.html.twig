@@ -16,7 +16,8 @@
                   entitled:           element.parameters.domain|default(element.translatePlural),
                   url:                element.generateUrl,
                   subEntitled:        element.parameters.tile.subEntitled|default(null),
-                  img:                element.parameters.tile.img|default(null)
+                  img:                element.parameters.tile.img|default(null),
+                  picto:              element.pictoTile|default(null)
                 } only %}
                 {% set color = color + 1 %}
                 {% if color > 6 %}{% set color = 1 %}{% endif %}

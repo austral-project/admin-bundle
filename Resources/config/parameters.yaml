@@ -6,7 +6,7 @@ parameters:
   austral.admin.path:                                       "austral-admin"
   austral.admin.project:
     name:                                                   "Austral"
-    background:                                             "/bundles/australadmin/images/austral.jpg"
+    background:                                             "/bundles/australdesign/images/austral.jpg"
     forgot_enabled:                                         false
     copyright:                                              "Propulsed with ❤️ by <a href='https://austral.dev' target='_blank'>Austral</a>"
     deployment_api_key:                                    false

@@ -470,6 +470,7 @@ class Modules
       $moduleKey = "$moduleKey-{$domain->getDomain()}";
       $moduleParameters["route"] = "{$domain->getDomain()}";
       $moduleParameters["name"] = "{$moduleParameters["name"]} - {$domain->getName()}";
+      $moduleParameters["pictoTile"] = "world";
       $domainName = $domain->getName();
       $domainImg = $this->container->get('austral.entity_file.link.generator')->image($domain, "favicon");
       $keyTranslate = "ByDomain";
@@ -479,6 +480,7 @@ class Modules
       $moduleKey = "$moduleKey-{$domain->getId()}";
       $moduleParameters["route"] = $domain->getId();
       $moduleParameters["name"] = "{$moduleParameters["name"]} - For All Domains";
+      $moduleParameters["pictoTile"] = "world";
       $keyTranslate = "ForAllDomain";
     }
     $moduleParameters["security_key"] = $parentModule->getModulePath();
