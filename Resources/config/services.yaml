@@ -12,7 +12,7 @@ services:
   Austral\AdminBundle\Listener\Security\AuthenticationListener: "@austral.admin.authentication.listener"
   austral.admin.authentication.listener:
     class:        Austral\AdminBundle\Listener\Security\AuthenticationListener
-    arguments:    ["@request_stack"]
+    arguments:    ["@request_stack", "@security.authorization_checker"]
     tags:
       - { name: kernel.event_listener, event: "security.authentication.success", method: success }
 

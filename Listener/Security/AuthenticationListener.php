@@ -11,6 +11,8 @@
 namespace Austral\AdminBundle\Listener\Security;
 
 use Austral\SecurityBundle\Entity\Interfaces\UserInterface;
+use Austral\SecurityBundle\Security\Authorization\AuthorizationChecker;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -25,20 +27,23 @@ class AuthenticationListener
 {
 
   /**
-   * @var TokenStorageInterface
-   */
-  protected TokenStorageInterface $token;
-  /**
    * @var Request|null
    */
   protected ?Request $request;
 
   /**
-   * @param RequestStack $requestStack
+   * @var AuthorizationChecker
    */
-  public function __construct(RequestStack $requestStack)
+  protected AuthorizationChecker $authorizationChecker;
+
+  /**
+   * @param RequestStack $requestStack
+   * @param AuthorizationChecker $authorizationChecker
+   */
+  public function __construct(RequestStack $requestStack, AuthorizationChecker $authorizationChecker)
   {
     $this->request = $requestStack->getCurrentRequest();
+    $this->authorizationChecker = $authorizationChecker;
   }
 
   /**
@@ -54,7 +59,10 @@ class AuthenticationListener
       /** @var UserInterface $user */
       if($user = $authenticationSuccessEvent->getAuthenticationToken()->getUser())
       {
-        $this->request->getSession()->set("austral_language_interface", $user->getLanguage());
+        if($this->authorizationChecker->isGranted("ROLE_ADMIN_ACCESS"))
+        {
+          $this->request->getSession()->set("austral_language_interface", $user->getLanguage());
+        }
       }
     }
   }
