@@ -63,6 +63,14 @@ services:
       - "@austral.admin.config"
       - "@austral.tools.debug"
 
+##### Roles Modules
+  Austral\AdminBundle\Module\RolesModules: "@austral.admin.modules.roles"
+  austral.admin.modules.roles:
+    class:          Austral\AdminBundle\Module\RolesModules
+    arguments:
+      - "@austral.admin.modules"
+      - "@austral.entity_manager.role"
+
 ##### Handler
   Austral\AdminBundle\Handler\AdminHandler: "@austral.admin.handler"
   austral.admin.handler:

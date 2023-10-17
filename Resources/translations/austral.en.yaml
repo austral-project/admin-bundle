@@ -104,8 +104,9 @@ fieldset:
   right:                                        Parameters
   content:                                      Content
   admin:                                        Admin
+  rolesManagement:                              Roles management
   dev:
-    config:                                     Configuration developpement
+    config:                                     Configuration development
 
 duplicate:
   status:

@@ -22,6 +22,7 @@ use Doctrine\ORM\QueryBuilder;
 use Exception;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use function Symfony\Component\String\u;
 
 /**
  * Austral Module.
@@ -646,6 +647,15 @@ class Module implements ModuleInterface
   }
 
   /**
+   * Get moduleKey
+   * @return string
+   */
+  public function getModuleKeyWithPosition(): string
+  {
+    return ($this->navigationPosition() ? "{$this->navigationPosition()}-" : "").$this->moduleKey;
+  }
+
+  /**
    * Get actions
    * @return array
    */
@@ -780,6 +790,17 @@ class Module implements ModuleInterface
   }
 
   /**
+   * getSecurityKey
+   *
+   * @return string
+   */
+  public function getSecurityKey(): string
+  {
+    $securityKey = $this->getParametersByKey("security_key", $this->getModulePath());
+    return u("ROLE_$securityKey")->snake()->upper()->__toString();
+  }
+
+  /**
    * @param array $grantedByActionKeys
    *
    * @return Module
@@ -788,6 +809,16 @@ class Module implements ModuleInterface
   {
     $this->grantedByActionKeys = $grantedByActionKeys;
     return $this;
+  }
+
+  /**
+   * getGrantedByAction
+   *
+   * @return array
+   */
+  public function getGrantedByAction(): array
+  {
+    return $this->grantedByActionKeys;
   }
 
   /**

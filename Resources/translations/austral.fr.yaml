@@ -113,6 +113,7 @@ fieldset:
   right:                                        Parametres
   content:                                      Contenu
   admin:                                        Admin
+  rolesManagement:                              Gestion des permissions
   dev:
     config:                                     Configuration developpement
 
