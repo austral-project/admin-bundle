@@ -549,6 +549,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
     {
       throw new \Exception("configurationDownload method in your admin for {$this->module->getName()} module is not defined");
     }
+    $listMapper->setFilter($filterMapper);
     $listMapper->generate();
     $this->module->getAdmin()->dispatch(DownloadAdminEvent::EVENT_END, $downloadAdminEvent);
 
