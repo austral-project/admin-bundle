@@ -93,7 +93,7 @@
         {% else %}
           {% for childrenFormType in form.view[field.fieldname].children %}
             {% set childrenForm = childrenForm|merge({
-              (field.sortable(childrenFormType.vars.data)): {
+              ("position-"~field.sortable(childrenFormType.vars.data)): {
                 collectionForm: field,
                 data: childrenFormType.vars.data,
                 form: {
