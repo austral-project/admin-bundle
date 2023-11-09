@@ -371,7 +371,7 @@ class Modules
         foreach($module->getExtendActions() as $action => $extendAction)
         {
           $grantedByActionKey = $securityKey."_".strtoupper($action);
-          $grantedByActionKeys[$action] = $this->authorizationChecker && $this->authorizationChecker->isGranted($grantedByActionKey);
+          $grantedByActionKeys[strtolower($action)] = $this->authorizationChecker && $this->authorizationChecker->isGranted($grantedByActionKey);
           $actionsEntites[$action] = array(
             "default"     =>  "austral_admin_module_action_extend",
             "language"    =>  "austral_admin_module_action_extend_language"

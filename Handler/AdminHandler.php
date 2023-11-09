@@ -184,7 +184,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
   /**
    * @return ListMapper
    */
-  protected function createListMapper(): ListMapper
+  public function createListMapper(): ListMapper
   {
     /** @var ListMapper $listMapper */
     $listMapper = $this->container->get('austral.list.mapper');
@@ -207,7 +207,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
   /**
    * @return FilterMapper
    */
-  protected function createFilterMapper(): FilterMapper
+  public function createFilterMapper(): FilterMapper
   {
     return $this->container->get('austral.filter.mapper')
       ->setKeyname($this->module->getModulePath())
