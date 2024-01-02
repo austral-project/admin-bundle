@@ -5,7 +5,7 @@ austral_admin_translation_json:
 
 ##### Popin Select Links
 austral_admin_popin_select_links:
-  path:                     /popin-select-links
+  path:                     /popin-select-links/{_locale}
   controller:               Austral\AdminBundle\Controller\AdminController::popinSelectLinks
 
 ##### Popin Select Links

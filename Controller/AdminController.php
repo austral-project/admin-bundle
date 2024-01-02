@@ -351,15 +351,16 @@ class AdminController extends HttpController
   }
 
   /**
+   * @param Request $request
    * @return Response
    */
-  public function popinSelectLinks(): Response
+  public function popinSelectLinks(Request $request): Response
   {
     $this->container->get('austral.http.domains.management')->initialize();
     $urlParameterManagement = $this->container->get('austral.seo.url_parameter.management')->initialize();
 
     return $this->render("@AustralDesign/Components/Popin/templates/select-links-content.html.twig", array(
-      "urlsByDomains" => $urlParameterManagement->getUrlParametersByDomainsWithTree()
+      "urlsByDomains" => $urlParameterManagement->getUrlParametersByDomainsWithTree($request->attributes->get('_locale'))
     ));
   }
 
