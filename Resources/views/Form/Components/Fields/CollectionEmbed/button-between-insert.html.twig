@@ -1,3 +1,25 @@
-<div class="between-insert" data-aside-container="#aside-choices-collections-content{{ ((parent is defined and parent is not null) ? "-"~parent.id : "-"~field.fieldname) }}">
+{% if choiceEmbedField|length == 0 %}
+  {% set uniqueChoiceName = field.fieldname %}
+{% else %}
+  {% set uniqueChoiceName = false %}
+  {% if choiceEmbedField|length == 1%}
+    {% if choiceEmbedField|first|length == 1%}
+      {% set uniqueChoiceName = choiceEmbedField|first|keys|first %}
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+{% if uniqueChoiceName %}
+  {% set dataButton = {
+    "data-collection-embed-choice-type": uniqueChoiceName,
+    "data-collection-embed-append":"#field-"~ field.fieldname ~"-content-embed > .collection-embed-forms"
+  } %}
+{% else %}
+  {% set dataButton = {
+    "data-aside-container": "#aside-choices-collections-content"~((parent is defined and parent is not null) ? "-"~parent.id : "-"~field.fieldname),
+  } %}
+{% endif%}
+
+<div class="between-insert {{ uniqueChoiceName ? "add-new-collection-embed" : "" }}" {% for key, value in dataButton %}{{ key }}="{{ value }}" {% endfor %}>
   <span class="picto austral-picto-plus"></span>
 </div>
