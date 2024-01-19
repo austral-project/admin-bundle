@@ -216,6 +216,8 @@ fields:
   mainTitle:
     entitled:                                   Main title
     placeholder:                                Enter the title
+  translates:
+    entitled:                                   Languages
 
 
 form:

@@ -220,6 +220,9 @@ fields:
   mainTitle:
     entitled:                                   Titre principal
     placeholder:                                Saisir le titre
+  translates:
+    entitled:                                   Langues
+
 
 form:
   optional:                                     (Facultatif)
