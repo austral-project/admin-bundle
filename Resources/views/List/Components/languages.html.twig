@@ -1,0 +1,10 @@
+<ul class="list-objects_languages-choices">
+  {% for language, translateObject in col.value %}
+    <li>
+      {% set actionsParameters = {"language": language, "id": row.object.id} %}
+      <a data-click-actions="reload" data-reload-elements-key="container" href="{{ module.generateUrl("edit", actionsParameters) }}" class="content-language link">
+        {{ language }}
+      </a>
+    </li>
+  {% endfor %}
+</ul>
