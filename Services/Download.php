@@ -312,22 +312,7 @@ Class Download
         $spreadsheet->getActiveSheet()->getRowDimension($row)->setRowHeight(40);
         $col++;
       }
-      $lastCol = $this->colName($col-1);
 
-      $styleContentArray = array(
-        "font"    =>  array(
-          "bold"    => true,
-          "size"    => 10,
-          "color"   => array('rgb' => u($this->adminConfiguration->get("download.xlsTheme.content.color"))->trim("#")->toString()),
-          'name'    => 'Verdana'
-        ),
-        'fill' => array(
-          'fillType' => Fill::FILL_SOLID,
-          'startColor' => array(
-            'rgb' => u($this->adminConfiguration->get("download.xlsTheme.content.background"))->trim("#")->toString(),
-          )
-        ),
-      );
       $row++;
       /** @var Row $row */
       foreach ($section->rows() as $rowValues) {
@@ -342,39 +327,56 @@ Class Download
         $row++;
       }
 
-      $styleHeaderArray = array(
-        "font"    =>  array(
-          "bold"    => true,
-          "size"    => 10,
-          "color"   => array('rgb' => u($this->adminConfiguration->get("download.xlsTheme.header.color"))->trim("#")->toString()),
-          'name'    => 'Verdana'
-        ),
-        'fill' => array(
-          'fillType' => Fill::FILL_SOLID,
-          'startColor' => array(
-            'rgb' => u($this->adminConfiguration->get("download.xlsTheme.header.background"))->trim("#")->toString(),
-          )
-        ),
-      );
+      if($this->adminConfiguration->get("download.xlsTheme.enabled"))
+      {
+        $styleHeaderArray = array(
+          "font"    =>  array(
+            "bold"    => true,
+            "size"    => 10,
+            "color"   => array('rgb' => u($this->adminConfiguration->get("download.xlsTheme.header.color"))->trim("#")->toString()),
+            'name'    => 'Verdana'
+          ),
+          'fill' => array(
+            'fillType' => Fill::FILL_SOLID,
+            'startColor' => array(
+              'rgb' => u($this->adminConfiguration->get("download.xlsTheme.header.background"))->trim("#")->toString(),
+            )
+          ),
+        );
 
-      $spreadsheet->getActiveSheet()
-        ->getStyle("A1:{$this->colName(count($section->headerColumns())-1)}1")
-        ->applyFromArray($styleHeaderArray)
-        ->getAlignment()
-        ->setHorizontal('left')
-        ->setVertical('center');
+        $styleContentArray = array(
+          "font"    =>  array(
+            "bold"    => true,
+            "size"    => 10,
+            "color"   => array('rgb' => u($this->adminConfiguration->get("download.xlsTheme.content.color"))->trim("#")->toString()),
+            'name'    => 'Verdana'
+          ),
+          'fill' => array(
+            'fillType' => Fill::FILL_SOLID,
+            'startColor' => array(
+              'rgb' => u($this->adminConfiguration->get("download.xlsTheme.content.background"))->trim("#")->toString(),
+            )
+          ),
+        );
 
+        $spreadsheet->getActiveSheet()
+          ->getStyle("A1:{$this->colName(count($section->headerColumns())-1)}1")
+          ->applyFromArray($styleHeaderArray)
+          ->getAlignment()
+          ->setHorizontal('left')
+          ->setVertical('center');
 
-      $spreadsheet->getActiveSheet()
-        ->getStyle("A1:{$this->colName(count($section->headerColumns())-1)}".($row-1))
-        ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $spreadsheet->getActiveSheet()
+          ->getStyle("A1:{$this->colName(count($section->headerColumns())-1)}".($row-1))
+          ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
-      $spreadsheet->getActiveSheet()
-        ->getStyle("A2:{$this->colName(count($section->headerColumns())-1)}".($row-1))
-        ->applyFromArray($styleContentArray)
-        ->getAlignment()
-        ->setHorizontal('left')
-        ->setVertical('center');
+        $spreadsheet->getActiveSheet()
+          ->getStyle("A2:{$this->colName(count($section->headerColumns())-1)}".($row-1))
+          ->applyFromArray($styleContentArray)
+          ->getAlignment()
+          ->setHorizontal('left')
+          ->setVertical('center');
+      }
 
       $sheet++;
     }

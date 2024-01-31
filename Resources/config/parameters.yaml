@@ -9,7 +9,7 @@ parameters:
     background:                                             "/bundles/australdesign/images/austral.jpg"
     forgot_enabled:                                         false
     copyright:                                              "Propulsed with ❤️ by <a href='https://austral.dev' target='_blank'>Austral</a>"
-    deployment_api_key:                                    false
+    deployment_api_key:                                     false
 
   austral.admin.download:
     creator:                                                "Austral"
@@ -17,6 +17,7 @@ parameters:
     trans_domain:                                           "austral"
     encode:                                                 "UTF-8"
     xlsTheme:
+      enabled:                                              true
       header:
         color:                                              "#000000"
         background:                                         "#f0f0f0"
