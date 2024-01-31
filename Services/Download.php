@@ -164,9 +164,20 @@ Class Download
   }
 
   /**
+   * @throws Exception
+   */
+  public function push()
+  {
+    $generateByFormat = "{$this->format}Push";
+    $this->$generateByFormat();
+  }
+
+
+  protected string $jsonValues = "";
+  /**
    * Generate JSON File
    */
-  protected function jsonGenerate()
+  protected function jsonGenerate(): Download
   {
     $returnValues = array();
     /** @var Section $section */
@@ -194,19 +205,33 @@ Class Download
         "values"  =>  $valuesColumns
       );
     }
+    $this->jsonValues = json_encode(count($returnValues) == 1 ? AustralTools::first($returnValues) : $returnValues);
+    return $this;
+  }
 
+  /**
+   * jsonPush
+   *
+   * @return void
+   */
+  protected function jsonPush()
+  {
     $file = fopen("php://output", 'w');
-      echo json_encode(count($returnValues) == 1 ? AustralTools::first($returnValues) : $returnValues);
+    echo $this->jsonValues;
     fclose($file);
   }
+
+
+  /**
+   * @var array
+   */
+  protected array $csvValues = array();
 
   /**
    * Generate CVS File
    */
-  protected function csvGenerate()
+  protected function csvGenerate(): Download
   {
-    ob_start();
-    $file = fopen("php://output", 'w');
     /** @var Section $section */
     foreach($this->listMapper->getSections() as $section)
     {
@@ -216,7 +241,7 @@ Class Download
       {
         $headerColumns[] = $this->translate($headerColumn->getEntitled(), $headerColumn->getTranslateParameters());
       }
-      fputcsv($file, $headerColumns);
+      $this->csvValues[] = $headerColumns;
       /** @var Row $row */
       foreach ($section->rows() as $row) {
         $valueColumns = array();
@@ -225,11 +250,34 @@ Class Download
         {
           $valueColumns[] = $this->getValueByColumn($column);
         }
-        fputcsv($file, $valueColumns);
+        $this->csvValues[] = $valueColumns;
       }
+    }
+    return $this;
+  }
+
+  /**
+   * csvPush
+   *
+   * @return void
+   */
+  protected function csvPush()
+  {
+    ob_start();
+    $file = fopen("php://output", 'w');
+    foreach($this->csvValues as $values)
+    {
+      fputcsv($file, $values);
     }
     fclose($file);
   }
+
+
+
+  /**
+   * @var Xlsx
+   */
+  protected Xlsx $xlsxValues;
 
   /**
    * Generate XLSX File
@@ -237,25 +285,10 @@ Class Download
    * @throws \PhpOffice\PhpSpreadsheet\Exception
    * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
    */
-  protected function xlsxGenerate()
+  protected function xlsxGenerate(): Download
   {
     $spreadsheet = new Spreadsheet();
     $spreadsheet->getProperties()->setCreator($this->adminConfiguration->get('download.creator'))->setTitle($this->getFilename());
-
-    $styleHeaderArray = array(
-      "font"    =>  array(
-        "bold"    => true,
-        "size"    => 10,
-        "color"   => array('rgb' => u($this->adminConfiguration->get("download.xlsTheme.header.color"))->trim("#")->toString()),
-        'name'    => 'Verdana'
-      ),
-      'fill' => array(
-        'fillType' => Fill::FILL_SOLID,
-        'startColor' => array(
-          'rgb' => u($this->adminConfiguration->get("download.xlsTheme.header.background"))->trim("#")->toString(),
-        )
-      ),
-    );
 
     $sheet = 0;
     /** @var Section $section */
@@ -279,12 +312,7 @@ Class Download
         $spreadsheet->getActiveSheet()->getRowDimension($row)->setRowHeight(40);
         $col++;
       }
-      $spreadsheet->getActiveSheet()
-        ->getStyle("A1:{$this->colName(count($section->headerColumns())-1)}1")
-        ->applyFromArray($styleHeaderArray)
-        ->getAlignment()
-        ->setHorizontal('left')
-        ->setVertical('center');
+      $lastCol = $this->colName($col-1);
 
       $styleContentArray = array(
         "font"    =>  array(
@@ -308,29 +336,61 @@ Class Download
         {
           $colName = $this->colName($col);
           $spreadsheet->getActiveSheet()
-            ->setCellValue($colName.$row, $this->getValueByColumn($column))
-            ->getStyle($colName.$row)
-            ->applyFromArray($styleContentArray)
-            ->getAlignment()
-            ->setHorizontal('left')
-            ->setVertical('center');
+            ->setCellValue($colName.$row, $this->getValueByColumn($column));
           $spreadsheet->getActiveSheet()->getRowDimension($row)->setRowHeight(30);
         }
         $row++;
       }
 
+      $styleHeaderArray = array(
+        "font"    =>  array(
+          "bold"    => true,
+          "size"    => 10,
+          "color"   => array('rgb' => u($this->adminConfiguration->get("download.xlsTheme.header.color"))->trim("#")->toString()),
+          'name'    => 'Verdana'
+        ),
+        'fill' => array(
+          'fillType' => Fill::FILL_SOLID,
+          'startColor' => array(
+            'rgb' => u($this->adminConfiguration->get("download.xlsTheme.header.background"))->trim("#")->toString(),
+          )
+        ),
+      );
+
+      $spreadsheet->getActiveSheet()
+        ->getStyle("A1:{$this->colName(count($section->headerColumns())-1)}1")
+        ->applyFromArray($styleHeaderArray)
+        ->getAlignment()
+        ->setHorizontal('left')
+        ->setVertical('center');
+
+
       $spreadsheet->getActiveSheet()
         ->getStyle("A1:{$this->colName(count($section->headerColumns())-1)}".($row-1))
         ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
-      for($i = 1; $i <= $row; $i++)
-      {
-        $spreadsheet->getActiveSheet()->getColumnDimension($this->colName($i))->setAutoSize(true);
-      }
+      $spreadsheet->getActiveSheet()
+        ->getStyle("A2:{$this->colName(count($section->headerColumns())-1)}".($row-1))
+        ->applyFromArray($styleContentArray)
+        ->getAlignment()
+        ->setHorizontal('left')
+        ->setVertical('center');
+
       $sheet++;
     }
-    $writer = new Xlsx($spreadsheet);
-    $writer->save('php://output');
+    $this->xlsxValues = new Xlsx($spreadsheet);
+    return $this;
+  }
+
+  /**
+   * csvPush
+   *
+   * @return void
+   * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+   */
+  protected function xlsxPush()
+  {
+    $this->xlsxValues->save('php://output');
   }
 
   /**
