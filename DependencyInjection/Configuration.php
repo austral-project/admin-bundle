@@ -61,6 +61,7 @@ class Configuration implements ConfigurationInterface
           ->scalarNode("encode")->end()
           ->arrayNode("xlsTheme")
             ->children()
+              ->booleanNode("enabled")->end()
               ->arrayNode("header")
                 ->children()
                   ->scalarNode("color")->end()

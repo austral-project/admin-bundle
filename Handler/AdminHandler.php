@@ -557,13 +557,15 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
     $download = $this->container->get("austral.admin.download")
       ->setListMapper($listMapper)
       ->setFormat($format)
-      ->setFilename($this->module->getName());
+      ->setFilename($this->module->getName())
+      ->generate();
+
 
     $this->debug->stopWatchStop("austral.admin.handler.download");
 
     $response = new StreamedResponse(
       function () use ($download) {
-        $download->generate();
+        $download->push();
       },
       200,
       array()
@@ -574,7 +576,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
     );
     $response->headers->set('Content-Type', "{$download->getContentType()}; charset=utf-8");
     $response->headers->set('Pragma', 'public');
-    $response->headers->set('Cache-Control', 'max-age=0');
+    $response->headers->set('Cache-Control', 'max-age=1');
     $response->headers->set('Content-Disposition', $dispositionHeader);
     return $response;
   }
