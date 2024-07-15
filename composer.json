@@ -39,8 +39,6 @@
     "symfony/translation":                    "^5.4 || ^6.4",
     "symfony/http-kernel":                    "^5.4 || ^6.4",
 
-    "sensio/framework-extra-bundle":          "^5.4 || ^6.4",
-
     "phpoffice/phpspreadsheet":               "1.*"
   },
   "suggest": {
