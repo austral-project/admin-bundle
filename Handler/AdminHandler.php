@@ -456,7 +456,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
       /** @var DomainFilterMapping $domainFilter */
       if($domainFilter = $this->container->get("austral.entity.mapping")->getEntityClassMapping($duplicateManagerEvent->getDuplicateObject()->getClassnameForMapping(), DomainFilterMapping::class))
       {
-        if($domainFilter->getAutoDomainId())
+        if($domainFilter->getAutoDomainId() && $moduleObject->getParent())
         {
           $children = $moduleObject->getParent()->getChildren();
           /** @var Module $child */

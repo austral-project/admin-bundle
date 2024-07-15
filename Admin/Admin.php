@@ -341,7 +341,7 @@ abstract class Admin implements AdminInterface
           )
         );
 
-        if($this->module->getEnableMultiDomain())
+        if($this->module->getEnableMultiDomain() && (count($listAdminEvent->getAdminHandler()->getDomainsManagement()->getDomainsWithoutVirtual()) > 1))
         {
           /** @var Domain $domain */
           foreach($listAdminEvent->getAdminHandler()->getDomainsManagement()->getDomainsWithoutVirtual() as $domain)
