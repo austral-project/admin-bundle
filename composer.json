@@ -18,7 +18,7 @@
     }
   ],
   "require": {
-    "php":                                    "^7.4 || ^8.0",
+    "php":                                    "^7.4 || ^8.0 || ^8.1 || ^8.2",
     "austral/tools-bundle":                   "^3.1",
     "austral/security-bundle":                "^3.1",
     "austral/design-bundle":                  "^3.1",
@@ -28,26 +28,26 @@
     "austral/form-bundle":                    "^3.1",
     "austral/filter-bundle":                  "^3.1",
 
-    "symfony/framework-bundle":               "^5.4",
-    "symfony/runtime":                        "^5.4",
-    "symfony/routing":                        "^5.4",
-    "symfony/config":                         "^5.4",
-    "symfony/event-dispatcher":               "^5.4",
-    "symfony/property-access":                "^5.4",
-    "symfony/property-info":                  "^5.4",
-    "symfony/intl":                           "^5.4",
-    "symfony/translation":                    "^5.4",
-    "symfony/http-kernel":                    "^5.4",
+    "symfony/framework-bundle":               "^5.4 || ^6.4",
+    "symfony/runtime":                        "^5.4 || ^6.4",
+    "symfony/routing":                        "^5.4 || ^6.4",
+    "symfony/config":                         "^5.4 || ^6.4",
+    "symfony/event-dispatcher":               "^5.4 || ^6.4",
+    "symfony/property-access":                "^5.4 || ^6.4",
+    "symfony/property-info":                  "^5.4 || ^6.4",
+    "symfony/intl":                           "^5.4 || ^6.4",
+    "symfony/translation":                    "^5.4 || ^6.4",
+    "symfony/http-kernel":                    "^5.4 || ^6.4",
 
-    "sensio/framework-extra-bundle":          "^5.4",
+    "sensio/framework-extra-bundle":          "^5.4 || ^6.4",
 
     "phpoffice/phpspreadsheet":               "1.*"
   },
   "suggest": {
-    "austral/entity-translate-bundle":        "^3.0",
-    "austral/entity-file-bundle":             "^3.0",
-    "austral/website-bundle":                 "^3.0",
-    "austral/email-bundle":                   "^3.0"
+    "austral/entity-translate-bundle":        "^3.1",
+    "austral/entity-file-bundle":             "^3.1",
+    "austral/website-bundle":                 "^3.1",
+    "austral/email-bundle":                   "^3.1"
   },
   "require-dev": {
   },
