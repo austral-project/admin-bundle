@@ -374,7 +374,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
 
     $this->dispatcher->dispatch($formEvent, FormEvent::EVENT_AUSTRAL_FORM_ADD_AUTO_FIELDS_AFTER);
     /** @var Form $form */
-    $form = $this->container->get('form.factory')->create(get_class($formType), $formMapper->getObject());
+    $form = $this->formFactory->create(get_class($formType), $formMapper->getObject());
     $formEvent->setForm($form);
     $formAdminEvent->setForm($form);
     $this->dispatcher->dispatch($formEvent, FormEvent::EVENT_AUSTRAL_FORM_INIT_END);
