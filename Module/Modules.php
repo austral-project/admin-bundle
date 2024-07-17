@@ -323,7 +323,7 @@ class Modules
     $entityManager = $this->container->get('doctrine.orm.entity_manager');
     if($module->isEntityModule())
     {
-      $entityManagerClass = AustralTools::getValueByKey($moduleParameters, "entity_manager",  "austral.entity_manager.".(u($moduleKey)->snake()->toString()));
+      $entityManagerClass = AustralTools::getValueByKey($moduleParameters, "entity_manager",  "austral.entity_manager.".(u($moduleKey)->snake()->replace("-", "_")->toString()));
       if(!$this->container->has($entityManagerClass))
       {
         throw new ErrorException("The module {$moduleKey} is entity type, but the entity manager {$entityManagerClass} is not found !!!");
