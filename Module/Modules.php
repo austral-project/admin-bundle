@@ -351,7 +351,7 @@ class Modules
      */
 
     $securityKey = array_key_exists("security_key", $moduleParameters) ? $moduleParameters["security_key"] : $module->getModulePath();
-    $securityKey = $module->getModuleKey() !== "austral_admin_dashboard" ? "ROLE_".strtoupper(u($securityKey)->snake()) : "ROLE_ADMIN_ACCESS";
+    $securityKey = $module->getModuleKey() !== "austral_admin_dashboard" ? "ROLE_".strtoupper(u($securityKey)->replace("-", "_")->snake()) : "ROLE_ADMIN_ACCESS";
     $grantedByActionKeys = array();
     if($module->isEntityModule())
     {

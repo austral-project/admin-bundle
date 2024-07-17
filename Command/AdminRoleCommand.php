@@ -132,7 +132,7 @@ EOF
           $securityKey = array_key_exists("security_key", $moduleParameters) ? $moduleParameters["security_key"] : $module->getModulePath();
           if($securityKey)
           {
-            $securityKey = u("ROLE_$securityKey")->snake()->upper()->__toString();
+            $securityKey = u("ROLE_$securityKey")->replace("-", "_")->replace("/", "_")->snake()->upper()->__toString();
             if($actionName = $module->getActionName())
             {
               $actionName = $actionName != "index" ? " - {$actionName}" : "";
@@ -170,6 +170,7 @@ EOF
   protected function addRole(string $roleName, string $role, int &$nbRolesAdd, int &$nbRolesUpdate)
   {
     $roleName = str_replace("_", " ", $roleName);
+    $roleName = str_replace("/", " ", $roleName);
     $roleName = preg_replace('/(?!^)[A-Z]{2,}(?=[A-Z][a-z])|[A-Z][a-z]/', ' $0', $roleName);
     $roleName = ucwords(strtolower($roleName));
     if(!array_key_exists($role, $this->rolesExists))
