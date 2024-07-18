@@ -60,6 +60,9 @@ class RolesModule
   {
     $this->moduleKeyname = $module->getModuleKey();
     $this->moduleName = $module->translateSingular();
+    if(($tile = $module->getParametersByKey("tile")) && array_key_exists("subEntitled", $tile)) {
+      $this->moduleName .= " : ".$tile["subEntitled"];
+    }
     $this->keyname = $module->getModuleKeyWithPosition();
     $this->parent = $rolesModule;
     $this->parent?->addChild($this);

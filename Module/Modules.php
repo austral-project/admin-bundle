@@ -204,7 +204,7 @@ class Modules
    *
    * @throws ErrorException
    */
-  protected function generateModule(string $moduleKey, array $moduleParameters, bool $defaultNavigationEnabled = true, int $defaultNavigationPosition = 0, Module $parent = null, ?string $domainFilterId = null)
+  protected function generateModule(string $moduleKey, array $moduleParameters, bool $defaultNavigationEnabled = true, int $defaultNavigationPosition = 0, Module $parent = null, ?string $domainFilterId = null, int $color = 1)
   {
     $this->debug->stopWatchStart("austral.admin.modules.generate.module.{$moduleKey}", "austral.admin.modules");
     $actions = AustralTools::getValueByKey($moduleParameters, "actions", array());
@@ -242,6 +242,8 @@ class Modules
       )
     );
 
+    $module->addParameters("color", $color);
+
     if(count($actions) > 0)
     {
       $module->setExtendActions($actions);
@@ -257,6 +259,7 @@ class Modules
 
     if($children = AustralTools::getValueByKey($moduleParameters, "children", array()))
     {
+      $colorChildren = 1;
       $defaultNavigationPositionChild = AustralTools::getValueByKey($navigation, "position", $defaultNavigationPosition);
       /**
        * @var string $childModuleKey
@@ -265,7 +268,11 @@ class Modules
       foreach($children as $childModuleKey => $childModuleParameters)
       {
         $defaultNavigationPositionChild++;
-        $this->generateModule($childModuleKey, $childModuleParameters, false, $defaultNavigationPositionChild, $module, $domainFilterId);
+        $this->generateModule($childModuleKey, $childModuleParameters, false, $defaultNavigationPositionChild, $module, $domainFilterId, $colorChildren);
+        $colorChildren++;
+        if($colorChildren > 6) {
+          $colorChildren = 1;
+        }
       }
     }
     $this->addModule($module, true);
@@ -461,7 +468,7 @@ class Modules
    * @return $this
    * @throws \Exception
    */
-  public function generateModuleByDomain(string $moduleKey, array $moduleParameters, ?DomainInterface $domain, ?Module $parentModule = null): Modules
+  public function generateModuleByDomain(string $moduleKey, array $moduleParameters, ?DomainInterface $domain, ?Module $parentModule = null, int $color = 1): Modules
   {
     $this->dispatchEvent = false;
     $domainName = $domainImg = "";
@@ -509,6 +516,7 @@ class Modules
       //"subEntitled"   =>  $this->trans("pages.names.{$parentModule->translateKey()}ByDomain.subTitle", array('%count%'=>$countPages)),
       "img"           =>  $domainImg
     ));
+    $module->addParameters("color", $color);
 
     /** @var Module $child */
     foreach ($module->getChildren() as $child)

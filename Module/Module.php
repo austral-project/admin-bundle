@@ -796,8 +796,8 @@ class Module implements ModuleInterface
    */
   public function getSecurityKey(): string
   {
-    $securityKey = $this->getParametersByKey("security_key", $this->getModulePath());
-    return u("ROLE_$securityKey")->snake()->upper()->__toString();
+    $securityKey = $this->getModuleParametersByKey("security_key", $this->getModulePath());
+    return u("ROLE_$securityKey")->replace("-", "_")->replace("/", "_")->snake()->upper()->__toString();
   }
 
   /**
@@ -1032,6 +1032,17 @@ class Module implements ModuleInterface
   public function getModuleParameters(): array
   {
     return $this->moduleParameters;
+  }
+
+  /**
+   * @param string $key
+   * @param null $default
+   *
+   * @return mixed
+   */
+  public function getModuleParametersByKey(string $key, $default = null)
+  {
+    return array_key_exists($key, $this->getModuleParameters()) ? $this->moduleParameters[$key] : $default;
   }
 
   /**

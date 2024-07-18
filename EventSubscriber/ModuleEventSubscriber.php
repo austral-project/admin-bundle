@@ -98,6 +98,14 @@ class ModuleEventSubscriber implements EventSubscriberInterface
       if($domainFilterMapping = $this->mapping->getEntityClassMapping($entityManager->getClass(), DomainFilterMapping::class))
       {
         if($this->domainsManagement->getEnabledDomainWithoutVirtual() && $domainFilterMapping->getAutoDomainId()) {
+
+          $color = count($moduleEvent->getModule()->getChildren());
+          $color++;
+          if($color > 6) {
+            $color = 1;
+          }
+
+
           $moduleChange = false;
           /** @var DomainInterface $domain */
           foreach($this->domainsManagement->getDomainsWithoutVirtual() as $domain)
@@ -111,9 +119,14 @@ class ModuleEventSubscriber implements EventSubscriberInterface
                   $moduleEvent->getModule()->getModuleKey(),
                   $moduleEvent->getModule()->getModuleParameters(),
                   $domain,
-                  $moduleEvent->getModule()
+                  $moduleEvent->getModule(),
+                  $color
                 );
               }
+            }
+            $color++;
+            if($color > 6) {
+              $color = 1;
             }
           }
           if($domainFilterMapping->getForAllDomainEnabled())
@@ -123,7 +136,8 @@ class ModuleEventSubscriber implements EventSubscriberInterface
               $moduleEvent->getModule()->getModuleKey(),
               $moduleEvent->getModule()->getModuleParameters(),
               $this->domainsManagement->getDomainForAll(),
-              $moduleEvent->getModule()
+              $moduleEvent->getModule(),
+              $color
             );
           }
           if($moduleChange)
