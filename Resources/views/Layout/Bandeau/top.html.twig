@@ -30,7 +30,7 @@
           </div>
         </div>
       {% endif %}
-      <div class="row row--center title-buttons-container">
+      <div class="row title-buttons-container">
         <div class="col col--xs-7 title-button-content">
           {% if returnButton is defined and returnButton %}
             <div class="button-return-container">
@@ -49,19 +49,31 @@
               }}
             </div>
           {% endif %}
+          {% if module.parameters.tile.img is defined and module.parameters.tile.img %}
+            <div class="image-content">
+              <img src="{{ module.parameters.tile.img  }}" alt="" />
+            </div>
+          {% elseif module.moduleParameters.pictoTile is defined and module.moduleParameters.pictoTile %}
+            <div class="picto-content color-{{ module.parameters.color|default(1) }}">
+              {% if module.moduleParameters.pictoTile is not defined or module.moduleParameters.pictoTile is null %}
+                {% set picto = "folder" %}
+              {% endif %}
+              <img src="{{ asset("bundles/australdesign/images/tile-picto/color-"~module.parameters.color|default(1) ~"/austral-icon-"~module.moduleParameters.pictoTile~".svg") }}" alt="{{ module.moduleParameters.name }}">
+            </div>
+          {% endif %}
           <div class="title-container">
             {{ include("@AustralDesign/Components/Title/title.html.twig",
                 {
                   tag:        "h1",
                   value:      module.translatePlural,
-                  subTitle:   subTitle is defined and subTitle ? subTitle : null
+                  subTitle:   subTitle is defined and subTitle ? subTitle : (module.parameters.tile.subEntitled is defined and module.parameters.tile.subEntitled ? module.parameters.tile.subEntitled : null)
                 }
               )
             }}
           </div>
         </div>
         {%- if actions is defined and actions|length > 0 or (submitButton is defined and submitButton == true) or (selectLanguage is defined) -%}
-          <div class="col col--xs-4 col--xs-offset-1 col--align-bottom">
+          <div class="col col--xs-4 col--xs-offset-1">
             <ul class="buttons-content">
               {%- if actions is defined and actions|length > 0 -%}
                 {% for actionkey, action in actions %}
