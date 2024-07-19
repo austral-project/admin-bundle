@@ -557,7 +557,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
     $download = $this->container->get("austral.admin.download")
       ->setListMapper($listMapper)
       ->setFormat($format)
-      ->setFilename($this->module->getName())
+      ->setFilename($downloadAdminEvent->getFilename())
       ->generate();
 
 

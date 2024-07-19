@@ -35,15 +35,8 @@ class DownloadAdminEvent extends AdminEvent implements FilterEventInterface
    */
   private ?FilterMapper $filterMapper;
 
-  /**
-   * @var array
-   */
-  private array $headers = array();
+  private string $filename;
 
-  /**
-   * @var array
-   */
-  private array $objects = array();
 
   /**
    * FormAdminEvent constructor.
@@ -57,6 +50,7 @@ class DownloadAdminEvent extends AdminEvent implements FilterEventInterface
     parent::__construct($adminHandler);
     $this->listMapper = $listMapper;
     $this->filterMapper = $filterMapper;
+    $this->filename = $this->getCurrentModule()->getName();
   }
 
   /**
@@ -79,44 +73,6 @@ class DownloadAdminEvent extends AdminEvent implements FilterEventInterface
   }
 
   /**
-   * @return array
-   */
-  public function getHeaders(): array
-  {
-    return $this->headers;
-  }
-
-  /**
-   * @param array $headers
-   *
-   * @return DownloadAdminEvent
-   */
-  public function setHeaders(array $headers): DownloadAdminEvent
-  {
-    $this->headers = $headers;
-    return $this;
-  }
-
-  /**
-   * @return array
-   */
-  public function getObjects(): array
-  {
-    return $this->objects;
-  }
-
-  /**
-   * @param array $objects
-   *
-   * @return DownloadAdminEvent
-   */
-  public function setObjects(array $objects): DownloadAdminEvent
-  {
-    $this->objects = $objects;
-    return $this;
-  }
-
-  /**
    * @return FilterMapper|null
    */
   public function getFilterMapper(): ?FilterMapper
@@ -132,6 +88,26 @@ class DownloadAdminEvent extends AdminEvent implements FilterEventInterface
   public function setFilterMapper(?FilterMapper $filterMapper): DownloadAdminEvent
   {
     $this->filterMapper = $filterMapper;
+    return $this;
+  }
+
+  /**
+   * getFilename
+   *
+   * @return string
+   */
+  public function getFilename(): string
+  {
+    return $this->filename;
+  }
+
+  /**
+   * @param string $filename
+   * @return $this
+   */
+  public function setFilename(string $filename): DownloadAdminEvent
+  {
+    $this->filename = $filename;
     return $this;
   }
 
