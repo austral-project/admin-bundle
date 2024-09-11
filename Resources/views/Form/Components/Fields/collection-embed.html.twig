@@ -147,6 +147,7 @@
               sortableEnabled: sortableEnabled,
               parentData: childForm.data,
               form: childForm.form,
+              childrenNum: loop.index,
               childrenForm: value_by_key(childrenFormByParentIds, childForm.data.id, {}),
             })
           }}

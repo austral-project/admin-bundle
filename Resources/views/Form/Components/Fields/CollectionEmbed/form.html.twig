@@ -1,5 +1,5 @@
 {% if collectionForm.title %}
-  <span class="collection-embed-title">{{ ("." in collectionForm.title ? collectionForm.title|trans({"%value%": (form.view.vars.data.__toString() is defined ? (form.view.vars.data.__toString()|capitalize) : "")},form.mapper.translateDomain): collectionForm.title) }}</span>
+  <span class="collection-embed-title">{{ ("." in collectionForm.title ? collectionForm.title|trans({"%value%": (form.view.vars.data.__toString() is defined ? (form.view.vars.data.__toString()|capitalize) : ""), "%num%": childrenNum|default("__num_replace__")},form.mapper.translateDomain): collectionForm.title) }}</span>
 {% endif %}
 
 <div class="collection-embed-form" >

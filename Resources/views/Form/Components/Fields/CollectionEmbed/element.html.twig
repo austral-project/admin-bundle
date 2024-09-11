@@ -3,7 +3,7 @@
     {% include('@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-between-insert.html.twig') %}
   {% endif %}
   <div class="hover">
-    {% include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/form.html.twig") with {parent: parentData} %}
+    {% include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/form.html.twig") with {parent: parentData, childrenNum: childrenNum|default("__num_replace__")} %}
   </div>
   {% if collectionForm.allowChild and collectionForm.masterChildren %}
     {% include("@AustralAdmin/Form/Components/Fields/collection-embed.html.twig") with {field: collectionForm, parent: parentData, sortableEnabled: sortableEnabled} %}
