@@ -100,6 +100,7 @@ actions:
   newOnglet:                                    Éditer (Nouvel onglet)
   close:                                        Fermer
   reduce:                                       Réduire
+  guidelineComposants:                          Voir la guideline des composants
 
 
 download:

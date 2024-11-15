@@ -32,7 +32,7 @@ Class Guideline
   {
     $fontFilePath = AustralTools::join(
       dirname(__FILE__),
-      "../../design-bundle/Resources/assets/styles/base/font.scss",
+      "../../design-bundle/Resources/assets/styles/fonts/fonts.scss",
     );
     if(!file_exists($fontFilePath))
     {
@@ -157,7 +157,7 @@ Class Guideline
   {
     $fontFilePath = AustralTools::join(
       dirname(__FILE__),
-      "../../design-bundle/Resources/assets/styles/base/_root.scss",
+      "../../design-bundle/Resources/assets/styles/colors/_root.scss",
     );
     if(!file_exists($fontFilePath))
     {

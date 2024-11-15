@@ -92,6 +92,7 @@ actions:
   search:                                       Search
   newOnglet:                                    Edit (New onglet)
   reduce:                                       Reduce
+  guidelineComposants:                          View composants guideline
 
 download:
   format:
