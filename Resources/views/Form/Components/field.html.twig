@@ -42,7 +42,7 @@
                         "id":       popin.popin.id,
                         "class":    popin.popin.class,
                         "template": popin.popin.template,
-                        "update":   "#"~popin.popinKeyId|replace({'__name__': form.view.vars.data.id|default()})
+                        "update":   "#"~popin.popinKeyId|replace({'__name__': form.view[field.name].vars.id|default()})
                       }|json_encode,
                       "data-view-by-choice-element": ""
                     }|merge(popin.button.data)
@@ -50,7 +50,7 @@
                 )
               }}
             </div>
-            {{ include("@AustralAdmin/Form/Components/popin.html.twig", {field: popin, fields: popin.fields}) }}
+            {{ include("@AustralAdmin/Form/Components/popin.html.twig", {field: popin, fields: popin.fields, popinId: popin.popinKeyId|replace({'__name__': form.view[field.name].vars.id|default()})}) }}
           {% endif %}
         {% endif %}
 

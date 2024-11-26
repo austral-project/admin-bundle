@@ -1,3 +1,6 @@
+{% if popinId is not defined %}
+  {% set popinId = field.popinKeyId|replace({'__name__': form.view.vars.data.id}) %}
+{% endif %}
 {% if field.fieldname == null %}
   <div class="button-add-link">
     {{ include("@AustralDesign/Components/Button/picto.html.twig",
@@ -11,7 +14,7 @@
             "id":       field.popin.id,
             "class":    field.popin.class,
             "template": field.popin.template,
-            "update":   "#"~field.popinKeyId|replace({'__name__': form.view.vars.data.id})
+            "update":   "#"~popinId
           }|json_encode,
           "data-view-by-choice-element": ""
         }
@@ -19,7 +22,7 @@
     )}}
   </div>
 {% endif %}
-<div id="{{ field.popinKeyId|replace({'__name__': form.view.vars.data.id|default()}) }}" class="popin-fields-container hidden" data-popin-clone-fields="popin-fields">
+<div id="{{ popinId }}" class="popin-fields-container hidden" data-popin-clone-fields="popin-fields">
   {%- for field in fields -%}
     {%- if field is instanceof("Austral\\FormBundle\\Mapper\\GroupFields") -%}
       {{ include("@AustralAdmin/Form/Components/group-fields.html.twig", {fields: field.fields }) }}
