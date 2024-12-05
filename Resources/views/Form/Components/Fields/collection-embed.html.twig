@@ -136,12 +136,21 @@
       {% if isMasterEmbedForm and field.options.allow.add %}
         {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig")}}
       {% endif %}
-
+      
+      {% set editorComponentContainer = false %}
       <div class="collection-embed-forms" data-replace-id="{{ field.options.prototype.name }}" {% if sortableEnabled %}data-sortable="" data-sortable-draggable=".collection-embed-element"  data-sortable-handle=".sortable-handle" data-sortable-input="*[data-collection-sortabled]"{% endif %}>
         {% if isMasterEmbedForm != true and field.options.allow.add %}
           {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig")}}
         {% endif %}
         {% for childForm in childrenForm|ksort %}
+          {% if childForm.form.view.vars.data.editorComponent.isContainer is defined and childForm.form.view.vars.data.editorComponent.isContainer %}
+            {% if editorComponentContainer %}
+            </div></div>
+            {% endif %}
+            <div class="editor-component-container collection-embed-element">
+              <div class="children">
+            {% set editorComponentContainer = true %}
+          {% endif %}
           {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
               collectionForm: childForm.collectionForm,
               sortableEnabled: sortableEnabled,
@@ -152,6 +161,9 @@
             })
           }}
         {% endfor %}
+        {% if editorComponentContainer %}
+            </div></div>
+        {% endif %}
       </div>
     </div>
   </div>
