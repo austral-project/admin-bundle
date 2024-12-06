@@ -7,11 +7,17 @@
   <div class="form-type-content">
     {% for subField in subFormMapper.fields %}
       {% if subField is instanceof("Austral\\FormBundle\\Mapper\\Fieldset") %}
-        {{ include("@AustralAdmin/Form/Components/fieldset.html.twig", {fieldset: subField}) }}
+        {% if subField.fields|length > 0 %}
+          {{ include("@AustralAdmin/Form/Components/fieldset.html.twig", {fieldset: subField}) }}
+        {% endif %}
       {% elseif subField is instanceof("Austral\\FormBundle\\Mapper\\GroupFields") %}
-        {{ include("@AustralAdmin/Form/Components/group-fields.html.twig", {fields: subField.fields, field: subField}) }}
+        {% if subField.fields|length > 0 %}
+          {{ include("@AustralAdmin/Form/Components/group-fields.html.twig", {fields: subField.fields, field: subField}) }}
+        {% endif %}
       {% elseif subField is instanceof("Austral\\FormBundle\\Mapper\\Popin") %}
-        {{ include("@AustralAdmin/Form/Components/popin.html.twig", {field: subField, fields: subField.fields}) }}
+        {% if subField.fields|length > 0 %}
+          {{ include("@AustralAdmin/Form/Components/popin.html.twig", {field: subField, fields: subField.fields}) }}
+        {% endif %}
       {%- endif -%}
     {% endfor %}
   </div>

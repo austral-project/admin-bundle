@@ -6,7 +6,7 @@
   {%- endif -%}
 {% else %}
 
-  <div id="field-{{ form.view[field.name].vars.id }}-content" class="field-content {{ field.type.attrClass }} {% if field.required %} is-required{% endif %}
+  <div id="field-{{ form.view[field.name].vars.id }}-content" class="{% if field.type.symfonyFormTypeName == "HiddenType" %}hidden{% endif %} field-content {{ field.type.attrClass }} {% if field.required %} is-required{% endif %}
     {% if field.errors %} is-error{% endif %}" {% if field.type.style is defined %}style="{{ field.type.style }}"{% endif %}>
 
     {%- if field.type.symfonyFormTypeName != "RepeatedType" -%}
