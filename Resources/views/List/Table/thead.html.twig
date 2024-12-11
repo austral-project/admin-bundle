@@ -1,9 +1,12 @@
 <thead>
   <tr>
     {% for col in section.headerColumns %}
-      <th class="{{ col.fieldname }}-field {{ col.size }} {{ col.align }} {{ col.options.class is defined ? col.options.class : "" }}" {{ col.attr ? : "" }}>{{ col.entitled|trans(col.translateParameters, section.translateDomain )|raw() }}</th>
+      {% set attrString = "" %}
+      {% for attrKey, attr in col.attr %}
+        {% set attrString = "attrKey='"~attrValue~"'" %}
+      {% endfor %}
+      <th class="{{ col.fieldname }}-field {{ col.size }} {{ col.align }} {{ col.options.class is defined ? col.options.class : "" }}" {{ attrString }}>{{ col.entitled|trans(col.translateParameters, section.translateDomain )|raw() }}</th>
     {% endfor %}
-
     {% if section.columnActionsDefined %}
       <th class="actions-object"></th>
     {% endif %}
