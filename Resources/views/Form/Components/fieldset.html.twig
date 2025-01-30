@@ -51,7 +51,7 @@
       {%- endif -%}
     {%- endfor -%}
     {% if template != "" %}
-      <div class="fields-content">
+      <div class="fields-content fields-content-{{ fieldset.name  }}-fieldset">
         {{ template|raw() }}
       </div>
     {% endif %}
