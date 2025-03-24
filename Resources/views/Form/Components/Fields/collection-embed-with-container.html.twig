@@ -244,7 +244,7 @@
         
         {% for childForm in childrenForm|ksort %}
           {% if childForm.form.view.vars.data.containerId|default() == "" %}
-            {% if childForm.form.view.vars.data.editorComponent.isContainer|default(false) and field.options.renderContainer|default(false) %}
+            {% if childForm.form.view.vars.data.editorComponent.isContainer|default(false)%}
               {{ marcoCollectionEmbed.renderContainer(
                 form,
                 childrenForm,
