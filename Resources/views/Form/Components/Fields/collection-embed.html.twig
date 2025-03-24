@@ -1,3 +1,57 @@
+{% macro renderField(field, childForm, loopIndex, childrenFormByParentIds, sortableEnabled, choiceEmbedField, betweenInsertAccepted) %}
+  {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
+      field: field,
+      collectionForm: childForm.collectionForm,
+      sortableEnabled: sortableEnabled,
+      parentData: childForm.data,
+      form: childForm.form,
+      childrenNum: loopIndex,
+      childrenForm: value_by_key(childrenFormByParentIds, childForm.data.id, {}),
+      betweenInsertAccepted: betweenInsertAccepted
+    })
+  }}
+{% endmacro %}
+
+{% macro renderContainer(form, childrenForm, isMasterEmbedForm, field, childForm, loopIndex, childrenFormByParentIds, sortableEnabled, embedFieldsLength, choiceEmbedField, containerId, betweenInsertAccepted) %}
+  <div class="editor-component-container collection-embed-element">
+    {{ _self.renderField(field, childForm, loopIndex, childrenFormByParentIds, sortableEnabled) }}
+    <div class="children" data-editor-component-container-id="{{ childForm.data.id }}">
+      {% for subChildrenForm in childrenForm %}
+        {% if subChildrenForm.form.view.vars.data.id != containerId %}
+          {% if subChildrenForm.form.view.vars.data.containerId is defined and subChildrenForm.form.view.vars.data.containerId == containerId  %}
+            {% set loopIndex = loopIndex+1 %}
+            {% if subChildrenForm.form.view.vars.data.editorComponent.isContainer|default(false) %}
+              {{ _self.renderContainer(
+                form,
+                childrenForm,
+                isMasterEmbedForm,
+                field,
+                subChildrenForm,
+                loop.index,
+                childrenFormByParentIds,
+                sortableEnabled,
+                embedFieldsLength,
+                choiceEmbedField,
+                subChildrenForm.form.view.vars.data.id, betweenInsertAccepted
+              ) }}
+            {% else %}
+              {{ _self.renderField(field, subChildrenForm, loopIndex, childrenFormByParentIds, sortableEnabled, choiceEmbedField, betweenInsertAccepted) }}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% if isMasterEmbedForm and field.options.allow.add %}
+      {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {append: "*[data-editor-component-container-id='"~childForm.data.id~"']", asidePrefix: "-"~childForm.data.id})}}
+    {% endif %}
+  </div>
+{% endmacro %}
+
+
+{# Structure racine #}
+{% import _self as marcoCollectionEmbed %}
+
+
 {% if field.usedGeneratedForm %}
   {% set isMasterEmbedForm = isMasterEmbedForm is defined ? false : true %}
   {% if form.mapper.hasSubFormMapperByKey(field.fieldname) %}
@@ -144,49 +198,37 @@
         {% if isMasterEmbedForm != true and field.options.allow.add %}
           {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig")}}
         {% endif %}
+        
         {% for childForm in childrenForm|ksort %}
-          
-          {% if childForm.form.view.vars.data.containerId is defined and childForm.form.view.vars.data.containerId != editorComponentContainerId and editorComponentContainerId %}
-            </div>
-            {% if isMasterEmbedForm and field.options.allow.add %}
-              {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {append: "*[data-editor-component-container-id='"~editorComponentContainerId~"'] > .children", asidePrefix: "-"~editorComponentContainerId})}}
+          {% if childForm.form.view.vars.data.containerId|default() == "" %}
+            {% if childForm.form.view.vars.data.editorComponent.isContainer|default(false) %}
+              {{ marcoCollectionEmbed.renderContainer(
+                form,
+                childrenForm,
+                isMasterEmbedForm,
+                field,
+                childForm,
+                loop.index,
+                childrenFormByParentIds,
+                sortableEnabled,
+                embedFieldsLength,
+                choiceEmbedField,
+                childForm.form.view.vars.data.id,
+                betweenInsertAccepted
+              ) }}
+            {% else %}
+              {{ marcoCollectionEmbed.renderField(
+                field,
+                childForm,
+                loop.index,
+                childrenFormByParentIds,
+                sortableEnabled,
+                choiceEmbedField,
+                betweenInsertAccepted
+              ) }}
             {% endif %}
-            </div>
-            {% set editorComponentContainerId = null %}
-          {% endif %}
-          
-          {% if childForm.form.view.vars.data.editorComponent.isContainer is defined and childForm.form.view.vars.data.editorComponent.isContainer %}
-            {% if editorComponentContainerId %}
-              </div>
-              {% if isMasterEmbedForm and field.options.allow.add %}
-                {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {append: "*[data-editor-component-container-id='"~editorComponentContainerId~"'] > .children", asidePrefix: "-"~editorComponentContainerId})}}
-              {% endif %}
-              </div>
-            {% endif %}
-            <div class="editor-component-container collection-embed-element" data-editor-component-container-id="{{ childForm.data.id }}">
-            {% set editorComponentContainerId = childForm.data.id %}
-          {% endif %}
-          {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
-              collectionForm: childForm.collectionForm,
-              sortableEnabled: sortableEnabled,
-              parentData: childForm.data,
-              form: childForm.form,
-              childrenNum: loop.index,
-              childrenForm: value_by_key(childrenFormByParentIds, childForm.data.id, {}),
-            })
-          }}
-          {% if childForm.form.view.vars.data.editorComponent.isContainer is defined and childForm.form.view.vars.data.editorComponent.isContainer %}
-            <div class="children">
           {% endif %}
         {% endfor %}
-        {% if editorComponentContainerId %}
-            </div>
-            {% if isMasterEmbedForm and field.options.allow.add %}
-              {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {append: "*[data-editor-component-container-id='"~editorComponentContainerId~"'] > .children", asidePrefix: "-"~editorComponentContainerId})}}
-            {% endif %}
-            </div>
-            {% set editorComponentContainerId = null %}
-        {% endif %}
       </div>
     </div>
   </div>

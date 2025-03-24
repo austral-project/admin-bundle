@@ -1,5 +1,5 @@
 {% if createElement|default() and form.view.vars.data.editorComponent.isContainer is defined and form.view.vars.data.editorComponent.isContainer %}
-  <div class="editor-component-container collection-embed-element" data-editor-component-container-id="{{ form.view.vars.data.id }}">
+  <div class="editor-component-container collection-embed-element">
 {% endif %}
 
 
@@ -20,9 +20,9 @@
 {% endif %}
 
 {% if createElement|default() and form.view.vars.data.editorComponent.isContainer is defined and form.view.vars.data.editorComponent.isContainer %}
-    <div class="children"></div>
+    <div class="children" data-editor-component-container-id="{{ form.view.vars.data.id }}"></div>
     {% if isMasterEmbedForm and field.options.allow.add %}
-      {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {append: "*[data-editor-component-container-id='"~form.view.vars.data.id~"'] > .children", asidePrefix: "-"~form.view.vars.data.id})}}
+      {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {append: "*[data-editor-component-container-id='"~form.view.vars.data.id~"']", asidePrefix: "-"~form.view.vars.data.id})}}
     {% endif %}
   </div>
 {% endif %}
