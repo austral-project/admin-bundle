@@ -1,11 +1,4 @@
-{% if createElement|default() and form.view.vars.data.editorComponent.isContainer is defined and form.view.vars.data.editorComponent.isContainer %}
-  <div class="editor-component-container collection-embed-element">
-{% endif %}
-
-
-{% if form.view.vars.data.editorComponent.isContainer is not defined or form.view.vars.data.editorComponent.isContainer == false %}
-  <div data-embed-id="{{ form.view.vars.data.id }}" class="collection-embed-element {{ containerClass|default()}} {% if betweenInsertAccepted is not defined or betweenInsertAccepted == false %}no-between-insert{% endif %} {{ collectionForm.options.attr.class }} {{ classEmbedElement is defined ? classEmbedElement : "" }} {% if form.view.vars.errors|length > 0 %} error {% endif %}">
-{% endif %}
+<div data-embed-id="{{ form.view.vars.data.id }}" class="collection-embed-element {{ containerClass|default()}} {% if betweenInsertAccepted is not defined or betweenInsertAccepted == false %}no-between-insert{% endif %} {{ collectionForm.options.attr.class }} {{ classEmbedElement is defined ? classEmbedElement : "" }} {% if form.view.vars.errors|length > 0 %} error {% endif %}">
   {% if betweenInsertAccepted is defined and betweenInsertAccepted %}
     {% include('@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-between-insert.html.twig') %}
   {% endif %}
@@ -15,14 +8,4 @@
   {% if collectionForm.allowChild and collectionForm.masterChildren %}
     {% include("@AustralAdmin/Form/Components/Fields/collection-embed.html.twig") with {field: collectionForm, parent: parentData, sortableEnabled: sortableEnabled} %}
   {% endif %}
-{% if form.view.vars.data.editorComponent.isContainer is not defined or form.view.vars.data.editorComponent.isContainer == false %}
-  </div>
-{% endif %}
-
-{% if createElement|default() and form.view.vars.data.editorComponent.isContainer is defined and form.view.vars.data.editorComponent.isContainer %}
-    <div class="children" data-editor-component-container-id="{{ form.view.vars.data.id }}"></div>
-    {% if isMasterEmbedForm and field.options.allow.add %}
-      {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {append: "*[data-editor-component-container-id='"~form.view.vars.data.id~"']", asidePrefix: "-"~form.view.vars.data.id})}}
-    {% endif %}
-  </div>
-{% endif %}
+</div>

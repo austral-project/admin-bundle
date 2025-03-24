@@ -1,57 +1,3 @@
-{% macro renderField(field, childForm, loopIndex, childrenFormByParentIds, sortableEnabled, choiceEmbedField, betweenInsertAccepted) %}
-  {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
-      field: field,
-      collectionForm: childForm.collectionForm,
-      sortableEnabled: sortableEnabled,
-      parentData: childForm.data,
-      form: childForm.form,
-      childrenNum: loopIndex,
-      childrenForm: value_by_key(childrenFormByParentIds, childForm.data.id, {}),
-      betweenInsertAccepted: betweenInsertAccepted
-    })
-  }}
-{% endmacro %}
-
-{% macro renderContainer(form, childrenForm, isMasterEmbedForm, field, childForm, loopIndex, childrenFormByParentIds, sortableEnabled, embedFieldsLength, choiceEmbedField, containerId, betweenInsertAccepted) %}
-  <div class="editor-component-container collection-embed-element">
-    {{ _self.renderField(field, childForm, loopIndex, childrenFormByParentIds, sortableEnabled) }}
-    <div class="children" data-editor-component-container-id="{{ childForm.data.id }}">
-      {% for subChildrenForm in childrenForm %}
-        {% if subChildrenForm.form.view.vars.data.id != containerId %}
-          {% if subChildrenForm.form.view.vars.data.containerId is defined and subChildrenForm.form.view.vars.data.containerId == containerId  %}
-            {% set loopIndex = loopIndex+1 %}
-            {% if subChildrenForm.form.view.vars.data.editorComponent.isContainer|default(false) %}
-              {{ _self.renderContainer(
-                form,
-                childrenForm,
-                isMasterEmbedForm,
-                field,
-                subChildrenForm,
-                loop.index,
-                childrenFormByParentIds,
-                sortableEnabled,
-                embedFieldsLength,
-                choiceEmbedField,
-                subChildrenForm.form.view.vars.data.id, betweenInsertAccepted
-              ) }}
-            {% else %}
-              {{ _self.renderField(field, subChildrenForm, loopIndex, childrenFormByParentIds, sortableEnabled, choiceEmbedField, betweenInsertAccepted) }}
-            {% endif %}
-          {% endif %}
-        {% endif %}
-      {% endfor %}
-    </div>
-    {% if isMasterEmbedForm and field.options.allow.add %}
-      {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {append: "*[data-editor-component-container-id='"~childForm.data.id~"']", asidePrefix: "-"~childForm.data.id})}}
-    {% endif %}
-  </div>
-{% endmacro %}
-
-
-{# Structure racine #}
-{% import _self as marcoCollectionEmbed %}
-
-
 {% if field.usedGeneratedForm %}
   {% set isMasterEmbedForm = isMasterEmbedForm is defined ? false : true %}
   {% if form.mapper.hasSubFormMapperByKey(field.fieldname) %}
@@ -60,14 +6,14 @@
     {% set subFormMapper = form.mapper.getSubFormMapperByKey(field.fieldname) %}
     {% if subFormMapper %}
       {% if field.masterChildren != true %}
-
+        
         {% if colorKey is not defined %}
           {% set colorKey = "__COLOR__" %}
         {% endif %}
-
+        
         {% set betweenInsertAccepted = field.betweenInsert and field.options.allow.add %}
         {% set sortableEnabled = field.hasSortable %}
-
+        
         {% set childrenForm = {} %}
         {% set childrenFormByParentIds = {} %}
         {% set embedFields = {} %}
@@ -80,38 +26,38 @@
               {% set embedFieldsLength = embedFieldsLength+1 %}
             {% endif %}
           {% endfor %}
-
+          
           {% for choiceKey, choiceValue in field.collectionsChoices %}
             {% if field.collectionsForms[choiceKey] is defined and form.view[choiceKey].vars.prototype is defined %}
               {% set collectionFormChild = field.collectionsForms[choiceKey] %}
-
+              
               {% set embedFields = embedFields|merge({
-                  (choiceKey): include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
-                    classEmbedElement: "init-form",
-                    parentData: {id: "__name__"},
-                    collectionForm: collectionFormChild,
-                    childrenForm: {},
-                    childrenFormByParentIds: {},
-                    createElement: true,
-                    form: {
-                      mapper: subFormMapper.getSubFormMapperByKey(choiceKey),
-                      view: form.view[choiceKey].vars.prototype
-                    }
-                  })
+                (choiceKey): include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
+                  classEmbedElement: "init-form",
+                  parentData: {id: "__name__"},
+                  collectionForm: collectionFormChild,
+                  childrenForm: {},
+                  childrenFormByParentIds: {},
+                  createElement: true,
+                  form: {
+                    mapper: subFormMapper.getSubFormMapperByKey(choiceKey),
+                    view: form.view[choiceKey].vars.prototype
+                  }
                 })
+              })
               %}
               {% for childrenFormType in form.view[choiceKey].children %}
                 {% if childrenFormType.vars.data.parent is defined and childrenFormType.vars.data.parent != null %}
-
+                  
                   {% if  childrenFormByParentIds[childrenFormType.vars.data.parentId] is not defined %}
                     {% set childrenFormByParentIds = add_in_array(childrenFormByParentIds, childrenFormType.vars.data.parentId, {}) %}
                   {% endif %}
-
+                  
                   {% set positionElement = field.sortable(childrenFormType.vars.data) %}
                   {% if childrenFormByParentIds[childrenFormType.vars.data.parentId]["position-"~positionElement] is defined and childrenFormByParentIds[childrenFormType.vars.data.parentId]["position-"~positionElement] %}
                     {% set positionElement = (childrenFormByParentIds[childrenFormType.vars.data.parentId]|length) %}
                   {% endif %}
-
+                  
                   {% set childrenFormByParentIds = childrenFormByParentIds|merge({
                     (childrenFormType.vars.data.parentId): childrenFormByParentIds[childrenFormType.vars.data.parentId]|merge({
                       ("position-"~positionElement): {
@@ -141,10 +87,10 @@
                   }) %}
                 {% endif %}
               {% endfor %}
-
+            
             {% endif %}
           {% endfor %}
-
+        
         {% else %}
           {% for childrenFormType in form.view[field.fieldname].children %}
             {% set childrenForm = childrenForm|merge({
@@ -158,23 +104,23 @@
               }
             }) %}
           {% endfor %}
-
+          
           {% set embedFieldsLength = embedFieldsLength+1 %}
-
+          
           {% if form.view[field.fieldname].vars.prototype is defined %}
             {% set embedFields = embedFields|merge({
-                (field.fieldname): include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
-                  classEmbedElement: field.fieldname~" init-form",
-                  parentData: {id: "__name__"},
-                  collectionForm: field,
-                  collectionObjects: {},
-                  createElement: true,
-                  form: {
-                    mapper: subFormMapper,
-                    view: form.view[field.fieldname].vars.prototype
-                  }
-                })
+              (field.fieldname): include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
+                classEmbedElement: field.fieldname~" init-form",
+                parentData: {id: "__name__"},
+                collectionForm: field,
+                collectionObjects: {},
+                createElement: true,
+                form: {
+                  mapper: subFormMapper,
+                  view: form.view[field.fieldname].vars.prototype
+                }
               })
+            })
             %}
           {% endif %}
         {% endif %}
@@ -182,52 +128,33 @@
       {% endif %}
     {% endif %}
   {% endif %}
-
+  
   {% set colorKey = (colorKey != "__COLOR__") ? colorKey+1 : colorKey %}
   <div id="field-{{ field.fieldname }}-content" class="field-content field-collection-embed-content {{ field.options.container.class|default() }}">
+  
     {% if field.entitled and form.view[field.fieldname()] is defined %}
       {{ form_label(form.view[field.fieldname()]) }}
     {% endif %}
+  
     <div id="field-{{ field.fieldname }}-content-embed" class="collection-embed-fields {{ field.options.class }} color-{{ colorKey }} {{ isMasterEmbedForm ? "collection-embed-fields-master" : "collection-embed-fields-children" }} {{ field.options.attr.class }}" data-color="{{ colorKey }}" {% if field.options.allow.add %}data-collection-embed="" {% if field.masterChildren != true %}data-collection-embed-fields-template="{{ embedFields|json_encode }}"{% endif %}{% endif %} data-collection-embed-children-parameters="{{ field.childrenParameters()|json_encode }}">
       {% if isMasterEmbedForm and field.options.allow.add %}
         {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig")}}
       {% endif %}
       
-      {% set editorComponentContainerId = null %}
       <div class="collection-embed-forms" data-replace-id="{{ field.options.prototype.name }}" {% if sortableEnabled %}data-sortable="" data-sortable-draggable=".collection-embed-element"  data-sortable-handle=".sortable-handle" data-sortable-input="*[data-collection-sortabled]"{% endif %}>
         {% if isMasterEmbedForm != true and field.options.allow.add %}
           {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig")}}
         {% endif %}
-        
         {% for childForm in childrenForm|ksort %}
-          {% if childForm.form.view.vars.data.containerId|default() == "" %}
-            {% if childForm.form.view.vars.data.editorComponent.isContainer|default(false) %}
-              {{ marcoCollectionEmbed.renderContainer(
-                form,
-                childrenForm,
-                isMasterEmbedForm,
-                field,
-                childForm,
-                loop.index,
-                childrenFormByParentIds,
-                sortableEnabled,
-                embedFieldsLength,
-                choiceEmbedField,
-                childForm.form.view.vars.data.id,
-                betweenInsertAccepted
-              ) }}
-            {% else %}
-              {{ marcoCollectionEmbed.renderField(
-                field,
-                childForm,
-                loop.index,
-                childrenFormByParentIds,
-                sortableEnabled,
-                choiceEmbedField,
-                betweenInsertAccepted
-              ) }}
-            {% endif %}
-          {% endif %}
+          {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/element.html.twig", {
+            collectionForm: childForm.collectionForm,
+            sortableEnabled: sortableEnabled,
+            parentData: childForm.data,
+            form: childForm.form,
+            childrenNum: loop.index,
+            childrenForm: value_by_key(childrenFormByParentIds, childForm.data.id, {}),
+          })
+          }}
         {% endfor %}
       </div>
     </div>
