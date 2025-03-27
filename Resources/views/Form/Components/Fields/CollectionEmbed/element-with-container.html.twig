@@ -20,9 +20,24 @@
 {% endif %}
 
 {% if createElement|default() and form.view.vars.data.editorComponent.isContainer is defined and form.view.vars.data.editorComponent.isContainer %}
-    <div class="children" data-editor-component-container-id="{{ form.view.vars.data.id }}"></div>
+  {% if form.view.vars.data.editorComponent.hasContainerChildren %}
+    <div class="container-children-row">
+      {% for componentType in form.view.vars.data.editorComponent.getContainerChildren() %}
+        <div class="container-children-col" data-editor-component-container-id="{{ form.view.vars.data.id }}_{{ componentType.id }}">
+          <div class="children">
+          </div>
+          {% if isMasterEmbedForm and field.options.allow.add %}
+            {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {append: "*[data-editor-component-container-id='"~form.view.vars.data.id ~"_"~componentType.id~"'] > .children", asidePrefix: "-"~form.view.vars.data.id ~"_"~componentType.id})}}
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="children" data-editor-component-container-id="{{ form.view.vars.data.id }}">
+    </div>
     {% if isMasterEmbedForm and field.options.allow.add %}
-      {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {append: "*[data-editor-component-container-id='"~form.view.vars.data.id~"']", asidePrefix: "-"~form.view.vars.data.id})}}
+      {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {append: "*[data-editor-component-container-id='"~form.view.vars.data.id ~"']", asidePrefix: "-"~form.view.vars.data.id })}}
     {% endif %}
+  {% endif %}
   </div>
 {% endif %}
