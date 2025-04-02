@@ -242,7 +242,8 @@
           {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig")}}
         {% endif %}
         
-        {% for childForm in childrenForm|ksort %}
+        {% set childrenForm = childrenForm|ksort %}
+        {% for childForm in childrenForm %}
           {% if childForm.form.view.vars.data.containerId|default() == "" %}
             {% if childForm.form.view.vars.data.editorComponent.isContainer|default(false)%}
               {{ marcoCollectionEmbed.renderContainer(
