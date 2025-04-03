@@ -16,7 +16,9 @@
 
 {% macro renderContainer(form, childrenForm, isMasterEmbedForm, field, childForm, loopIndex, childrenFormByParentIds, sortableEnabled, embedFieldsLength, choiceEmbedField, containerId, betweenInsertAccepted, colorKey) %}
   <div class="editor-component-container collection-embed-element">
-    
+    {% if betweenInsertAccepted is defined and betweenInsertAccepted %}
+      {% include('@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-between-insert.html.twig') %}
+    {% endif %}
     {{ _self.renderField(field, childForm, loopIndex, childrenFormByParentIds, sortableEnabled) }}
     {% if childForm.form.view.vars.data.editorComponent.hasContainerChildren %}
       <div class="container-children-row">
