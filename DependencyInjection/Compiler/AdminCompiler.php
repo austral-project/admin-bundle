@@ -26,7 +26,7 @@ class AdminCompiler implements CompilerPassInterface
    * Init Configuration Austral Admin with all parameters defined
    * @var ContainerBuilder $container
    */
-  public function process(ContainerBuilder $container)
+  public function process(ContainerBuilder $container): void
   {
     $australAdminConfiguration = $container->getParameter('austral_admin');
     $allParameters = $container->getParameterBag()->all();

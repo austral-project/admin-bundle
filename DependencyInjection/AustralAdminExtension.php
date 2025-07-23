@@ -30,7 +30,7 @@ class AustralAdminExtension extends Extension implements PrependExtensionInterfa
    * {@inheritdoc}
    * @throws Exception
    */
-  public function load(array $configs, ContainerBuilder $container)
+  public function load(array $configs, ContainerBuilder $container): void
   {
     $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
     $loader->load('austral_admin.yaml');
@@ -58,7 +58,7 @@ class AustralAdminExtension extends Extension implements PrependExtensionInterfa
     $this->loadConfigToAustralBundle($container, $loader);
   }
 
-  public function prepend(ContainerBuilder $container)
+  public function prepend(ContainerBuilder $container): void
   {
     $container->setParameter("austral.admin.path", "austral-admin");
   }
@@ -69,7 +69,7 @@ class AustralAdminExtension extends Extension implements PrependExtensionInterfa
    *
    * @throws \Exception
    */
-  protected function loadConfigToAustralBundle(ContainerBuilder $container, YamlFileLoader $loader)
+  protected function loadConfigToAustralBundle(ContainerBuilder $container, YamlFileLoader $loader): void
   {
     $bundlesConfigPath = $container->getParameter("kernel.project_dir")."/config/bundles.php";
     if(file_exists($bundlesConfigPath))
