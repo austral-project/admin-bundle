@@ -35,6 +35,8 @@ services:
   austral.admin.http.event_subscriber:
     class:          Austral\AdminBundle\EventSubscriber\HttpAdminEventSubscriber
     arguments:      [ "@service_container", "@austral.admin.config", "@austral.http.domains.management","@austral.tools.debug" ]
+    calls:
+      - [ setTwig, [ "@twig" ] ]
     tags:
       - { name: kernel.event_subscriber }
 
