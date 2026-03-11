@@ -58,7 +58,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <div class="children" data-editor-component-container-id="{{ childForm.data.id }}"  {% if sortableEnabled and field.restrictionContainer()|default(false) %}data-sortable="" data-sortable-group="secondary" data-sortable-draggable="> .collection-embed-element"  data-sortable-handle=".sortable-handle" data-sortable-input="*[data-collection-sortabled]"{% endif %}>
+      <div class="children" data-editor-component-container-id="{{ childForm.data.id }}"  {% if sortableEnabled and field.restrictionContainer()|default(false) %}data-sortable="" data-sortable-group="secondary" data-sortable-draggable=".collection-embed-element"  data-sortable-handle=".sortable-handle" data-sortable-input="*[data-collection-sortabled]"{% endif %}>
         {% for subChildrenForm in childrenForm %}
           {% if subChildrenForm.form.view.vars.data.id != containerId %}
             {% if subChildrenForm.form.view.vars.data.containerId is defined and subChildrenForm.form.view.vars.data.containerId == containerId  %}
@@ -239,7 +239,7 @@
         {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {isMaster: true})}}
       {% endif %}
       
-      <div class="collection-embed-forms" data-replace-id="{{ field.options.prototype.name }}" {% if sortableEnabled %}data-sortable="" {% if field.restrictionContainer()|default(false) %}data-sortable-group="master" data-sortable-draggable="> .collection-embed-element" {% else %}data-sortable-draggable=".collection-embed-element"{% endif %} data-sortable-handle=".sortable-handle" data-sortable-input="*[data-collection-sortabled]"{% endif %}>
+      <div class="collection-embed-forms" data-replace-id="{{ field.options.prototype.name }}" {% if sortableEnabled %}data-sortable="" {% if field.restrictionContainer()|default(false) %}data-sortable-group="master" data-sortable-draggable=".collection-embed-element" {% else %}data-sortable-draggable=".collection-embed-element"{% endif %} data-sortable-handle=".sortable-handle" data-sortable-input="*[data-collection-sortabled]"{% endif %}>
         {% if isMasterEmbedForm != true and field.options.allow.add %}
           {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {isMaster: true})}}
         {% endif %}
