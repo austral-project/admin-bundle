@@ -36,7 +36,7 @@
     <div class="children" data-editor-component-container-id="{{ form.view.vars.data.id }}">
     </div>
     {% if isMasterEmbedForm and field.options.allow.add %}
-      {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {append: "*[data-editor-component-container-id='"~form.view.vars.data.id ~"']", asidePrefix: "-"~form.view.vars.data.id })}}
+      {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig", {isMaster: false, append: "*[data-editor-component-container-id='"~form.view.vars.data.id ~"']", asidePrefix: "-"~form.view.vars.data.id })}}
     {% endif %}
   {% endif %}
   </div>

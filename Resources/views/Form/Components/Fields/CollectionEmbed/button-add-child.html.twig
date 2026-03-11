@@ -11,7 +11,7 @@
             {% endif %}
         {% endif %}
       {% endif %}
-
+      
       {% if uniqueChoiceName %}
         {% set dataButton = {
           "data-collection-embed-choice-type": uniqueChoiceName,
@@ -33,9 +33,9 @@
         }) %}
       {% endif %}
       {{ include("@AustralDesign/Components/Button/action.html.twig", {
-        picto:    "austral-picto-square-plus",
+        picto:    isMaster|default(false) == true ? "austral-picto-marquee" : "austral-picto-square-plus",
         full:     true,
-        title:    field.entitledButton|trans({}, form.mapper.translateDomain),
+        title:    field.restritionContainer()|default(false) == true ? (isMaster|default(false) == true ? field.entitledButton~"_master" : field.entitledButton )|trans({}, form.mapper.translateDomain) : field.entitledButton|trans({}, form.mapper.translateDomain),
         data:     dataButton
       }) }}
     </div>
@@ -61,23 +61,25 @@
               {% endif %}
               <ul class="content-listes-choices">
                 {% for key, choice in choices %}
-                  <li class="choice">
-                    {{ include('@AustralDesign/Components/Button/picto.html.twig', {
-                      picto:          choice.picto ?? "",
-                      image:          choice.image ?? "",
-                      graphicItem:    choice.graphicItem ?? "",
-                      withEntitled:   true,
-                      title:          ("." in choice.entitled ? choice.entitled|trans({}, form.mapper.translateDomain) : choice.entitled),
-                      data: {
-                        class:                "add-new-collection-embed",
-                        "data-aside-close":   true,
-                        "data-collection-embed-choice-type": key,
-                        "data-collection-embed-append":"#field-"~ field.fieldname ~"-content-embed > .collection-embed-forms",
-                        "data-collection-parent-id": ((parent is defined and parent is not null) ? parent.id : ""),
-                        "data-collection-append-children": append|default()
-                      }
-                    }) }}
-                  </li>
+                  {% if choice.isContainer is not defined or field.restritionContainer()|default(false) == false or ((isMaster|default(false) == true and choice.isContainer == true) or (isMaster|default(false) == false and choice.isContainer === false)) %}
+                    <li class="choice">
+                      {{ include('@AustralDesign/Components/Button/picto.html.twig', {
+                        picto:          choice.picto ?? "",
+                        image:          choice.image ?? "",
+                        graphicItem:    choice.graphicItem ?? "",
+                        withEntitled:   true,
+                        title:          ("." in choice.entitled ? choice.entitled|trans({}, form.mapper.translateDomain) : choice.entitled),
+                        data: {
+                          class:                "add-new-collection-embed",
+                          "data-aside-close":   true,
+                          "data-collection-embed-choice-type": key,
+                          "data-collection-embed-append":"#field-"~ field.fieldname ~"-content-embed > .collection-embed-forms",
+                          "data-collection-parent-id": ((parent is defined and parent is not null) ? parent.id : ""),
+                          "data-collection-append-children": append|default()
+                        }
+                      }) }}
+                    </li>
+                  {% endif %}
                 {% endfor %}
               </ul>
             {% endfor %}
