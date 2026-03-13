@@ -141,7 +141,7 @@
         {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig")}}
       {% endif %}
       
-      <div class="collection-embed-forms collection-embed-form-simple" data-replace-id="{{ field.options.prototype.name }}" {% if sortableEnabled %}data-sortable="" data-sortable-draggable=".collection-embed-element"  data-sortable-handle=".sortable-handle" data-sortable-input="*[data-collection-sortabled]"{% endif %}>
+      <div class="collection-embed-forms collection-embed-form-simple" data-replace-id="{{ field.options.prototype.name }}" {% if isMasterEmbedForm == false and form.view.vars.data.id|default() %}data-sortable-parent-id="{{ form.view.vars.data.id|default() }}"{% endif%}  {% if sortableEnabled %}data-sortable="" data-sortable-draggable=".collection-embed-element"  data-sortable-handle=".sortable-handle" data-sortable-input="*[data-collection-sortabled]"{% endif %}>
         {% if isMasterEmbedForm != true and field.options.allow.add %}
           {{ include("@AustralAdmin/Form/Components/Fields/CollectionEmbed/button-add-child.html.twig")}}
         {% endif %}
