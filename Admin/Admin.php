@@ -343,13 +343,26 @@ abstract class Admin implements AdminInterface
 
         if($this->module->getEnableMultiDomain() && (count($listAdminEvent->getAdminHandler()->getDomainsManagement()->getDomainsWithoutVirtual()) > 1))
         {
+          $domainsForDuplicate = array();
           /** @var Domain $domain */
           foreach($listAdminEvent->getAdminHandler()->getDomainsManagement()->getDomainsWithoutVirtual() as $domain)
           {
-            if($domain->getId() !== $this->module->getFilterDomainId())
+            if($domain->getId() !== $this->module->getFilterDomainId() && $domain->getIsMaster())
             {
+              $domainsForDuplicate[] = $domain;
+            }
+          }
+          if(count($domainsForDuplicate) > 1)
+          {
+            foreach ($domainsForDuplicate as $domain)
+            {
+              $parametersDuplicateUrl = array('domainId' => $domain->getId());
+              if($domain->getLanguage())
+              {
+                $parametersDuplicateUrl["language"] = $domain->getLanguage();
+              }
               $listMapper->addColumnAction(new Action("duplicate", "actions.duplicate_by_domain",
-                  $this->module->generateUrl("duplicate", array('domainId' => $domain->getId())),
+                  $this->module->generateUrl("duplicate", $parametersDuplicateUrl),
                   "austral-picto-stack",
                   array(
                     "attr"  =>  array(
@@ -366,6 +379,9 @@ abstract class Admin implements AdminInterface
               );
             }
           }
+
+
+
         }
       }
 
