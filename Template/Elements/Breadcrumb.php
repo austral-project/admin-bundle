@@ -15,13 +15,14 @@ use Austral\AdminBundle\Module\Modules;
 
 /**
  * Austral Breadcrumb.
+ * @template T of object
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class Breadcrumb
 {
 
   /**
-   * @var array
+   * @var array<int, array{url: string|null, entitled?: string, translateKey?: string, picto: string}>
    */
   protected array $breadcrumb = array();
 
@@ -34,33 +35,34 @@ class Breadcrumb
   }
 
   /**
-   * @param Modules $modules
-   * @param Module $module
+   * @param Modules<T> $modules
+   * @param Module<T> $currentModule
    *
    * @return $this
    */
-  public function init(Modules $modules, Module $module): Breadcrumb
+  public function init(Modules $modules, Module $currentModule): self
   {
     $breadcrumb = array();
     $index = 0;
-    $this->breadcrumbElement($breadcrumb, $modules->getModuleByPath("austral_admin_index"), $index);
-    if($module)
+    $moduleIndex = $modules->getModuleByPath("austral_admin_index");
+    if($moduleIndex)
     {
-      if($module->getModulePath() !== "austral_admin_index")
-      {
-        $this->breadcrumbElement($breadcrumb, $module, $index);
-      }
+      $this->breadcrumbElement($breadcrumb, $moduleIndex, $index);
+    }
+    if($currentModule->getModulePath() !== "austral_admin_index")
+    {
+      $this->breadcrumbElement($breadcrumb, $currentModule, $index);
     }
     $this->breadcrumb = $breadcrumb;
     return $this;
   }
 
   /**
-   * @param array $breadcrumb
-   * @param Module $module
+   * @param array<array{url: string, entitled: string, picto: string}> $breadcrumb
+   * @param Module<T> $module
    * @param int $index
    */
-  protected function breadcrumbElement(array &$breadcrumb, Module $module, int &$index = 0)
+  protected function breadcrumbElement(array &$breadcrumb, Module $module, int &$index = 0): void
   {
     if($parent = $module->getParent())
     {
@@ -75,12 +77,12 @@ class Breadcrumb
   }
 
   /**
-   * @param Module $module
-   * @param $translateKey
+   * @param Module<T> $module
+   * @param string $translateKey
    *
    * @return $this
    */
-  public function addBreadcrumbEntry(Module $module, $translateKey): Breadcrumb
+  public function addBreadcrumbEntry(Module $module, string $translateKey): self
   {
     $this->breadcrumb[] = array(
       "url"             =>  $module->generateUrl(),
@@ -91,9 +93,11 @@ class Breadcrumb
   }
 
   /**
-   * @return array
+   * get
+   *
+   * @return array<int, array{url: string|null, entitled?: string, translateKey?: string, picto: string}>
    */
-  public function __serialize()
+  public function get(): array
   {
     return $this->breadcrumb;
   }

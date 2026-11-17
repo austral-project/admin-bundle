@@ -12,13 +12,14 @@ namespace Austral\AdminBundle\Command;
 
 use Austral\AdminBundle\Module\Module;
 
+use Austral\AdminBundle\Module\Modules;
 use Austral\SecurityBundle\Entity\Interfaces\RoleInterface;
 use Austral\SecurityBundle\EntityManager\RoleEntityManager;
 
 use Austral\ToolsBundle\Command\Base\Command;
 use Austral\ToolsBundle\Command\Exception\CommandException;
 
-use Austral\EntityBundle\Entity\EntityInterface;
+use Austral\Contracts\Entity\EntityInterface;
 
 use Doctrine\DBAL\Driver\PDO\MySQL\Driver;
 use Doctrine\ORM\NonUniqueResultException;
@@ -26,10 +27,13 @@ use Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use function Symfony\Component\String\u;
 
 /**
  * Austral Roles Command.
+ * @template T of object
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  * @final
  */
@@ -45,11 +49,6 @@ class AdminRoleCommand extends Command
    * @var string
    */
   protected string $titleCommande = "Create or update Module Roles";
-
-  /**
-   * @var RoleEntityManager|null
-   */
-  protected ?RoleEntityManager $roleEntityManager;
 
   /**
    * @var array
@@ -82,6 +81,24 @@ EOF
     ;
   }
 
+
+
+  /**
+   * @param RoleEntityManager $roleEntityManager
+   * @param Modules<T> $modules
+   * @param string|null $name
+   * @param (callable(): mixed)|null $code
+   */
+  public function __construct(
+    #[Autowire(service: 'austral.entity_manager.role')] protected RoleEntityManager $roleEntityManager,
+    #[Autowire(service: 'austral.admin.modules')] protected Modules $modules,
+    ?string $name = null,
+    ?callable $code = null)
+  {
+    parent::__construct($name, $code);
+  }
+
+
   /**
    * @param InputInterface $input
    * @param OutputInterface $output
@@ -90,9 +107,8 @@ EOF
    * @throws Exception
    * @throws NonUniqueResultException
    */
-  protected function executeCommand(InputInterface $input, OutputInterface $output)
+  protected function executeCommand(InputInterface $input, OutputInterface $output): void
   {
-    $this->roleEntityManager = $this->container->get("austral.entity_manager.role");
     if($input->getOption("clean"))
     {
       $classMetaData = $this->roleEntityManager->getDoctrineEntityManager()->getClassMetadata($this->roleEntityManager->getClass());
@@ -112,9 +128,13 @@ EOF
         $connection->commit();
         $this->viewMessage("Roles Clean successfully !!!", "success");
       }
-      catch (Exception $e) {
-        $connection->rollback();
-        $this->viewMessage("Roles Clean error -> {$e->getMessage()} !!!", "error");
+      catch (Exception|\Doctrine\DBAL\Exception $e) {
+        try {
+          $connection->rollback();
+          $this->viewMessage("Roles Clean error -> {$e->getMessage()} !!!", "error");
+        } catch (\Doctrine\DBAL\Exception $e) {
+          $this->viewMessage("Rollback error -> {$e->getMessage()} !!!", "error");
+        }
       }
     }
 
@@ -124,9 +144,8 @@ EOF
       $nbRolesAdd = 0;
       $nbRolesUpdate = 0;
       try {
-        $modules = $this->container->get('austral.admin.modules')->init()->getModules();
-        /** @var Module $module */
-        foreach($modules as $module)
+        /** @var Module<T> $module */
+        foreach($this->modules->init()->getModules() as $module)
         {
           $moduleParameters = $module->getModuleParameters();
           $securityKey = array_key_exists("security_key", $moduleParameters) ? $moduleParameters["security_key"] : $module->getModulePath();

@@ -17,11 +17,12 @@ use Austral\AdminBundle\Admin\Event\FormAdminEvent;
 use Austral\AdminBundle\Admin\Event\ListAdminEvent;
 use Austral\AdminBundle\Admin\Event\SortableAdminEvent;
 use Austral\AdminBundle\Module\Module;
-use Austral\EntityBundle\Entity\EntityInterface;
-use Austral\EntityBundle\Entity\Interfaces\TranslateMasterInterface;
+use Austral\Contracts\Entity\EntityInterface;
+use Austral\Contracts\Translate\TranslateMasterInterface;
 use Austral\HttpBundle\Entity\Domain;
 use Austral\ListBundle\Column\Action;
 use Austral\ListBundle\Column\Actions;
+use Austral\ListBundle\Column\Interfaces\ColumnActionInterface;
 use Austral\SeoBundle\Entity\Interfaces\UrlParameterInterface;
 use Austral\ToolsBundle\AustralTools;
 
@@ -30,50 +31,54 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Austral Admin  Abstract.
+ * @template T of object
+ *
+ * @implements AdminInterface<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  * @abstract
  */
 abstract class Admin implements AdminInterface
 {
 
-  const DEFAULT_LISTENER = array(
-    ListAdminEvent::EVENT_START             => "adminEventListStart",
-    ListAdminEvent::EVENT_HYDRATE           => "adminEventListHydrate",
-    ListAdminEvent::EVENT_END               => "adminEventListEnd",
+  const array DEFAULT_LISTENER = array(
+    AdminEventInterface::ADMIN_EVENT_LIST_START             => "adminEventListStart",
+    AdminEventInterface::ADMIN_EVENT_LIST_HYDRATE           => "adminEventListHydrate",
+    AdminEventInterface::ADMIN_EVENT_LIST_END               => "adminEventListEnd",
 
-    FormAdminEvent::EVENT_START             => "adminEventFormStart",
-    FormAdminEvent::EVENT_END               => "adminEventFormEnd",
+    AdminEventInterface::ADMIN_EVENT_FORM_START             => "adminEventFormStart",
+    AdminEventInterface::ADMIN_EVENT_FORM_END               => "adminEventFormEnd",
 
-    ActionAdminEvent::EVENT_START           => "adminEventActionStart",
-    ActionAdminEvent::EVENT_END             => "adminEventActionEnd",
+    AdminEventInterface::ADMIN_EVENT_ACTION_START           => "adminEventActionStart",
+    AdminEventInterface::ADMIN_EVENT_ACTION_END             => "adminEventActionEnd",
 
-    ChangeValueAdminEvent::EVENT_START      => "adminEventChangeValueStart",
+    AdminEventInterface::ADMIN_EVENT_CHANGE_VALUE_START      => "adminEventChangeValueStart",
 
-    SortableAdminEvent::EVENT_END           => "adminEventSortableEnd",
+    AdminEventInterface::ADMIN_EVENT_SORTABLE_END           => "adminEventSortableEnd",
   );
 
   /**
-   * @var ContainerInterface
+   * @var ContainerInterface|null
    */
-  protected ContainerInterface $container;
+  protected ?ContainerInterface $container = null;
 
   /**
-   * @var TranslatorInterface
+   * @var TranslatorInterface|null
    */
-  protected TranslatorInterface $translator;
+  protected ?TranslatorInterface $translator = null;
 
   /**
-   * @var array
+   * @var array<string, array<int, list<string>>>
    */
   protected array $events = array();
 
   /**
-   * @var EntityInterface
+   * @var EntityInterface<T>|null
    */
-  protected EntityInterface $object;
+  protected ?EntityInterface $object = null;
 
   /**
-   * @var Module|null
+   * @var Module<T>|null
    */
   protected ?Module $module = null;
 
@@ -94,62 +99,63 @@ abstract class Admin implements AdminInterface
    */
   public function __construct()
   {
+
     /**
      * @var string $eventName
-     * @var string|array $params
+     * @var string|array{0: string, 1?: int}|list<array{0: string, 1?: int}> $params
      */
     foreach(self::DEFAULT_LISTENER as $eventName => $params)
     {
-      if (\is_string($params)) {
-        $this->addEvent($eventName, $params, 0);
-      } elseif (\is_string($params[0])) {
-        $this->addEvent($eventName, $params[0], $params[1] ?? 0);
-      } else {
-        foreach ($params as $param) {
-          $this->addEvent($eventName, $param[0], $param[1] ?? 0);
-        }
-      }
+      $this->addEvents($eventName, $params);
     }
 
     /**
      * @var string $eventName
-     * @var string|array $params
+     * @var string|array{0: string, 1: int}|list<array{0: string, 1?: int}> $params
      */
     foreach($this->getEvents() as $eventName => $params)
     {
-      if (\is_string($params)) {
-        $this->addEvent($eventName, $params, -1024);
-      } elseif (\is_string($params[0])) {
-        $this->addEvent($eventName, $params[0], $params[1] ?? -1024);
-      } else {
-        foreach ($params as $param) {
-          $this->addEvent($eventName, $param[0], $param[1] ?? -1024);
-        }
-      }
+      $this->addEvents($eventName, $params);
     }
   }
 
   /**
-   * setModule
-   *
-   * @param Module|null $module
-   * @return $this
+   * @param string $eventName
+   * @param string|array{0: string, 1: int}|list<array{0: string, 1?: int}> $params
    */
-  public function setModule(?Module $module = null): Admin
+  private function addEvents(string $eventName, mixed $params): void
   {
-    $this->module = $module;
-    return $this;
+    if (\is_string($params)) {
+      $this->addEvent($eventName, $params);
+    } elseif (isset($params[0]) && \is_array($params[0])) {
+      /** @var array{0: string, 1?: int} $param */
+      foreach ($params as $param) {
+        $this->addEvent($eventName, $param[0], (int) ($param[1] ?? 0));
+      }
+    } else {
+      $this->addEvent($eventName, is_string($params[0]) ? $params[0] : "", (int) ($params[1] ?? 0));
+    }
   }
 
   /**
-   * @param $eventName
-   * @param $methodName
+   * @param string $eventName
+   * @param string $methodName
    * @param int $priority
    */
-  private function addEvent($eventName, $methodName, int $priority = 0)
+  private function addEvent(string $eventName, string $methodName, int $priority = 0): void
   {
     $this->events[$eventName][$priority][] = $methodName;
     ksort($this->events[$eventName], SORT_NUMERIC);
+  }
+
+  /**
+   * @param Module<T>|null $module
+   * @return $this
+   */
+  public function setModule(?Module $module = null): self
+  {
+    $this->module = $module;
+    return $this;
   }
 
   /**
@@ -157,29 +163,23 @@ abstract class Admin implements AdminInterface
    *
    * @return $this
    */
-  public function setCurrentLanguage(string $currentLanguage): Admin
+  public function setCurrentLanguage(string $currentLanguage): self
   {
     $this->currentLanguage = $currentLanguage;
     return $this;
   }
 
   /**
-   * @param $container
-   *
-   * @return $this
-   * @final
+   * @inheritDoc
    */
-  public function setContainer($container): Admin
+  public function setContainer($container): self
   {
     $this->container = $container;
     return $this;
   }
 
   /**
-   * @param $translator
-   *
-   * @return $this
-   * @final
+   * @inheritDoc
    */
   public function setTranslator($translator): Admin
   {
@@ -188,22 +188,19 @@ abstract class Admin implements AdminInterface
   }
 
   /**
-   * @return array
+   * @inheritDoc
    */
   public function getEvents(): array
   {
-    return array();
+    return $this->events;
   }
 
   /**
-   * @param string $eventName
-   * @param AdminEventInterface $managerEvent
-   *
-   * @final
+   * @inheritDoc
    */
-  public function dispatch(string $eventName, AdminEventInterface $managerEvent)
+  public function dispatch(string $eventName, AdminEventInterface $managerEvent): void
   {
-    foreach(AustralTools::getValueByKey($this->events, $eventName, array()) as $methods)
+    foreach(AustralTools::valueByKey($this->events, $eventName, array()) as $methods)
     {
       foreach($methods as $method)
       {
@@ -216,20 +213,17 @@ abstract class Admin implements AdminInterface
   }
 
   /**
-   * @return bool
+   * @inheritDoc
    */
   public function isDevEnv(): bool
   {
-    return $this->container->getParameter("kernel.environment") === "dev";
+    return $this->container?->getParameter("kernel.environment") === "dev";
   }
 
   /**
-   * @param EntityInterface $object
-   *
-   * @return $this
-   * @final
+   * @inheritDoc
    */
-  public function setObject(EntityInterface $object): Admin
+  public function setObject(EntityInterface $object): self
   {
     $this->object = $object;
     return $this;
@@ -245,32 +239,35 @@ abstract class Admin implements AdminInterface
   }
 
   /**
-   * @var array
+   * @var array<int, Module<T>>
    */
   protected array $childrenModules = array();
 
   /**
-   * @param ListAdminEvent $listAdminEvent
+   * @param ListAdminEvent<T> $listAdminEvent
    */
-  public function listChildrenModules(ListAdminEvent $listAdminEvent)
+  public function listChildrenModules(ListAdminEvent $listAdminEvent): void
   {
-    /** @var Module $module */
-    foreach ($this->module->getChildren() as $module)
+    if($this->module instanceof Module)
     {
-      if($module->isGranted())
+      /** @var Module<T> $module */
+      foreach ($this->module->getChildren() as $module)
       {
-        $this->childrenModules[] = $module;
+        if($module->isGranted())
+        {
+          $this->childrenModules[] = $module;
+        }
       }
     }
     $listAdminEvent->getTemplateParameters()->addParameters("childrenModules", $this->childrenModules);
   }
 
   /**
-   * @param ListAdminEvent $listAdminEvent
+   * @param ListAdminEvent<T> $listAdminEvent
    *
    * @final
    */
-  protected function adminEventListStart(ListAdminEvent $listAdminEvent)
+  protected function adminEventListStart(ListAdminEvent $listAdminEvent): void
   {
     if($listAdminEvent->getListMapper())
     {
@@ -285,39 +282,41 @@ abstract class Admin implements AdminInterface
   }
 
   /**
-   * @param ListAdminEvent $listAdminEvent
+   * @param ListAdminEvent<T> $listAdminEvent
    *
    * @throws \Exception
    * @final
    */
-  protected function adminEventListHydrate(ListAdminEvent $listAdminEvent)
+  protected function adminEventListHydrate(ListAdminEvent $listAdminEvent): void
   {
-    $listAdminEvent->getListMapper()->generate();
+    $listAdminEvent->getListMapper()?->generate();
   }
 
   /**
-   * @param ListAdminEvent $listAdminEvent
+   * @param ListAdminEvent<T> $listAdminEvent
    *
    * @final
    */
-  protected function adminEventListEnd(ListAdminEvent $listAdminEvent)
+  protected function adminEventListEnd(ListAdminEvent $listAdminEvent): void
   {
-    if($listMapper = $listAdminEvent->getListMapper())
+    /** @var list<Action<T>> $actionsColumn */
+    $actionsColumn = [];
+
+    if(($listMapper = $listAdminEvent->getListMapper()) && $this->module)
     {
       if($this->module->isGranted("edit"))
       {
-        $listMapper->addColumnAction(new Action("edit", "actions.edit",
-            $this->module->generateUrl("edit"),
-            "austral-picto-edit",
-            array(
-              "attr"  =>  array(
-                "data-click-actions"        =>  "reload",
-                "data-reload-elements-key"  =>  "container"
-              ),
-              "translateParameters" => array(
-                "module_name"     =>  $this->module->translateSingular(),
-                "module_gender"   =>  $this->module->translateGenre()
-              )
+        $actionsColumn[] = new Action("edit", "actions.edit",
+          $this->module->generateUrl("edit"),
+          "austral-picto-edit",
+          array(
+            "attr"  =>  array(
+              "data-click-actions"        =>  "reload",
+              "data-reload-elements-key"  =>  "container"
+            ),
+            "translateParameters" => array(
+              "module_name"     =>  $this->module->translateSingular(),
+              "module_gender"   =>  $this->module->translateGenre()
             )
           )
         );
@@ -325,27 +324,27 @@ abstract class Admin implements AdminInterface
 
       if($this->module->isGranted("duplicate"))
       {
-        $listMapper->addColumnAction(new Action("duplicate", "actions.duplicate",
-            $this->module->generateUrl("duplicate"),
-          "austral-picto-stack",
-            array(
-              "attr"  =>  array(
-                "data-click-actions"        =>  "reload",
-                "data-reload-elements-key"  =>  "container"
-              ),
-              "translateParameters" => array(
-                "module_name"     =>  $this->module->translateSingular(),
-                "module_gender"   =>  $this->module->translateGenre()
-              )
+        $actionsColumn[] = new Action("duplicate", "actions.duplicate",
+          $this->module->generateUrl("duplicate"),
+        "austral-picto-stack",
+          array(
+            "attr"  =>  array(
+              "data-click-actions"        =>  "reload",
+              "data-reload-elements-key"  =>  "container"
+            ),
+            "translateParameters" => array(
+              "module_name"     =>  $this->module->translateSingular(),
+              "module_gender"   =>  $this->module->translateGenre()
             )
           )
         );
-
-        if($this->module->getEnableMultiDomain() && (count($listAdminEvent->getAdminHandler()->getDomainsManagement()->getDomainsWithoutVirtual()) > 1))
+        $domainsWithoutVirtual = $listAdminEvent->getAdminHandler()->getDomainsManagement()?->getDomainsWithoutVirtual();
+        if($this->module->getEnableMultiDomain() && $domainsWithoutVirtual && (count($domainsWithoutVirtual) > 1))
         {
-          $domainsForDuplicate = array();
-          /** @var Domain $domain */
-          foreach($listAdminEvent->getAdminHandler()->getDomainsManagement()->getDomainsWithoutVirtual() as $domain)
+          /** @var Domain<T>[] $domainsForDuplicate */
+          $domainsForDuplicate = [];
+          /** @var Domain<T> $domain */
+          foreach($domainsWithoutVirtual as $domain)
           {
             if($domain->getId() !== $this->module->getFilterDomainId() && $domain->getIsMaster())
             {
@@ -354,26 +353,25 @@ abstract class Admin implements AdminInterface
           }
           if(count($domainsForDuplicate) > 1)
           {
-            foreach ($domainsForDuplicate as $domain)
+            foreach($domainsForDuplicate as $domain)
             {
               $parametersDuplicateUrl = array('domainId' => $domain->getId());
               if($domain->getLanguage())
               {
                 $parametersDuplicateUrl["language"] = $domain->getLanguage();
               }
-              $listMapper->addColumnAction(new Action("duplicate", "actions.duplicate_by_domain",
-                  $this->module->generateUrl("duplicate", $parametersDuplicateUrl),
-                  "austral-picto-stack",
-                  array(
-                    "attr"  =>  array(
-                      "data-click-actions"        =>  "reload",
-                      "data-reload-elements-key"  =>  "container"
-                    ),
-                    "translateParameters" => array(
-                      "module_name"     =>  $this->module->translateSingular(),
-                      "module_gender"   =>  $this->module->translateGenre(),
-                      "%domainName%"    =>  $domain->getName()
-                    )
+              $actionsColumn[] = new Action("duplicate", "actions.duplicate_by_domain",
+                $this->module->generateUrl("duplicate", $parametersDuplicateUrl),
+                "austral-picto-stack",
+                array(
+                  "attr"  =>  array(
+                    "data-click-actions"        =>  "reload",
+                    "data-reload-elements-key"  =>  "container"
+                  ),
+                  "translateParameters" => array(
+                    "module_name"     =>  $this->module->translateSingular(),
+                    "module_gender"   =>  $this->module->translateGenre(),
+                    "%domainName%"    =>  $domain->getName()
                   )
                 )
               );
@@ -387,20 +385,19 @@ abstract class Admin implements AdminInterface
 
       if($this->module->isGranted("delete"))
       {
-        $listMapper->addColumnAction(new Action("delete", "actions.delete",
-            $this->module->generateUrl("delete"),
-            "austral-picto-trash",
-            array(
-              "data-url" =>  true,
-              "attr"    =>  array(
-                "data-click-actions"        =>  "remove, confirm",
-                "data-alert"                =>  "confirm",
-                "data-reload-elements-key"  =>  "container",
-              ),
-              "translateParameters" => array(
-                "module_name"     =>  $this->module->translateSingular(),
-                "module_gender"   =>  $this->module->translateGenre()
-              )
+        $actionsColumn[] = new Action("delete", "actions.delete",
+          $this->module->generateUrl("delete"),
+          "austral-picto-trash",
+          array(
+            "data-url" =>  true,
+            "attr"    =>  array(
+              "data-click-actions"        =>  "remove, confirm",
+              "data-alert"                =>  "confirm",
+              "data-reload-elements-key"  =>  "container",
+            ),
+            "translateParameters" => array(
+              "module_name"     =>  $this->module->translateSingular(),
+              "module_gender"   =>  $this->module->translateGenre()
             )
           )
         );
@@ -408,11 +405,27 @@ abstract class Admin implements AdminInterface
 
       if($this->module->isGranted("download") && $this->module->downloadEnabled())
       {
-
         $formats = $this->module->getDownloadFormats();
         if(count($formats) > 1)
         {
-          $actions = new Actions("download", "actions.download.default",
+          /** @var list<ColumnActionInterface<T>> $actionsDownload */
+          $actionsDownload = [];
+          foreach($this->module->getDownloadFormats() as $format)
+          {
+            $actionsDownload[] = new Action("download-{$format}", "download.format.{$format}",
+              $this->module->generateUrl("download", array("format" => $format)),
+              "austral-picto-cloud-download",
+              array(
+                "translateParameters" => array(
+                  "module_name"     =>  $this->module->translateSingular(),
+                  "module_gender"   =>  $this->module->translateGenre()
+                )
+              )
+            );
+          }
+
+          /** @var Actions<T> $actionDownload */
+          $actionDownload = new Actions("download", "actions.download.default",
             null,
             "austral-picto-cloud-download",
             array(
@@ -422,24 +435,12 @@ abstract class Admin implements AdminInterface
               )
             )
           );
-
-          foreach($this->module->getDownloadFormats() as $format)
-          {
-            $actions->addAction(new Action("download-{$format}", "download.format.{$format}",
-              $this->module->generateUrl("download", array("format" => $format)),
-              "austral-picto-cloud-download",
-              array(
-                "translateParameters" => array(
-                  "module_name"     =>  $this->module->translateSingular(),
-                  "module_gender"   =>  $this->module->translateGenre()
-                )
-              )
-            ));
-          }
+          $actionDownload->addActions($actionsDownload);
         }
         else
         {
-          $actions = new Action("download", "actions.download.".AustralTools::first($formats),
+          /** @var Action<T> $actionDownload */
+          $actionDownload = new Action("download", "actions.download.".AustralTools::first($formats),
             $this->module->generateUrl("download", array("format"=>AustralTools::first($formats))),
             "austral-picto-cloud-download",
             array(
@@ -451,96 +452,102 @@ abstract class Admin implements AdminInterface
             )
           );
         }
-        $listMapper->addAction($actions, 10);
+        $listMapper->addAction($actionDownload, 10);
       }
 
-      if($this->module->isGranted("truncate") &&
-        $this->module->getTruncateEnabled())
+      if($this->module->isGranted("truncate") && $this->module->getTruncateEnabled())
       {
-        $listAdminEvent->getListMapper()->addAction(new Action("truncate", "actions.truncate",
-            $this->module->generateUrl("truncate"),
-            "austral-picto-trash",
-            array(
-              "attr"    =>  array(
-                "data-click-actions"        =>  "reload, confirm",
-                "data-reload-elements-key"  =>  "container",
-                "data-alert"                =>  "confirm",
-                "data-alert-options"        =>  json_encode(array(
-                  'button'  =>  array(
-                    "confirm" => $this->translator->trans("sweetAlert.confirm.actions.confirmAll", array(), $listMapper->getTranslateDomain()),
-                    "cancel"  => $this->translator->trans("sweetAlert.confirm.actions.cancel", array(), $listMapper->getTranslateDomain()),
-                  )
-                ))
-              ),
-              "translateParameters" => array(
-                "module_name"     =>  $this->module->translateSingular(),
-                "module_gender"   =>  $this->module->translateGenre()
-              )
+        /** @var Action<T> $actionTruncate */
+        $actionTruncate = new Action("truncate", "actions.truncate",
+          $this->module->generateUrl("truncate"),
+          "austral-picto-trash",
+          array(
+            "attr"    =>  array(
+              "data-click-actions"        =>  "reload, confirm",
+              "data-reload-elements-key"  =>  "container",
+              "data-alert"                =>  "confirm",
+              "data-alert-options"        =>  json_encode(array(
+                'button'  =>  array(
+                  "confirm" => $this->translator?->trans("sweetAlert.confirm.actions.confirmAll", array(), $listMapper->getTranslateDomain()),
+                  "cancel"  => $this->translator?->trans("sweetAlert.confirm.actions.cancel", array(), $listMapper->getTranslateDomain()),
+                )
+              ))
+            ),
+            "translateParameters" => array(
+              "module_name"     =>  $this->module->translateSingular(),
+              "module_gender"   =>  $this->module->translateGenre()
             )
-          ), 30
+          )
         );
+        $listMapper->addAction($actionTruncate, 30);
       }
 
       if($this->module->isGranted("create"))
       {
-        $listMapper->addAction(new Action("create", "actions.create",
-            $this->module->generateUrl("create"),
-            null,
-            array(
-              "keybord-shortcut"            =>  "CTRL+MAJ+N",
-              "attr"    =>  array(
-                "data-click-actions"    =>  "reload",
-                "data-reload-elements-key"  =>  "container"
-              ),
-              "translateParameters" => array(
-                "module_name"     =>  $this->module->translateSingular(),
-                "module_gender"   =>  $this->module->translateGenre()
-              )
+        /** @var Action<T> $actionCreate */
+        $actionCreate = new Action("create", "actions.create",
+          $this->module->generateUrl("create"),
+          null,
+          array(
+            "keybord-shortcut"            =>  "CTRL+MAJ+N",
+            "attr"    =>  array(
+              "data-click-actions"    =>  "reload",
+              "data-reload-elements-key"  =>  "container"
+            ),
+            "translateParameters" => array(
+              "module_name"     =>  $this->module->translateSingular(),
+              "module_gender"   =>  $this->module->translateGenre()
             )
-          ), 40
+          )
         );
+        $listMapper->addAction($actionCreate, 40);
       }
 
       if($this->module->isGranted("edit"))
       {
-        $listMapper->addColumnAction(new Action("edit_blank", "actions.newOnglet",
-            $this->module->generateUrl("edit"),
-            "austral-picto-corner-forward",
-            array(
-              "attr"  =>  array(
-                "itemClass"   =>  "in-to-context first",
-                "target"      =>  "_blank",
-              ),
-              "translateParameters" => array(
-                "module_name"     =>  $this->module->translateSingular(),
-                "module_gender"   =>  $this->module->translateGenre()
-              )
+        $actionsColumn[] = new Action("edit_blank", "actions.newOnglet",
+          $this->module->generateUrl("edit"),
+          "austral-picto-corner-forward",
+          array(
+            "attr"  =>  array(
+              "itemClass"   =>  "in-to-context first",
+              "target"      =>  "_blank",
+            ),
+            "translateParameters" => array(
+              "module_name"     =>  $this->module->translateSingular(),
+              "module_gender"   =>  $this->module->translateGenre()
             )
           )
         );
       }
 
-      if(AustralTools::usedImplements($this->module->getEntityManager()->getClass(), "Austral\EntityBundle\Entity\Interfaces\SeoInterface"))
+      $entityClass = $this->module->getEntityManager()?->getClass();
+      if($entityClass && AustralTools::usedImplements($entityClass, "Austral\EntityBundle\Entity\Interfaces\SeoInterface"))
       {
         try {
-          $listMapper->addColumnAction(new Action("goTo", "actions.goTo",
-              $listAdminEvent->getAdminHandler()->generateUrl("austral_website_page", array('slug'=>"__refUrl__")),
-              "austral-picto-corner-forward",
-              array(
-                "attr"  =>  array(
-                  "itemClass"   =>  "in-to-context",
-                  "target"      =>  "_blank"
-                ),
-                "translateParameters" => array(
-                  "module_name"     =>  $this->module->translateSingular(),
-                  "module_gender"   =>  $this->module->translateGenre()
-                )
+          $actionsColumn[] = new Action("goTo", "actions.goTo",
+            $listAdminEvent->getAdminHandler()->generateUrl("austral_website_page", array('slug'=>"__refUrl__")),
+            "austral-picto-corner-forward",
+            array(
+              "attr"  =>  array(
+                "itemClass"   =>  "in-to-context",
+                "target"      =>  "_blank"
+              ),
+              "translateParameters" => array(
+                "module_name"     =>  $this->module->translateSingular(),
+                "module_gender"   =>  $this->module->translateGenre()
               )
             )
           );
         } catch(\Exception $e) {
 
         }
+      }
+
+      /** @var ColumnActionInterface<T> $action */
+      foreach ($actionsColumn as $action)
+      {
+        $listMapper->addAction($action);
       }
 
       $listAdminEvent->getTemplateParameters()->addParameters("list", array(
@@ -554,35 +561,37 @@ abstract class Admin implements AdminInterface
   }
 
   /**
-   * @param FormAdminEvent $formAdminEvent
+   * @param FormAdminEvent<T> $formAdminEvent
    *
    * @final
    */
-  protected function adminEventFormStart(FormAdminEvent $formAdminEvent)
+  protected function adminEventFormStart(FormAdminEvent $formAdminEvent): void
   {
     $formAdminEvent->getTemplateParameters()->setPath("@AustralAdmin/Form/index.html.twig");
     $formAdminEvent->getTemplateParameters()->addParameters("pageType", "action");
   }
 
   /**
-   * @param FormAdminEvent $formAdminEvent
+   * @param FormAdminEvent<T> $formAdminEvent
    *
    * @final
    */
-  protected function adminEventFormEnd(FormAdminEvent $formAdminEvent)
+  protected function adminEventFormEnd(FormAdminEvent $formAdminEvent): void
   {
     $formAdminEvent->getTemplateParameters()->addParameters("form", array(
       "mapper"    =>  $formAdminEvent->getFormMapper(),
       "view"      =>  $formAdminEvent->getForm()->createView()
     ));
-    $formAdminEvent->getTemplateParameters()
-      ->breadcrumb()
-      ->addBreadcrumbEntry(clone $this->module,"pages.form.{$formAdminEvent->getFormMapper()->getFormTypeAction()}.name");
-
-
-    if($this->module->isGranted("duplicate"))
+    if($this->module)
     {
-      $formAdminEvent->getFormMapper()->addAction(new Action("duplicate", "actions.duplicate",
+      $formAdminEvent->getTemplateParameters()
+        ->breadcrumb()
+        ->addBreadcrumbEntry(clone $this->module,"pages.form.{$formAdminEvent->getFormMapper()->getFormTypeAction()}.name");
+
+
+      if($this->module->isGranted("duplicate"))
+      {
+        $formAdminEvent->getFormMapper()->addAction(new Action("duplicate", "actions.duplicate",
           $this->module->generateUrl("duplicate", array('id'=>$formAdminEvent->getFormMapper()->getObject()->getId())),
           "austral-picto-stack",
           array(
@@ -597,33 +606,33 @@ abstract class Admin implements AdminInterface
             )
           )
         ), 40
-      );
-    }
-    if($this->module->isGranted("delete"))
-    {
-      $formAdminEvent->getFormMapper()->addAction(new Action("delete", "actions.delete",
-        $this->module->generateUrl("delete", array('id'=>$formAdminEvent->getFormMapper()->getObject()->getId())),
-        "austral-picto-trash",
-        array(
-          "keybord-shortcut"            =>  "CTRL+MAJ+DELETE",
-          "attr"    =>  array(
-            "data-click-actions"        =>  "reload, confirm",
-            "data-reload-elements-key"  =>  "container",
-            "data-alert"                =>  "confirm",
-          ),
-          "translateParameters" => array(
-            "module_name"     =>  $this->module->translateSingular(),
-            "module_gender"   =>  $this->module->translateGenre()
+        );
+      }
+      if($this->module->isGranted("delete"))
+      {
+        $formAdminEvent->getFormMapper()->addAction(new Action("delete", "actions.delete",
+          $this->module->generateUrl("delete", array('id'=>$formAdminEvent->getFormMapper()->getObject()->getId())),
+          "austral-picto-trash",
+          array(
+            "keybord-shortcut"            =>  "CTRL+MAJ+DELETE",
+            "attr"    =>  array(
+              "data-click-actions"        =>  "reload, confirm",
+              "data-reload-elements-key"  =>  "container",
+              "data-alert"                =>  "confirm",
+            ),
+            "translateParameters" => array(
+              "module_name"     =>  $this->module->translateSingular(),
+              "module_gender"   =>  $this->module->translateGenre()
+            )
           )
-        )
-      ), 80
-      );
-    }
-    if($this->module->isGranted("create"))
-    {
-      $formAdminEvent->getFormMapper()->addAction(new Action("create", "actions.create",
-        $this->module->generateUrl("create"),
-        "austral-picto-square-plus",
+        ), 80
+        );
+      }
+      if($this->module->isGranted("create"))
+      {
+        $formAdminEvent->getFormMapper()->addAction(new Action("create", "actions.create",
+          $this->module->generateUrl("create"),
+          "austral-picto-square-plus",
           array(
             "keybord-shortcut"            =>  "CTRL+MAJ+N",
             "attr"    =>  array(
@@ -636,41 +645,44 @@ abstract class Admin implements AdminInterface
             )
           )
         ), 90
-      );
+        );
+      }
     }
-
   }
 
   /**
-   * @param ActionAdminEvent $actionAdminEvent
+   * @param ActionAdminEvent<T> $actionAdminEvent
    *
    * @final
    */
-  protected function adminEventActionStart(ActionAdminEvent $actionAdminEvent)
+  protected function adminEventActionStart(ActionAdminEvent $actionAdminEvent): void
   {
     $actionAdminEvent->getTemplateParameters()->setPath("@AustralAdmin/Action/index.html.twig");
     $actionAdminEvent->getTemplateParameters()->addParameters("pageType", "action");
   }
 
   /**
-   * @param ActionAdminEvent $actionAdminEvent
+   * @param ActionAdminEvent<T> $actionAdminEvent
    *
    * @final
    */
-  protected function adminEventActionEnd(ActionAdminEvent $actionAdminEvent)
+  protected function adminEventActionEnd(ActionAdminEvent $actionAdminEvent): void
   {
     $actionAdminEvent->getTemplateParameters()->addParameters("object", $actionAdminEvent->getObject());
-    $actionAdminEvent->getTemplateParameters()
-      ->breadcrumb()
-      ->addBreadcrumbEntry(clone $this->module,"pages.action.{$actionAdminEvent->getActionKey()}.name");
+    if($this->module)
+    {
+      $actionAdminEvent->getTemplateParameters()
+        ->breadcrumb()
+        ->addBreadcrumbEntry(clone $this->module,"pages.action.{$actionAdminEvent->getActionKey()}.name");
+    }
   }
 
   /**
-   * @param ChangeValueAdminEvent $changeValueAdminEvent
+   * @param ChangeValueAdminEvent<T> $changeValueAdminEvent
    *
    * @final
    */
-  protected function adminEventChangeValueStart(ChangeValueAdminEvent $changeValueAdminEvent)
+  protected function adminEventChangeValueStart(ChangeValueAdminEvent $changeValueAdminEvent): void
   {
     $object = $changeValueAdminEvent->getObject();
 
@@ -711,19 +723,20 @@ abstract class Admin implements AdminInterface
   }
 
   /**
-   * @param SortableAdminEvent $sortableAdminEvent
+   * @param SortableAdminEvent<T> $sortableAdminEvent
    *
    * @final
    */
-  protected function adminEventSortableEnd(SortableAdminEvent $sortableAdminEvent)
+  protected function adminEventSortableEnd(SortableAdminEvent $sortableAdminEvent): void
   {
     $setter = AustralTools::createSetterFunction($sortableAdminEvent->getFieldname());
     $objects = $sortableAdminEvent->getEntityManager()->selectAll("id", "ASC", $sortableAdminEvent->getQueryBuilder());
 
     foreach($sortableAdminEvent->getPositions() as $position => $value)
     {
-      /** @var EntityInterface $object */
-      if($object = AustralTools::getValueByKey($objects, $value, null))
+      /** @var EntityInterface<T>|null $object */
+      $object = AustralTools::valueByKey($objects, $value);
+      if($object)
       {
         $this->changePositionByValue($object, $setter, $position);
         $sortableAdminEvent->getEntityManager()->update($object, false);
@@ -733,13 +746,13 @@ abstract class Admin implements AdminInterface
   }
 
   /**
-   * @param EntityInterface $object
-   * @param $setter
-   * @param $position
+   * @param EntityInterface<T> $object
+   * @param string $setter
+   * @param int $position
    *
    * @return void
    */
-  protected function changePositionByValue(EntityInterface $object, $setter, $position)
+  protected function changePositionByValue(EntityInterface $object, string $setter, int $position)
   {
     if(method_exists($object, $setter))
     {

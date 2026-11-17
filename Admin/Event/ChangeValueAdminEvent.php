@@ -11,23 +11,25 @@
 namespace Austral\AdminBundle\Admin\Event;
 
 use Austral\AdminBundle\Handler\AdminHandler;
-use Austral\EntityBundle\Entity\EntityInterface;
+use Austral\Contracts\Entity\EntityInterface;
 
 
 /**
  * Austral Admin Event Change Value.
+ * @template T of object
+ *
+ * @extends AdminEvent<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class ChangeValueAdminEvent extends AdminEvent
 {
 
-  CONST EVENT_START = "austral.admin.event.change_value.start";
-  CONST EVENT_END = "austral.admin.event.change_value.end";
+  /** @deprecated  */
+  CONST string EVENT_START = "austral.admin.event.change_value.start";
 
-  /**
-   * @var EntityInterface
-   */
-  private EntityInterface $object;
+  /** @deprecated  */
+  CONST string EVENT_END = "austral.admin.event.change_value.end";
 
   /**
    * @var string
@@ -37,17 +39,16 @@ class ChangeValueAdminEvent extends AdminEvent
   /**
    * @var mixed|null
    */
-  private $value;
+  private mixed $value;
 
 
   /**
-   * FormAdminEvent constructor.
-   * @param AdminHandler $adminHandler
-   * @param EntityInterface $object
-   * @param $fieldname
-   * @param null $value
+   * @param AdminHandler<T> $adminHandler
+   * @param EntityInterface<T> $object
+   * @param string $fieldname
+   * @param mixed $value
    */
-  public function __construct(AdminHandler $adminHandler, EntityInterface $object, $fieldname, $value = null)
+  public function __construct(AdminHandler $adminHandler, EntityInterface $object, string $fieldname, mixed $value = null)
   {
     parent::__construct($adminHandler);
     $this->object = $object;
@@ -57,22 +58,14 @@ class ChangeValueAdminEvent extends AdminEvent
 
   /**
    * Get object
-   * @return EntityInterface
+   * @return EntityInterface<T>
    */
   public function getObject(): EntityInterface
   {
+    if (!$this->object instanceof EntityInterface) {
+      throw new \LogicException('Object is required.');
+    }
     return $this->object;
-  }
-
-  /**
-   * @param EntityInterface $object
-   *
-   * @return ChangeValueAdminEvent
-   */
-  public function setObject(EntityInterface $object): ChangeValueAdminEvent
-  {
-    $this->object = $object;
-    return $this;
   }
 
   /**
@@ -87,9 +80,9 @@ class ChangeValueAdminEvent extends AdminEvent
   /**
    * @param string $fieldname
    *
-   * @return ChangeValueAdminEvent
+   * @return $this
    */
-  public function setFieldname(string $fieldname): ChangeValueAdminEvent
+  public function setFieldname(string $fieldname): self
   {
     $this->fieldname = $fieldname;
     return $this;
@@ -99,7 +92,7 @@ class ChangeValueAdminEvent extends AdminEvent
    * Get value
    * @return mixed
    */
-  public function getValue()
+  public function getValue(): mixed
   {
     return $this->value;
   }
@@ -107,9 +100,9 @@ class ChangeValueAdminEvent extends AdminEvent
   /**
    * @param mixed $value
    *
-   * @return ChangeValueAdminEvent
+   * @return $this
    */
-  public function setValue($value): ChangeValueAdminEvent
+  public function setValue(mixed $value): self
   {
     $this->value = $value;
     return $this;

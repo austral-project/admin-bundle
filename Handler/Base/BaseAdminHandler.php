@@ -15,11 +15,14 @@ use Austral\HttpBundle\Handler\HttpHandler;
 use Austral\AdminBundle\Handler\Interfaces\AdminHandlerInterface;
 use Austral\AdminBundle\Module\Module;
 use Austral\AdminBundle\Module\Modules;
-use Austral\HttpBundle\Template\Interfaces\HttpTemplateParametersInterface;
 
 
 /**
  * Austral AdminHandler Abstract.
+ * @template T of object
+ *
+ * @extends HttpHandler<T>
+ * @implements AdminHandlerInterface<T>
  *
  * @author Matthieu Beurel <matthieu@austral.dev>
  *
@@ -29,32 +32,25 @@ abstract class BaseAdminHandler extends HttpHandler implements AdminHandlerInter
 {
 
   /**
-   * @var HttpTemplateParametersInterface|TemplateParametersInterface
+   * @var Module<T>|null
    */
-  protected HttpTemplateParametersInterface $templateParameters;
+  protected ?Module $module = null;
 
   /**
-   * @var Module
+   * @var Modules<T>|null
    */
-  protected Module $module;
+  protected ?Modules $modules = null;
 
   /**
-   * @var Modules
+   * @inheritDoc
    */
-  protected Modules $modules;
-
-  /**
-   * @return Module
-   */
-  public function getModule(): Module
+  public function getModule(): ?Module
   {
     return $this->module;
   }
 
   /**
-   * @param Module $module
-   *
-   * @return $this
+   * @inheritDoc
    */
   public function setModule(Module $module): BaseAdminHandler
   {
@@ -63,17 +59,15 @@ abstract class BaseAdminHandler extends HttpHandler implements AdminHandlerInter
   }
 
   /**
-   * @return Modules
+   * @inheritDoc
    */
-  public function getModules(): Modules
+  public function getModules(): ?Modules
   {
     return $this->modules;
   }
 
   /**
-   * @param Modules $modules
-   *
-   * @return $this
+   * @inheritDoc
    */
   public function setModules(Modules $modules): BaseAdminHandler
   {

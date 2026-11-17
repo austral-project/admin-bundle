@@ -27,9 +27,9 @@ abstract class DashboardValue implements DashboardValueInterface
   protected string $keyname;
 
   /**
-   * @var string
+   * @var string|null
    */
-  protected string $name;
+  protected ?string $name = null;
 
   /**
    * @var string|null
@@ -47,7 +47,7 @@ abstract class DashboardValue implements DashboardValueInterface
   protected ?string $templatePath = null;
 
   /**
-   * @var array
+   * @var array<string, mixed>
    */
   protected array $translateParameters = array();
 
@@ -62,9 +62,9 @@ abstract class DashboardValue implements DashboardValueInterface
   protected bool $isTranslatableValue = false;
 
   /**
-   * @var DashboardBlock
+   * @var DashboardBlock|null
    */
-  protected DashboardBlock $parent;
+  protected ?DashboardBlock $parent = null;
 
   /**
    * @param string $keyname
@@ -80,7 +80,7 @@ abstract class DashboardValue implements DashboardValueInterface
   }
 
   /**
-   * @return string
+   * @inheritDoc
    */
   public function getKeyname(): string
   {
@@ -88,26 +88,24 @@ abstract class DashboardValue implements DashboardValueInterface
   }
 
   /**
-   * @return string
+   * @inheritDoc
    */
-  public function getName(): string
+  public function getName(): ?string
   {
     return $this->name;
   }
 
   /**
-   * @param string $name
-   *
-   * @return DashboardValue
+   * @inheritDoc
    */
-  public function setName(string $name): DashboardValue
+  public function setName(string $name): self
   {
     $this->name = $name;
     return $this;
   }
 
   /**
-   * @return int|null
+   * @inheritDoc
    */
   public function getPosition(): ?int
   {
@@ -115,37 +113,33 @@ abstract class DashboardValue implements DashboardValueInterface
   }
 
   /**
-   * @param int|null $position
-   *
-   * @return DashboardValue
+   * @inheritDoc
    */
-  public function setPosition(?int $position): DashboardValue
+  public function setPosition(?int $position): self
   {
     $this->position = $position;
     return $this;
   }
 
   /**
-   * @return DashboardBlock
+   * @inheritDoc
    */
-  public function getParent(): DashboardBlock
+  public function getParent(): ?DashboardBlock
   {
     return $this->parent;
   }
 
   /**
-   * @param DashboardBlock $parent
-   *
-   * @return $this
+   * @inheritDoc
    */
-  public function setParent(DashboardBlock $parent): DashboardValue
+  public function setParent(DashboardBlock $parent): self
   {
     $this->parent = $parent;
     return $this;
   }
 
   /**
-   * @return array
+   * @inheritDoc
    */
   public function getTranslateParameters(): array
   {
@@ -153,18 +147,16 @@ abstract class DashboardValue implements DashboardValueInterface
   }
 
   /**
-   * @param array $translateParameters
-   *
-   * @return DashboardValue
+   * @inheritDoc
    */
-  public function setTranslateParameters(array $translateParameters): DashboardValue
+  public function setTranslateParameters(array $translateParameters): self
   {
     $this->translateParameters = $translateParameters;
     return $this;
   }
 
   /**
-   * @return bool
+   * @inheritDoc
    */
   public function getIsTranslatableText(): bool
   {
@@ -172,18 +164,16 @@ abstract class DashboardValue implements DashboardValueInterface
   }
 
   /**
-   * @param bool $isTranslatableText
-   *
-   * @return DashboardValue
+   * @inheritDoc
    */
-  public function setIsTranslatableText(bool $isTranslatableText): DashboardValue
+  public function setIsTranslatableText(bool $isTranslatableText): self
   {
     $this->isTranslatableText = $isTranslatableText;
     return $this;
   }
 
   /**
-   * @return bool
+   * @inheritDoc
    */
   public function getIsTranslatableValue(): bool
   {
@@ -191,19 +181,16 @@ abstract class DashboardValue implements DashboardValueInterface
   }
 
   /**
-   * @param bool $isTranslatableValue
-   *
-   * @return DashboardValue
+   * @inheritDoc
    */
-  public function setIsTranslatableValue(bool $isTranslatableValue): DashboardValue
+  public function setIsTranslatableValue(bool $isTranslatableValue): self
   {
     $this->isTranslatableValue = $isTranslatableValue;
     return $this;
   }
 
-
   /**
-   * @return string|null
+   * @inheritDoc
    */
   public function getType(): ?string
   {
@@ -211,18 +198,16 @@ abstract class DashboardValue implements DashboardValueInterface
   }
 
   /**
-   * @param string|null $type
-   *
-   * @return DashboardValue
+   * @inheritDoc
    */
-  public function setType(?string $type): DashboardValue
+  public function setType(?string $type): self
   {
     $this->type = $type;
     return $this;
   }
 
   /**
-   * @return string|null
+   * @inheritDoc
    */
   public function getTemplatePath(): ?string
   {
@@ -230,11 +215,9 @@ abstract class DashboardValue implements DashboardValueInterface
   }
 
   /**
-   * @param string|null $templatePath
-   *
-   * @return DashboardValue
+   * @inheritDoc
    */
-  public function setTemplatePath(?string $templatePath): DashboardValue
+  public function setTemplatePath(?string $templatePath): self
   {
     $this->templatePath = $templatePath;
     return $this;

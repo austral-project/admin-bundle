@@ -19,29 +19,49 @@ use Symfony\Component\Form\FormInterface;
 
 /**
  * Austral Admin Event Form.
+ * @template T of object
+ *
+ * @extends AdminEvent<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class FormAdminEvent extends AdminEvent
 {
 
-  CONST EVENT_START = "austral.admin.event.form.start";
-  CONST EVENT_HANDLE_REQUEST_BEFORE = "austral.admin.event.form.handle_request.before";
-  CONST EVENT_HANDLE_REQUEST_AFTER = "austral.admin.event.form.handle_request.after";
-  CONST EVENT_AUSTRAL_FORM_VALIDATE = "austral.admin.event.form.validate.form";
-  CONST EVENT_UPDATE_BEFORE = "austral.admin.event.form.update.before";
-  CONST EVENT_UPDATE_AFTER = "austral.admin.event.form.update.after";
-  CONST EVENT_FLUSH_AFTER = "austral.admin.event.form.flush.after";
-  CONST EVENT_END = "austral.admin.event.form.end";
+  /** @deprecated  */
+  CONST string EVENT_START = "austral.admin.event.form.start";
+
+  /** @deprecated  */
+  CONST string EVENT_HANDLE_REQUEST_BEFORE = "austral.admin.event.form.handle_request.before";
+
+  /** @deprecated  */
+  CONST string EVENT_HANDLE_REQUEST_AFTER = "austral.admin.event.form.handle_request.after";
+
+  /** @deprecated  */
+  CONST string EVENT_AUSTRAL_FORM_VALIDATE = "austral.admin.event.form.validate.form";
+
+  /** @deprecated  */
+  CONST string EVENT_UPDATE_BEFORE = "austral.admin.event.form.update.before";
+
+  /** @deprecated  */
+  CONST string EVENT_UPDATE_AFTER = "austral.admin.event.form.update.after";
+
+  /** @deprecated  */
+  CONST string EVENT_FLUSH_AFTER = "austral.admin.event.form.flush.after";
+
+  /** @deprecated  */
+  CONST string EVENT_END = "austral.admin.event.form.end";
+
 
   /**
-   * @var FormMapper
+   * @var FormMapper<T>
    */
   private FormMapper $formMapper;
 
   /**
-   * @var FormInterface
+   * @var FormInterface|null
    */
-  private FormInterface $form;
+  private ?FormInterface $form = null;
 
   /**
    * @var TemplateParametersInterface
@@ -51,13 +71,12 @@ class FormAdminEvent extends AdminEvent
   /**
    * @var bool
    */
-  private bool $valideForm;
+  private bool $valideForm = false;
 
   /**
-   * FormAdminEvent constructor.
-   * @param AdminHandler $adminHandler
+   * @param AdminHandler<T> $adminHandler
    * @param TemplateParametersInterface $templateParameters
-   * @param FormMapper $formMapper
+   * @param FormMapper<T> $formMapper
    */
   public function __construct(
     AdminHandler $adminHandler,
@@ -70,8 +89,7 @@ class FormAdminEvent extends AdminEvent
   }
 
   /**
-   * Get $this->formMapper
-   * @return FormMapper
+   * @return FormMapper<T>
    */
   public function getFormMapper(): FormMapper
   {
@@ -84,6 +102,9 @@ class FormAdminEvent extends AdminEvent
    */
   public function getForm(): FormInterface
   {
+    if($this->form === null){
+      throw new \RuntimeException('Form is not initialized');
+    }
     return $this->form;
   }
 

@@ -16,21 +16,29 @@ use Austral\ListBundle\Mapper\ListMapper;
 
 /**
  * Austral Admin Event Truncate.
+ * @template T of object
+ *
+ * @extends AdminEvent<T>
+ * @implements FilterEventInterface<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class TruncateAdminEvent extends AdminEvent implements FilterEventInterface
 {
 
-  CONST EVENT_START = "austral.admin.event.truncate.start";
-  CONST EVENT_END = "austral.admin.event.truncate.end";
+  /** @deprecated  */
+  CONST string EVENT_START = "austral.admin.event.truncate.start";
+
+  /** @deprecated  */
+  CONST string EVENT_END = "austral.admin.event.truncate.end";
 
   /**
-   * @var ListMapper|null
+   * @var ListMapper<T>|null
    */
-  private ListMapper $listMapper;
+  private ?ListMapper $listMapper;
 
   /**
-   * @var FilterMapper|null
+   * @var FilterMapper<T>|null
    */
   private ?FilterMapper $filterMapper;
 
@@ -38,10 +46,10 @@ class TruncateAdminEvent extends AdminEvent implements FilterEventInterface
    * FormAdminEvent constructor.
    *
    * @param AdminHandler $adminHandler
-   * @param ListMapper|null $listMapper
-   * @param FilterMapper|null $filterMapper
+   * @param ListMapper<T>|null $listMapper
+   * @param FilterMapper<T>|null $filterMapper
    */
-  public function __construct(AdminHandler $adminHandler, ListMapper $listMapper = null, ?FilterMapper $filterMapper = null)
+  public function __construct(AdminHandler $adminHandler, ?ListMapper $listMapper = null, ?FilterMapper $filterMapper = null)
   {
     parent::__construct($adminHandler);
     $this->listMapper = $listMapper;
@@ -49,7 +57,7 @@ class TruncateAdminEvent extends AdminEvent implements FilterEventInterface
   }
 
   /**
-   * @return ListMapper|null
+   * @inheritDoc
    */
   public function getListMapper(): ?ListMapper
   {
@@ -57,18 +65,16 @@ class TruncateAdminEvent extends AdminEvent implements FilterEventInterface
   }
 
   /**
-   * @param ?ListMapper $listMapper
-   *
-   * @return $this
+   * @inheritDoc
    */
-  public function setListMapper(ListMapper $listMapper): TruncateAdminEvent
+  public function setListMapper(ListMapper $listMapper): self
   {
     $this->listMapper = $listMapper;
     return $this;
   }
 
   /**
-   * @return FilterMapper|null
+   * @inheritDoc
    */
   public function getFilterMapper(): ?FilterMapper
   {
@@ -76,11 +82,9 @@ class TruncateAdminEvent extends AdminEvent implements FilterEventInterface
   }
 
   /**
-   * @param FilterMapper|null $filterMapper
-   *
-   * @return $this
+   * @inheritDoc
    */
-  public function setFilterMapper(?FilterMapper $filterMapper): TruncateAdminEvent
+  public function setFilterMapper(?FilterMapper $filterMapper): self
   {
     $this->filterMapper = $filterMapper;
     return $this;

@@ -26,9 +26,9 @@ interface DashboardValueInterface
   public function getKeyname(): string;
 
   /**
-   * @return string
+   * @return string|null
    */
-  public function getName(): string;
+  public function getName(): ?string;
 
   /**
    * @param string $name
@@ -50,9 +50,9 @@ interface DashboardValueInterface
   public function setPosition(?int $position): DashboardValueInterface;
 
   /**
-   * @return DashboardBlock
+   * @return DashboardBlock|null
    */
-  public function getParent(): DashboardBlock;
+  public function getParent(): ?DashboardBlock;
 
   /**
    * @param DashboardBlock $parent
@@ -62,12 +62,12 @@ interface DashboardValueInterface
   public function setParent(DashboardBlock $parent): DashboardValueInterface;
 
   /**
-   * @return array
+   * @return array<string, mixed>
    */
   public function getTranslateParameters(): array;
 
   /**
-   * @param array $translateParameters
+   * @param array<string, mixed> $translateParameters
    *
    * @return DashboardValueInterface
    */

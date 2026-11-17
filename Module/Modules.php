@@ -30,6 +30,8 @@ use function Symfony\Component\String\u;
 
 /**
  * Austral Modules.
+ * @template T of object
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class Modules
@@ -71,17 +73,17 @@ class Modules
   protected Debug $debug;
 
   /**
-   * @var array
+   * @var array<string, string>
    */
   protected array $modulesPathByKey = array();
 
   /**
-   * @var array
+   * @var array<string, Module>
    */
   protected array $modules = array();
 
   /**
-   * @var array
+   * @var array<string, array<string, string>>
    */
   protected array $modulesByEntityClassname = array();
 
@@ -96,7 +98,7 @@ class Modules
   protected array $breadcrumb = array();
 
   /**
-   * @var Module|null
+   * @var Module<T>|null
    */
   protected ?Module $currentModule = null;
 
@@ -564,11 +566,11 @@ class Modules
   /**
    * @param string $moduleKey
    *
-   * @return Module|null
+   * @return Module<T>|null
    */
   public function getModuleByKey(string $moduleKey): ?Module
   {
-    return $this->getModuleByPath(AustralTools::getValueByKey($this->modulesPathByKey, $moduleKey, null));
+    return $this->getModuleByPath(AustralTools::valueByKey($this->modulesPathByKey, $moduleKey, null));
   }
 
   /**
@@ -610,7 +612,7 @@ class Modules
   }
 
   /**
-   * @return array
+   * @return array<string, Module<T>>
    */
   public function getModules(): array
   {

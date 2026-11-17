@@ -12,25 +12,28 @@ namespace Austral\AdminBundle\Admin;
 
 use Austral\AdminBundle\Admin\Event\FormAdminEvent;
 use Austral\AdminBundle\Admin\Event\ListAdminEvent;
-use Austral\EntityBundle\Entity\EntityInterface;
 
 /**
  * Austral Admin  Module Interface.
+ * @template T of object
+ *
+ * @extends AdminInterface<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
-interface AdminModuleInterface
+interface AdminModuleInterface extends AdminInterface
 {
 
   /**
-   * @param ListAdminEvent $listAdminEvent
+   * @param ListAdminEvent<T> $listAdminEvent
    */
-  public function configureListMapper(ListAdminEvent $listAdminEvent);
+  public function configureListMapper(ListAdminEvent $listAdminEvent): void;
 
   /**
-   * @param FormAdminEvent $formAdminEvent
+   * @param FormAdminEvent<T> $formAdminEvent
    *
    * @throws \Exception
    */
-  public function configureFormMapper(FormAdminEvent $formAdminEvent);
+  public function configureFormMapper(FormAdminEvent $formAdminEvent): void;
 
 }

@@ -16,26 +16,33 @@ use Austral\EntityBundle\EntityManager\EntityManagerInterface;
 
 /**
  * Austral Admin Event Change Value.
+ * @template T of object
+ *
+ * @extends AdminEvent<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class SortableAdminEvent extends AdminEvent
 {
 
-  CONST EVENT_START = "austral.admin.event.sortable.start";
-  CONST EVENT_END = "austral.admin.event.sortable.end";
+  /** @deprecated  */
+  CONST string EVENT_START = "austral.admin.event.sortable.start";
+
+  /** @deprecated  */
+  CONST string EVENT_END = "austral.admin.event.sortable.end";
 
   /**
-   * @var EntityManagerInterface
+   * @var EntityManagerInterface<T>
    */
   private EntityManagerInterface $entityManager;
 
   /**
-   * @var array
+   * @var array<int, string>
    */
   private array $positions;
 
   /**
-   * @var null|\Closure
+   * @var null|\Closure(object|null): mixed
    */
   private ?\Closure $queryBuilder = null;
 
@@ -48,9 +55,9 @@ class SortableAdminEvent extends AdminEvent
   /**
    * FormAdminEvent constructor.
    *
-   * @param AdminHandler $adminHandler
-   * @param EntityManagerInterface $entityManager
-   * @param array $positions
+   * @param AdminHandler<T> $adminHandler
+   * @param EntityManagerInterface<T> $entityManager
+   * @param array<int, int> $positions
    * @param string|null $fieldname
    */
   public function __construct(AdminHandler $adminHandler, EntityManagerInterface $entityManager, array $positions = array(), string $fieldname = null)
@@ -62,7 +69,7 @@ class SortableAdminEvent extends AdminEvent
   }
 
   /**
-   * @return EntityManagerInterface
+   * @return EntityManagerInterface<T>
    */
   public function getEntityManager(): EntityManagerInterface
   {
@@ -70,7 +77,7 @@ class SortableAdminEvent extends AdminEvent
   }
 
   /**
-   * @return array
+   * @return array<int, string>
    */
   public function getPositions(): array
   {
@@ -78,11 +85,11 @@ class SortableAdminEvent extends AdminEvent
   }
 
   /**
-   * @param array $positions
+   * @param array<int, string> $positions
    *
-   * @return SortableAdminEvent
+   * @return $this
    */
-  public function setPositions(array $positions): SortableAdminEvent
+  public function setPositions(array $positions): self
   {
     $this->positions = $positions;
     return $this;
@@ -97,18 +104,18 @@ class SortableAdminEvent extends AdminEvent
   }
 
   /**
-   * @param mixed|string $fieldname
+   * @param string $fieldname
    *
-   * @return SortableAdminEvent
+   * @return $this
    */
-  public function setFieldname($fieldname): SortableAdminEvent
+  public function setFieldname(string $fieldname): self
   {
     $this->fieldname = $fieldname;
     return $this;
   }
 
   /**
-   * @return \Closure|null
+   * @return \Closure(object): mixed|null
    */
   public function getQueryBuilder(): ?\Closure
   {
@@ -118,9 +125,9 @@ class SortableAdminEvent extends AdminEvent
   /**
    * @param \Closure|null $queryBuilder
    *
-   * @return SortableAdminEvent
+   * @return $this
    */
-  public function setQueryBuilder(?\Closure $queryBuilder): SortableAdminEvent
+  public function setQueryBuilder(?\Closure $queryBuilder): self
   {
     $this->queryBuilder = $queryBuilder;
     return $this;

@@ -11,29 +11,28 @@
 namespace Austral\AdminBundle\Admin\Event;
 
 use Austral\AdminBundle\Handler\AdminHandler;
-use Austral\EntityBundle\Entity\EntityInterface;
+use Austral\Contracts\Entity\EntityInterface;
 
 /**
  * Austral Admin Event Delete.
+ * @template T of object
+ *
+ * @extends AdminEvent<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class DeleteAdminEvent extends AdminEvent
 {
 
-  CONST EVENT_START = "austral.admin.event.delete.start";
-  CONST EVENT_END = "austral.admin.event.delete.end";
+  /** @deprecated */
+  CONST string EVENT_START = "austral.admin.event.delete.start";
+
+  /** @deprecated */
+  CONST string EVENT_END = "austral.admin.event.delete.end";
 
   /**
-   * @var EntityInterface
-   */
-  private EntityInterface $object;
-
-
-  /**
-   * FormAdminEvent constructor.
-   *
-   * @param AdminHandler $adminHandler
-   * @param EntityInterface $object
+   * @param AdminHandler<T> $adminHandler
+   * @param EntityInterface<T> $object
    */
   public function __construct(AdminHandler $adminHandler, EntityInterface $object)
   {
@@ -43,22 +42,14 @@ class DeleteAdminEvent extends AdminEvent
 
   /**
    * Get object
-   * @return EntityInterface
+   * @return EntityInterface<T>
    */
   public function getObject(): EntityInterface
   {
+    if (!$this->object instanceof EntityInterface) {
+      throw new \LogicException('Object is required.');
+    }
     return $this->object;
-  }
-
-  /**
-   * @param EntityInterface $object
-   *
-   * @return DeleteAdminEvent
-   */
-  public function setObject(EntityInterface $object): DeleteAdminEvent
-  {
-    $this->object = $object;
-    return $this;
   }
 
 }

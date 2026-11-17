@@ -12,23 +12,17 @@ namespace Austral\AdminBundle\Services;
 
 use Austral\AdminBundle\Template\TemplateParameters;
 use Austral\NotifyBundle\Notification\Push;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Austral Deployment.
+ * @template T of object
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 Class Deployment
 {
-  /**
-   * @var TemplateParameters
-   */
-  protected TemplateParameters $templateParameters;
-
-  /**
-   * @var TranslatorInterface
-   */
-  protected TranslatorInterface $translator;
 
   /**
    * @var string
@@ -36,21 +30,17 @@ Class Deployment
   protected string $deploymentFilePath;
 
   /**
-   * @var Push|null
-   */
-  protected ?Push $push;
-
-  /**
-   * @param TemplateParameters $templateParameters
+   * @param TemplateParameters<T> $templateParameters
    * @param TranslatorInterface $translator
    * @param string $projectPath
    * @param Push|null $push
    */
-  public function __construct(TemplateParameters $templateParameters, TranslatorInterface $translator, string $projectPath, ?Push $push = null)
+  public function __construct(
+    #[Autowire(service: "austral.admin.template")] protected TemplateParameters $templateParameters,
+    #[Autowire(service: "translator")] protected TranslatorInterface $translator,
+    string $projectPath,
+    #[Autowire(service: "austral.notify.push")] protected ?Push $push = null)
   {
-    $this->templateParameters = $templateParameters;
-    $this->translator = $translator;
-    $this->push = $push;
     $this->deploymentFilePath = "{$projectPath}/deployment.pid";
   }
 
@@ -77,6 +67,7 @@ Class Deployment
   public function execute(?string $forceStatus = null): string
   {
     $status = "no-push";
+    $message = null;
     if($this->push)
     {
       $deploymentStatus = null;
@@ -104,16 +95,12 @@ Class Deployment
         $status = "deployment-stop";
         $message = "austral.deployment.stop";
       }
-
-      if($deploymentStatus)
-      {
-        $this->push->add(Push::TYPE_MERCURE, array('topics'=>array(
-          "authenticated"
-        ), "values" => array(
-          'type'            =>  $status,
-          "message"         =>  $this->translator->trans($message, array(), 'austral')
-        )))->push(true, false);
-      }
+      $this->push->add(Push::TYPE_MERCURE, array('topics'=>array(
+        "authenticated"
+      ), "values" => array(
+        'type'            =>  $status,
+        "message"         =>  $this->translator->trans($message, array(), 'austral')
+      )))->push(true, false);
 
     }
     return $status;

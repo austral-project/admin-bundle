@@ -29,18 +29,17 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Translation\MessageCatalogue;
 
 Use \Exception;
+
 /**
  * Austral Admin Controller.
+ * @template T of object
+ *
+ * @extends HttpController<T>
  *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class AdminController extends HttpController
 {
-
-  /**
-   * @var HttpHandlerInterface|AdminHandlerInterface
-   */
-  protected HttpHandlerInterface $handlerManager;
 
   /**
    * deploymentPush

@@ -12,14 +12,14 @@ namespace Austral\AdminBundle\Listener\Security;
 
 use Austral\SecurityBundle\Entity\Interfaces\UserInterface;
 use Austral\SecurityBundle\Security\Authorization\AuthorizationChecker;
-use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Event\AuthenticationSuccessEvent;
 
 /**
  * Austral Authentication Listener.
+ * @template T of object
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  * @final
  */
@@ -29,7 +29,7 @@ class AuthenticationListener
   /**
    * @var Request|null
    */
-  protected ?Request $request;
+  protected ?Request $request = null;
 
   /**
    * @var AuthorizationChecker
@@ -37,13 +37,21 @@ class AuthenticationListener
   protected AuthorizationChecker $authorizationChecker;
 
   /**
-   * @param RequestStack $requestStack
    * @param AuthorizationChecker $authorizationChecker
    */
-  public function __construct(RequestStack $requestStack, AuthorizationChecker $authorizationChecker)
+  public function __construct(AuthorizationChecker $authorizationChecker)
+  {
+    $this->authorizationChecker = $authorizationChecker;
+  }
+
+  /**
+   * @param RequestStack $requestStack
+   * @return $this
+   */
+  public function setRequestStack(RequestStack $requestStack): self
   {
     $this->request = $requestStack->getCurrentRequest();
-    $this->authorizationChecker = $authorizationChecker;
+    return $this;
   }
 
   /**
@@ -52,12 +60,13 @@ class AuthenticationListener
    * @param AuthenticationSuccessEvent $authenticationSuccessEvent
    * @return void
    */
-  public function success(AuthenticationSuccessEvent $authenticationSuccessEvent)
+  public function success(AuthenticationSuccessEvent $authenticationSuccessEvent): void
   {
     if($this->request)
     {
-      /** @var UserInterface $user */
-      if($user = $authenticationSuccessEvent->getAuthenticationToken()->getUser())
+      /** @var UserInterface<T>|null $user */
+      $user = $authenticationSuccessEvent->getAuthenticationToken()->getUser();
+      if($user)
       {
         if($this->authorizationChecker->isGranted("ROLE_ADMIN_ACCESS"))
         {

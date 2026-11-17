@@ -11,22 +11,24 @@
 namespace Austral\AdminBundle\Admin\Event;
 
 use Austral\AdminBundle\Handler\AdminHandler;
-use Austral\EntityBundle\Entity\EntityInterface;
+use Austral\Contracts\Entity\EntityInterface;
 
 /**
  * Austral Admin Event HttpCacheClear.
+ * @template T of object
+ *
+ * @extends AdminEvent<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class HttpCacheClearAdminEvent extends AdminEvent
 {
 
-  CONST EVENT_START = "austral.admin.event.http_cache.clear.start";
-  CONST EVENT_END = "austral.admin.event.http_cache.clear.end";
+  /** @deprecated  */
+  CONST string EVENT_START = "austral.admin.event.http_cache.clear.start";
 
-  /**
-   * @var EntityInterface|null
-   */
-  private ?EntityInterface $object = null;
+  /** @deprecated  */
+  CONST string EVENT_END = "austral.admin.event.http_cache.clear.end";
 
   /**
    * @var string|null
@@ -41,35 +43,13 @@ class HttpCacheClearAdminEvent extends AdminEvent
   /**
    * FormAdminEvent constructor.
    *
-   * @param AdminHandler $adminHandler
-   * @param EntityInterface|null $object
+   * @param AdminHandler<T> $adminHandler
+   * @param EntityInterface<T>|null $object
    */
   public function __construct(AdminHandler $adminHandler, ?EntityInterface $object = null)
   {
     parent::__construct($adminHandler);
     $this->object = $object;
-  }
-
-  /**
-   * getObject
-   *
-   * @return EntityInterface|null
-   */
-  public function getObject(): ?EntityInterface
-  {
-    return $this->object;
-  }
-
-  /**
-   * setObject
-   *
-   * @param EntityInterface|null $object
-   * @return $this
-   */
-  public function setObject(?EntityInterface $object): HttpCacheClearAdminEvent
-  {
-    $this->object = $object;
-    return $this;
   }
 
   /**
@@ -88,7 +68,7 @@ class HttpCacheClearAdminEvent extends AdminEvent
    * @param string|null $uri
    * @return $this
    */
-  public function setUri(?string $uri): HttpCacheClearAdminEvent
+  public function setUri(?string $uri): self
   {
     $this->uri = $uri;
     return $this;
@@ -110,7 +90,7 @@ class HttpCacheClearAdminEvent extends AdminEvent
    * @param bool $enabled
    * @return $this
    */
-  public function setEnabled(bool $enabled): HttpCacheClearAdminEvent
+  public function setEnabled(bool $enabled): self
   {
     $this->enabled = $enabled;
     return $this;

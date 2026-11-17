@@ -1,59 +1,71 @@
 {
-  "name":                                     "austral/admin-bundle",
-  "type":                                     "symfony-bundle",
-  "description":                              "Admin symfony Bundle",
-  "keywords":                                 ["Austral", "Admin", "Symfony", "vendor"],
-  "license":                                  "MIT",
-  "homepage":                                 "https://austral.dev",
-  "authors": [
-    {
-      "name":                                 "Matthieu Beurel",
-      "email":                                "matthieu@austral.dev",
-      "role":                                 "Developer"
+    "name": "austral/admin-bundle",
+    "type": "symfony-bundle",
+    "description": "Admin symfony Bundle",
+    "keywords": [
+        "Austral",
+        "Admin",
+        "Symfony",
+        "vendor"
+    ],
+    "license": "MIT",
+    "homepage": "https://austral.dev",
+    "authors": [
+        {
+            "name": "Matthieu Beurel",
+            "email": "matthieu@austral.dev",
+            "role": "Developer"
+        },
+        {
+            "name": "Guillaume Grimaud",
+            "email": "guillaume@austral.dev",
+            "role": "Designer"
+        }
+    ],
+    "require": {
+        "php": ">=8.2 <9.0",
+        "austral/contracts": "^4.0",
+        "austral/tools-bundle": "^4.0",
+        "austral/security-bundle": "^4.0",
+        "austral/design-bundle": "^4.0",
+        "austral/http-bundle": "^4.0",
+        "austral/entity-bundle": "^4.0",
+        "austral/entity-file-bundle": "^4.0",
+        "austral/list-bundle": "^4.0",
+        "austral/form-bundle": "^4.0",
+        "austral/filter-bundle": "^4.0",
+        "austral/notify-bundle": "^4.0",
+        "symfony/framework-bundle": "^7.4",
+        "symfony/runtime": "^7.4",
+        "symfony/routing": "^7.4",
+        "symfony/config": "^7.4",
+        "symfony/event-dispatcher": "^7.4",
+        "symfony/property-access": "^7.4",
+        "symfony/property-info": "^7.4",
+        "symfony/intl": "^7.4",
+        "symfony/translation": "^7.4",
+        "symfony/http-kernel": "^7.4",
+        "phpoffice/phpspreadsheet": "1.*"
     },
-    {
-      "name":                                 "Guillaume Grimaud",
-      "email":                                "guillaume@austral.dev",
-      "role":                                 "Designer"
-    }
-  ],
-  "require": {
-    "php":                                    "^8.0 || ^8.1 || ^8.2",
-    "austral/tools-bundle":                   "^3.1",
-    "austral/security-bundle":                "^3.1",
-    "austral/design-bundle":                  "^3.1",
-    "austral/http-bundle":                    "^3.1",
-    "austral/entity-bundle":                  "^3.1",
-    "austral/list-bundle":                    "^3.1",
-    "austral/form-bundle":                    "^3.1",
-    "austral/filter-bundle":                  "^3.1",
-
-    "symfony/framework-bundle":               "^5.4 || ^6.4",
-    "symfony/runtime":                        "^5.4 || ^6.4",
-    "symfony/routing":                        "^5.4 || ^6.4",
-    "symfony/config":                         "^5.4 || ^6.4",
-    "symfony/event-dispatcher":               "^5.4 || ^6.4",
-    "symfony/property-access":                "^5.4 || ^6.4",
-    "symfony/property-info":                  "^5.4 || ^6.4",
-    "symfony/intl":                           "^5.4 || ^6.4",
-    "symfony/translation":                    "^5.4 || ^6.4",
-    "symfony/http-kernel":                    "^5.4 || ^6.4",
-
-    "phpoffice/phpspreadsheet":               "1.*"
-  },
-  "suggest": {
-    "austral/entity-translate-bundle":        "^3.1",
-    "austral/entity-file-bundle":             "^3.1",
-    "austral/website-bundle":                 "^3.1",
-    "austral/email-bundle":                   "^3.1"
-  },
-  "require-dev": {
-  },
-  "config": {
-    "sort-packages":                          true
-  },
-  "autoload": {
-    "psr-4": { "Austral\\AdminBundle\\": "" }
-  },
-  "minimum-stability":                        "dev"
+    "suggest": {
+        "austral/entity-translate-bundle": "^4.0",
+        "austral/entity-file-bundle": "^4.0",
+        "austral/website-bundle": "^4.0",
+        "austral/email-bundle": "^4.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.64",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-symfony": "^2.0"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Austral\\AdminBundle\\": ""
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

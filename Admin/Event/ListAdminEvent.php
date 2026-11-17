@@ -18,23 +18,35 @@ use Austral\ListBundle\Mapper\ListMapper;
 
 /**
  * Austral Admin Event List.
+ * @template T of object
+ *
+ * @extends AdminEvent<T>
+ * @implements FilterEventInterface<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class ListAdminEvent extends AdminEvent implements FilterEventInterface
 {
 
-  CONST EVENT_START = "austral.admin.event.list.start";
-  CONST EVENT_HYDRATE = "austral.admin.event.list.hydrate";
-  CONST EVENT_END = "austral.admin.event.list.end";
-  CONST EVENT_DASHBOARD = "austral.admin.event.list.dashboard";
+  /** @deprecated  */
+  CONST string EVENT_START = "austral.admin.event.list.start";
+
+  /** @deprecated  */
+  CONST string EVENT_HYDRATE = "austral.admin.event.list.hydrate";
+
+  /** @deprecated  */
+  CONST string EVENT_END = "austral.admin.event.list.end";
+
+  /** @deprecated  */
+  CONST string EVENT_DASHBOARD = "austral.admin.event.list.dashboard";
 
   /**
-   * @var ListMapper|null
+   * @var ListMapper<T>|null
    */
   private ?ListMapper $listMapper;
 
   /**
-   * @var FilterMapper|null
+   * @var FilterMapper<T>|null
    */
   private ?FilterMapper $filterMapper;
 
@@ -49,13 +61,11 @@ class ListAdminEvent extends AdminEvent implements FilterEventInterface
   private TemplateParametersInterface $templateParameters;
 
   /**
-   * ListAdminEvent constructor.
-   *
-   * @param AdminHandler $adminHandler
+   * @param AdminHandler<T> $adminHandler
    * @param TemplateParametersInterface $templateParameters
    * @param string $actionName
-   * @param ListMapper|null $listMapper
-   * @param FilterMapper|null $filterMapper
+   * @param ListMapper<T>|null $listMapper
+   * @param FilterMapper<T>|null $filterMapper
    */
   public function __construct(
     AdminHandler $adminHandler,
@@ -82,26 +92,6 @@ class ListAdminEvent extends AdminEvent implements FilterEventInterface
   }
 
   /**
-   * Get objects
-   * @return ListMapper
-   */
-  public function getListMapper(): ?ListMapper
-  {
-    return $this->listMapper;
-  }
-
-  /**
-   * @param ?ListMapper $listMapper
-   *
-   * @return $this
-   */
-  public function setListMapper(ListMapper $listMapper): ListAdminEvent
-  {
-    $this->listMapper = $listMapper;
-    return $this;
-  }
-
-  /**
    * Get actionName
    * @return string|null
    */
@@ -111,7 +101,24 @@ class ListAdminEvent extends AdminEvent implements FilterEventInterface
   }
 
   /**
-   * @return FilterMapper|null
+   * @inheritDoc
+   */
+  public function getListMapper(): ?ListMapper
+  {
+    return $this->listMapper;
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public function setListMapper(ListMapper $listMapper): self
+  {
+    $this->listMapper = $listMapper;
+    return $this;
+  }
+
+  /**
+   * @inheritDoc
    */
   public function getFilterMapper(): ?FilterMapper
   {
@@ -119,11 +126,9 @@ class ListAdminEvent extends AdminEvent implements FilterEventInterface
   }
 
   /**
-   * @param FilterMapper|null $filterMapper
-   *
-   * @return $this
+   * @inheritDoc
    */
-  public function setFilterMapper(?FilterMapper $filterMapper): ListAdminEvent
+  public function setFilterMapper(FilterMapper $filterMapper): self
   {
     $this->filterMapper = $filterMapper;
     return $this;

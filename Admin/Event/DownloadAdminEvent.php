@@ -17,35 +17,43 @@ use Austral\ListBundle\Mapper\ListMapper;
 
 /**
  * Austral Admin Event Download.
+ * @template T of object
+ *
+ * @extends AdminEvent<T>
+ * @implements FilterEventInterface<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class DownloadAdminEvent extends AdminEvent implements FilterEventInterface
 {
+  /** @deprecated */
+  CONST string EVENT_START = "austral.admin.event.download.start";
 
-  CONST EVENT_START = "austral.admin.event.download.start";
-  CONST EVENT_END = "austral.admin.event.download.end";
-
-  /**
-   * @var ListMapper|null
-   */
-  private ListMapper $listMapper;
+  /** @deprecated */
+  CONST string EVENT_END = "austral.admin.event.download.end";
 
   /**
-   * @var FilterMapper|null
+   * @var ListMapper<T>|null
    */
-  private ?FilterMapper $filterMapper;
+  private ?ListMapper $listMapper;
 
+  /**
+   * @var FilterMapper<T>|null
+   */
+  private ?FilterMapper $filterMapper = null;
+
+  /**
+   * @var string
+   */
   private string $filename;
 
 
   /**
-   * FormAdminEvent constructor.
-   *
-   * @param AdminHandler $adminHandler
-   * @param ListMapper|null $listMapper
-   * @param FilterMapper|null $filterMapper
+   * @param AdminHandler<T> $adminHandler
+   * @param ListMapper<T>|null $listMapper
+   * @param FilterMapper<T>|null $filterMapper
    */
-  public function __construct(AdminHandler $adminHandler, ListMapper $listMapper = null, ?FilterMapper $filterMapper = null)
+  public function __construct(AdminHandler $adminHandler, ?ListMapper $listMapper = null, ?FilterMapper $filterMapper = null)
   {
     parent::__construct($adminHandler);
     $this->listMapper = $listMapper;
@@ -54,7 +62,7 @@ class DownloadAdminEvent extends AdminEvent implements FilterEventInterface
   }
 
   /**
-   * @return ListMapper|null
+   * @inheritDoc
    */
   public function getListMapper(): ?ListMapper
   {
@@ -62,18 +70,16 @@ class DownloadAdminEvent extends AdminEvent implements FilterEventInterface
   }
 
   /**
-   * @param ?ListMapper $listMapper
-   *
-   * @return $this
+   * @inheritDoc
    */
-  public function setListMapper(ListMapper $listMapper): DownloadAdminEvent
+  public function setListMapper(ListMapper $listMapper): self
   {
     $this->listMapper = $listMapper;
     return $this;
   }
 
   /**
-   * @return FilterMapper|null
+   * @inheritDoc
    */
   public function getFilterMapper(): ?FilterMapper
   {
@@ -81,11 +87,9 @@ class DownloadAdminEvent extends AdminEvent implements FilterEventInterface
   }
 
   /**
-   * @param FilterMapper|null $filterMapper
-   *
-   * @return $this
+   * @inheritDoc
    */
-  public function setFilterMapper(?FilterMapper $filterMapper): DownloadAdminEvent
+  public function setFilterMapper(?FilterMapper $filterMapper): self
   {
     $this->filterMapper = $filterMapper;
     return $this;

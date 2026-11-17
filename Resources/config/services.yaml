@@ -12,7 +12,6 @@ services:
   Austral\AdminBundle\Listener\Security\AuthenticationListener: "@austral.admin.authentication.listener"
   austral.admin.authentication.listener:
     class:        Austral\AdminBundle\Listener\Security\AuthenticationListener
-    arguments:    ["@request_stack", "@security.authorization_checker"]
     tags:
       - { name: kernel.event_listener, event: "security.authentication.success", method: success }
 
@@ -27,7 +26,7 @@ services:
   Austral\AdminBundle\EventSubscriber\ConfigurationCheckerSubscriber: "@austral.admin.configuration_checker.event_subscriber"
   austral.admin.configuration_checker.event_subscriber:
     class:          Austral\AdminBundle\EventSubscriber\ConfigurationCheckerSubscriber
-    arguments:      ["@austral.tools.services.status-checker"]
+    arguments:      ["@austral.tools.status-checker"]
     tags:
       - { name: kernel.event_subscriber }
 
@@ -77,14 +76,10 @@ services:
   Austral\AdminBundle\Handler\AdminHandler: "@austral.admin.handler"
   austral.admin.handler:
     class:          Austral\AdminBundle\Handler\AdminHandler
-    arguments:
-      - "@request_stack"
-      - "@event_dispatcher"
-      - "@security.token_storage"
-      - "@austral.tools.debug"
+    # Constructor arguments are autowired (#[Autowire] in HttpHandler).
     calls:
+      - [ setRequestStack, [ "@request_stack" ] ]
       - [ setFormFactory, [ "@form.factory" ] ]
-      - [ setContainer, [ "@service_container" ] ]
 
 ##### Downlaod
   Austral\AdminBundle\Services\Download: "@austral.admin.download"

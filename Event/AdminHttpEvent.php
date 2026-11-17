@@ -21,10 +21,10 @@ use Austral\HttpBundle\Event\HttpEvent;
 class AdminHttpEvent extends HttpEvent
 {
 
-  const EVENT_AUSTRAL_HTTP_REQUEST_INITIALISE = "austral.event.http.admin.request.initialise";
-  const EVENT_AUSTRAL_HTTP_REQUEST = "austral.event.http.admin.request";
-  const EVENT_AUSTRAL_HTTP_CONTROLLER = "austral.event.http.admin.controller";
-  const EVENT_AUSTRAL_HTTP_RESPONSE = "austral.event.http.admin.response";
-  const EVENT_AUSTRAL_HTTP_EXCEPTION = "austral.event.http.admin.exception";
+  const string EVENT_AUSTRAL_HTTP_REQUEST_INITIALISE = "austral.event.http.admin.request.initialise";
+  const string EVENT_AUSTRAL_HTTP_REQUEST = "austral.event.http.admin.request";
+  const string EVENT_AUSTRAL_HTTP_CONTROLLER = "austral.event.http.admin.controller";
+  const string EVENT_AUSTRAL_HTTP_RESPONSE = "austral.event.http.admin.response";
+  const string EVENT_AUSTRAL_HTTP_EXCEPTION = "austral.event.http.admin.exception";
 
 }

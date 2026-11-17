@@ -16,34 +16,35 @@ use Austral\ListBundle\Mapper\ListMapper;
 
 /**
  * Austral Filter Event Interface.
+ * @template T of object
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 interface FilterEventInterface
 {
 
   /**
-   * Get objects
-   * @return ListMapper
+   * @return ListMapper<T>|null
    */
   public function getListMapper(): ?ListMapper;
 
   /**
-   * @param ?ListMapper $listMapper
+   * @param ListMapper<T> $listMapper
    *
    * @return $this
    */
-  public function setListMapper(ListMapper $listMapper): FilterEventInterface;
+  public function setListMapper(ListMapper $listMapper): self;
 
   /**
-   * @return FilterMapper|null
+   * @return FilterMapper<T>|null
    */
   public function getFilterMapper(): ?FilterMapper;
 
   /**
-   * @param FilterMapper|null $filterMapper
+   * @param FilterMapper<T> $filterMapper
    *
    * @return $this
    */
-  public function setFilterMapper(?FilterMapper $filterMapper): FilterEventInterface;
+  public function setFilterMapper(FilterMapper $filterMapper): self;
 
 }

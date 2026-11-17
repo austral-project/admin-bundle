@@ -15,6 +15,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Austral Dashboard Event.
+ * @template T of object
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  * @final
  */

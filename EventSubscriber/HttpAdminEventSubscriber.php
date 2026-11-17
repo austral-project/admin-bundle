@@ -61,7 +61,7 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
    *
    * @return void
    */
-  public function onRequestInitialise(HttpEventInterface $httpEvent)
+  public function onRequestInitialise(HttpEventInterface $httpEvent): void
   {
     $australLanguageInterface = $httpEvent->getKernelEvent()->getRequest()->getSession()->get("austral_language_interface");
 
@@ -89,7 +89,7 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
    * @return void
    * @throws ErrorException|ReflectionException
    */
-  public function onRequest(HttpEventInterface $httpEvent)
+  public function onRequest(HttpEventInterface $httpEvent): void
   {
     $this->debug->stopWatchStart("austral.admin.http.event.request", "austral.admin.event.subscriber");
 
@@ -275,7 +275,7 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
    *
    * @return void
    */
-  public function onController(HttpEventInterface $httpEvent)
+  public function onController(HttpEventInterface $httpEvent): void
   {
 
   }
@@ -285,7 +285,7 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
    *
    * @return void
    */
-  public function onResponse(HttpEventInterface $httpEvent)
+  public function onResponse(HttpEventInterface $httpEvent): void
   {
     $this->debug->stopWatchStart("austral.admin.http.event.response", "austral.admin.event.subscriber");
     $response = $httpEvent->getKernelEvent()->getResponse();
@@ -302,7 +302,7 @@ class HttpAdminEventSubscriber extends HttpEventSubscriber
    *
    * @return void
    */
-  public function onException(HttpEventInterface $httpEvent)
+  public function onException(HttpEventInterface $httpEvent): void
   {
 
   }

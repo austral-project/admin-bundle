@@ -10,56 +10,70 @@
  
 namespace Austral\AdminBundle\Handler\Interfaces;
 
-use Austral\AdminBundle\Handler\AdminHandler;
 use Austral\AdminBundle\Module\Module;
-use Austral\EntityBundle\Entity\EntityInterface;
+use Austral\AdminBundle\Module\Modules;
+use Austral\Contracts\Entity\EntityInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Austral Admin Handler Interface.
+ * @template T of object
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 interface AdminHandlerInterface
 {
 
   /**
-   * @param Module $module
+   * @param Module<T> $module
    *
    * @return $this
    */
-  public function setModule(Module $module): AdminHandlerInterface;
+  public function setModule(Module $module): self;
 
   /**
-   * @return Module
+   * @return Module<T>|null
    */
-  public function getModule(): Module;
+  public function getModule(): ?Module;
+
+  /**
+   * @param Modules<T> $modules
+   *
+   * @return $this
+   */
+  public function setModules(Modules $modules): self;
+
+  /**
+   * @return Modules<T>|null
+   */
+  public function getModules(): ?Modules;
 
   /**
    * @return $this
    */
-  public function index(): AdminHandlerInterface;
+  public function index(): self;
 
   /**
    * @return $this
    */
-  public function list(): AdminHandlerInterface;
+  public function list(): self;
 
   /**
    * @param string $id
    *
    * @return $this
    */
-  public function form(string $id): AdminHandlerInterface;
+  public function form(string $id): self;
 
   /**
    * @param string $id
    *
    * @return $this
    */
-  public function duplicate(string $id): AdminHandlerInterface;
+  public function duplicate(string $id): self;
 
   /**
-   * @var string $format
+   * @param string $format
    *
    * @return StreamedResponse
    */
@@ -70,19 +84,19 @@ interface AdminHandlerInterface
    *
    * @return $this
    */
-  public function delete(string $id): AdminHandlerInterface;
+  public function delete(string $id): self;
 
   /**
    * @return $this
    */
-  public function truncate(): AdminHandlerInterface;
+  public function truncate(): self;
 
   /**
    * httpCacheClear
    *
-   * @param EntityInterface|null $object
-   * @return AdminHandlerInterface
+   * @param EntityInterface<T>|null $object
+   * @return $this
    */
-  public function httpCacheClear(?EntityInterface $object = null): AdminHandlerInterface;
+  public function httpCacheClear(?EntityInterface $object = null): self;
 
 }

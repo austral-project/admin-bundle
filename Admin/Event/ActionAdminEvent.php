@@ -10,24 +10,27 @@
 
 namespace Austral\AdminBundle\Admin\Event;
 
+use AllowDynamicProperties;
 use Austral\AdminBundle\Handler\AdminHandler;
 use Austral\AdminBundle\Template\Interfaces\TemplateParametersInterface;
-use Austral\EntityBundle\Entity\EntityInterface;
+use Austral\Contracts\Entity\EntityInterface;
 
 /**
  * Austral Admin Event Action.
+ * @template T of object
+ *
+ * @extends AdminEvent<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class ActionAdminEvent extends AdminEvent
 {
 
-  CONST EVENT_START = "austral.admin.event.action.start";
-  CONST EVENT_END = "austral.admin.event.action.end";
+  /** @deprecated */
+  CONST string EVENT_START = "austral.admin.event.action.start";
 
-  /**
-   * @var EntityInterface|null
-   */
-  private ?EntityInterface $object;
+  /** @deprecated */
+  CONST string EVENT_END = "austral.admin.event.action.end";
 
   /**
    * @var TemplateParametersInterface
@@ -44,14 +47,11 @@ class ActionAdminEvent extends AdminEvent
    */
   private ?string $redirectUrl = null;
 
-
   /**
-   * FormAdminEvent constructor.
-   *
-   * @param AdminHandler $adminHandler
+   * @param AdminHandler<T> $adminHandler
    * @param TemplateParametersInterface $templateParameters
    * @param string $actionKey
-   * @param EntityInterface|null $object
+   * @param EntityInterface<T>|null $object
    */
   public function __construct(AdminHandler $adminHandler, TemplateParametersInterface $templateParameters, string $actionKey, ?EntityInterface $object = null)
   {
@@ -59,26 +59,6 @@ class ActionAdminEvent extends AdminEvent
     $this->templateParameters = $templateParameters;
     $this->actionKey = $actionKey;
     $this->object = $object;
-  }
-
-  /**
-   * Get object
-   * @return EntityInterface|null
-   */
-  public function getObject(): ?EntityInterface
-  {
-    return $this->object;
-  }
-
-  /**
-   * @param EntityInterface $object
-   *
-   * @return ActionAdminEvent
-   */
-  public function setObject(EntityInterface $object): ActionAdminEvent
-  {
-    $this->object = $object;
-    return $this;
   }
 
   /**
@@ -108,9 +88,9 @@ class ActionAdminEvent extends AdminEvent
   /**
    * @param string|null $redirectUrl
    *
-   * @return ActionAdminEvent
+   * @return $this
    */
-  public function setRedirecturl(?string $redirectUrl): ActionAdminEvent
+  public function setRedirectUrl(?string $redirectUrl): self
   {
     $this->redirectUrl = $redirectUrl;
     return $this;

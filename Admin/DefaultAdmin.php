@@ -12,6 +12,10 @@ namespace Austral\AdminBundle\Admin;
 
 /**
  * Austral Admin Default .
+ * @template T of object
+ *
+ * @extends Admin<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class DefaultAdmin extends Admin

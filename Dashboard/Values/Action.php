@@ -46,7 +46,7 @@ class Action extends DashboardValue
   protected ?string $routeName = null;
 
   /**
-   * @var array
+   * @var array<string, mixed>
    */
   protected array $routeParameters = array();
 
@@ -108,11 +108,11 @@ class Action extends DashboardValue
   }
 
   /**
-   * @param string|null $value
+   * @param string|int|float|null $value
    *
    * @return Action
    */
-  public function setValue(?string $value): Action
+  public function setValue(string|int|float|null $value): Action
   {
     $this->value = $value;
     return $this;

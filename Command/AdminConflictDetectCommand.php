@@ -10,12 +10,13 @@
 
 namespace Austral\AdminBundle\Command;
 
+use Austral\AdminBundle\Services\ConflictDetect;
 use Austral\ToolsBundle\Command\Base\Command;
-use Austral\ToolsBundle\Command\Exception\CommandException;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Austral Conflict Detect Command.
@@ -38,7 +39,7 @@ class AdminConflictDetectCommand extends Command
   /**
    * {@inheritdoc}
    */
-  protected function configure()
+  protected function configure(): void
   {
     $this
       ->setDefinition([
@@ -58,23 +59,33 @@ EOF
   }
 
   /**
+   * @param ConflictDetect $conflictDetect
+   * @param string|null $name
+   * @param (callable(): mixed)|null $code
+   */
+  public function __construct(
+    #[Autowire(service: 'austral.admin.conflict_detect')] protected ConflictDetect $conflictDetect,
+    ?string $name = null,
+    ?callable $code = null)
+  {
+    parent::__construct($name, $code);
+  }
+
+  /**
    * @param InputInterface $input
    * @param OutputInterface $output
-   *
-   * @throws CommandException
-   * @throws \Doctrine\ORM\NonUniqueResultException
    */
-  protected function executeCommand(InputInterface $input, OutputInterface $output)
+  protected function executeCommand(InputInterface $input, OutputInterface $output): void
   {
     if($input->getOption("service")) {
       $sleep = $input->getOption("sleep") ? : 5;
       while(!$this->commandeStop) {
-        $this->container->get('austral.admin.conflict_detect')->execute();
+        $this->conflictDetect->execute();
         sleep($sleep*1);
       }
     }
     else {
-      $this->container->get('austral.admin.conflict_detect')->execute();
+      $this->conflictDetect->execute();
     }
   }
 

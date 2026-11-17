@@ -12,10 +12,11 @@ namespace Austral\AdminBundle\Module;
 
 use Austral\AdminBundle\Admin\AdminInterface;
 use Austral\AdminBundle\Admin\AdminModuleInterface;
+use Austral\EntityBundle\EntityManager\EntityManagerInterface;
 use Austral\EntityBundle\EntityManager\EntityManagerORMInterface;
 use Austral\ListBundle\Model\ModuleInterface;
 use Austral\ToolsBundle\AustralTools;
-use Austral\EntityBundle\Entity\Interfaces\TranslateMasterInterface;
+use Austral\Contracts\Translate\TranslateMasterInterface;
 
 use Doctrine\ORM\EntityManagerInterface as DoctrineEntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -26,6 +27,10 @@ use function Symfony\Component\String\u;
 
 /**
  * Austral Module.
+ * @template T of object
+ *
+ * @implements ModuleInterface<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class Module implements ModuleInterface
@@ -37,9 +42,9 @@ class Module implements ModuleInterface
   protected RouterInterface $router;
 
   /**
-   * @var AdminInterface|AdminModuleInterface|null
+   * @var AdminInterface<T>|null
    */
-  protected $admin = null;
+  protected ?AdminInterface $admin = null;
 
   /**
    * @var string|null
@@ -87,12 +92,12 @@ class Module implements ModuleInterface
   protected array $moduleParameters = array();
 
   /**
-   * @var array
+   * @var array<string, Module<T>>
    */
   protected array $children = array();
 
   /**
-   * @var array
+   * @var array{enabled: bool, position: int}
    */
   protected array $navigation = array(
     "enabled"   =>  false,
@@ -135,9 +140,9 @@ class Module implements ModuleInterface
   );
 
   /**
-   * @var string|null
+   * @var class-string<AdminInterface<T>|null
    */
-  protected ?string $actionName;
+  protected ?string $actionName = null;
 
   /**
    * @var array
@@ -200,17 +205,19 @@ class Module implements ModuleInterface
   protected ?string $filterDomainId = null;
 
   /**
-   * Module constructor.
+   * Module constructor
    *
-   * @throws Exception
+   * @param RouterInterface $router
+   * @param string $moduleKey
+   * @param class-string<AdminInterface<T>>|null $adminClass
    */
-  public function __construct(RouterInterface $router, string $moduleKey, string $adminClass = null)
+  public function __construct(RouterInterface $router, string $moduleKey, ?string $adminClass = null)
   {
     $this->router = $router;
     $this->moduleKey = $moduleKey;
-    $this->adminClass = $adminClass;
     if($adminClass && class_exists($adminClass))
     {
+      $this->adminClass = $adminClass;
       $this->admin = new $adminClass();
       $this->admin->setModule($this);
     }
@@ -240,7 +247,7 @@ class Module implements ModuleInterface
 
   /**
    * Get parent
-   * @return Module
+   * @return Module<T>|null
    */
   public function getParent(): ?Module
   {
@@ -248,11 +255,11 @@ class Module implements ModuleInterface
   }
 
   /**
-   * @param Module $parent
+   * @param Module<T> $parent
    *
-   * @return Module
+   * @return $this
    */
-  public function setParent(Module $parent): Module
+  public function setParent(Module $parent): self
   {
     $this->parent = $parent;
     $parent->addChildren($this);
@@ -261,7 +268,7 @@ class Module implements ModuleInterface
 
   /**
    * Get children
-   * @return array
+   * @return array<string, Module<T>>
    */
   public function getChildren(): array
   {
@@ -269,11 +276,11 @@ class Module implements ModuleInterface
   }
 
   /**
-   * @param Module $module
+   * @param Module<T> $module
    *
    * @return $this
    */
-  public function addChildren(Module $module): Module
+  public function addChildren(Module $module): self
   {
     if(!array_key_exists($module->getModulePath(), $this->children))
     {
@@ -283,11 +290,11 @@ class Module implements ModuleInterface
   }
 
   /**
-   * @param Module $module
+   * @param Module<T> $module
    *
    * @return $this
    */
-  public function removeChildren(Module $module): Module
+  public function removeChildren(Module $module): self
   {
     if(array_key_exists($module->getModulePath(), $this->children))
     {
@@ -297,11 +304,11 @@ class Module implements ModuleInterface
   }
 
   /**
-   * @param array $children
+   * @param array<string, Module<T>> $children
    *
-   * @return Module
+   * @return $this
    */
-  public function setChildren(array $children): Module
+  public function setChildren(array $children): self
   {
     $this->children = $children;
     return $this;
@@ -310,11 +317,11 @@ class Module implements ModuleInterface
   /**
    * Set navigation
    *
-   * @param array $navigation
+   * @param array{enabled: bool, position: int} $navigation
    *
-   * @return Module
+   * @return self
    */
-  public function setNavigation(array $navigation): Module
+  public function setNavigation(array $navigation): self
   {
     $this->navigation = $navigation;
     return $this;
@@ -331,7 +338,7 @@ class Module implements ModuleInterface
   /**
    * @return int|bool
    */
-  public function navigationPosition()
+  public function navigationPosition(): int|bool
   {
     return $this->navigation["position"];
   }
@@ -475,9 +482,9 @@ class Module implements ModuleInterface
   }
 
   /**
-   * @return EntityManagerORMInterface|DoctrineEntityManagerInterface|null
+   * @return EntityManagerInterface|null
    */
-  public function getEntityManager()
+  public function getEntityManager(): ?EntityManagerInterface
   {
     return $this->entityManager;
   }
@@ -638,9 +645,9 @@ class Module implements ModuleInterface
    *
    * @param string $moduleKey
    *
-   * @return Module
+   * @return $this
    */
-  public function setModuleKey(string $moduleKey): Module
+  public function setModuleKey(string $moduleKey): self
   {
     $this->moduleKey = $moduleKey;
     return $this;

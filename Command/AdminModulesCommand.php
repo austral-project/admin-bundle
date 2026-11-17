@@ -11,6 +11,8 @@
 namespace Austral\AdminBundle\Command;
 
 use Austral\AdminBundle\Module\Module;
+use Austral\AdminBundle\Module\Modules;
+use Austral\EntityBundle\Mapping\Mapping;
 use Austral\EntityFileBundle\File\Mapping\FieldFileMapping;
 use Austral\ToolsBundle\AustralTools;
 use Austral\ToolsBundle\Command\Base\Command;
@@ -20,10 +22,13 @@ use Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Austral Modules Command.
+ * @template T of object
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  * @final
  */
@@ -43,7 +48,7 @@ class AdminModulesCommand extends Command
   /**
    * {@inheritdoc}
    */
-  protected function configure()
+  protected function configure(): void
   {
     $this
       ->setDefinition([
@@ -67,27 +72,38 @@ EOF
   protected ClassLoader $composerLoader;
 
   /**
+   * @param Mapping<T> $mapping
+   * @param Modules<T> $modules
+   * @param string|null $name
+   * @param (callable(): mixed)|null $code
+   */
+  public function __construct(
+    #[Autowire(service: 'austral.entity.mapping')] protected Mapping $mapping,
+    #[Autowire(service: 'austral.admin.modules')] protected Modules $modules,
+    ?string $name = null,
+    ?callable $code = null)
+  {
+    parent::__construct($name, $code);
+    $this->composerLoader = require 'vendor/autoload.php';
+  }
+
+  /**
    * @param InputInterface $input
    * @param OutputInterface $output
    *
    * @throws Exception
    */
-  protected function executeCommand(InputInterface $input, OutputInterface $output)
+  protected function executeCommand(InputInterface $input, OutputInterface $output): void
   {
     $filesystem = new Filesystem();
     if($input->getOption("generate"))
     {
-      $this->composerLoader = require 'vendor/autoload.php';
-
-      $mapping = $this->container->get("austral.entity.mapping");
-
-      /** @var Module $module */
-      foreach ($this->container->get("austral.admin.modules")->init()->getModules() as $module)
+      /** @var Module<T> $module */
+      foreach ($this->modules->init()->getModules() as $module)
       {
-        if(!class_exists($module->getAdminClass()))
+        $entityManager = $module->getEntityManager();
+        if($module->getAdminClass() && $entityManager && $entityManager->getClass() && !class_exists($module->getAdminClass()))
         {
-          $entityManager = $module->getEntityManager();
-
           $filterMapperLines = array();
           $listMapperLines = array(
             '->getSection("default")',
@@ -100,14 +116,14 @@ EOF
           $formMapperLines = array(
             '->addFieldset("fieldset.generalInformation")'
           );
-          /** @var array $field */
+          /** @var array<string, mixed> $field */
           foreach($entityManager->getFieldsMappingAll() as $key => $field)
           {
             if($field["type"] === "string" && $key !== "id")
             {
               $filterMapperLines[] = sprintf('  ->add(new FilterType\StringType("%s"))', $field["fieldName"]);
               $listMapperLines[] = sprintf('  ->addColumn(new Column\Value("%s"))', $field["fieldName"]);
-              if($fileMapping = $mapping->getFieldsMappingByFieldname($entityManager->getClass(), FieldFileMapping::class, $field["fieldName"]))
+              if($this->mapping->getFieldsMappingByFieldname($entityManager->getClass(), FieldFileMapping::class, $field["fieldName"]))
               {
                 $formMapperLines[] = sprintf('  ->add(Field\UploadField::create("%s"))', $field["fieldName"]);
                 $formMapperLines[] = sprintf('  ->addPopin("popup-editor-%s", "%s", array(', $field["fieldName"], $field["fieldName"]);
@@ -149,24 +165,30 @@ EOF
           $formMapperLines[] = "->end()";
 
           $filePath = $this->getFilePathByClassname($module->getAdminClass());
-          $pathInfo = pathinfo($filePath);
-          if(!file_exists($pathInfo['dirname']))
+          $pathInfo = $filePath ? pathinfo($filePath) : array();
+          if(array_key_exists("dirname", $pathInfo))
           {
-            $filesystem->mkdir($pathInfo['dirname']);
+            if(!file_exists($pathInfo['dirname']))
+            {
+              $filesystem->mkdir($pathInfo['dirname']);
+            }
+            $searchReplaceValues = array(
+              "##php##"                 =>  "<?php",
+              "##NAMESPACE##"           =>  $this->getNamespace($module->getAdminClass()),
+              "##NAME##"                =>  $module->getName(),
+              "##CLASSNAME##"           =>  $this->getClassnameShort($module->getAdminClass()),
+              "##FILTER_MAPPER##"       =>  implode("\n      ", $filterMapperLines),
+              "##LIST_MAPPER##"         =>  implode("\n      ", $listMapperLines),
+              "##FORM_MAPPER##"         =>  implode("\n      ", $formMapperLines),
+            );
+            if(file_exists($filePath))
+            {
+              $fileContent = file_get_contents($filePath);
+              $fileContent = $fileContent !== false ? $fileContent : "";
+              $fileContent = str_replace(array_keys($searchReplaceValues), array_values($searchReplaceValues), $fileContent);
+              file_put_contents($filePath, $fileContent);
+            }
           }
-          $searchReplaceValues = array(
-            "##php##"                 =>  "<?php",
-            "##NAMESPACE##"           =>  $this->getNamespace($module->getAdminClass()),
-            "##NAME##"                =>  $module->getName(),
-            "##CLASSNAME##"           =>  $this->getClassnameShort($module->getAdminClass()),
-            "##FILTER_MAPPER##"       =>  implode("\n      ", $filterMapperLines),
-            "##LIST_MAPPER##"         =>  implode("\n      ", $listMapperLines),
-            "##FORM_MAPPER##"         =>  implode("\n      ", $formMapperLines),
-          );
-
-          $fileContent = file_get_contents(__DIR__."/../Skeleton/Admin/Admin.php");
-          $fileContent = str_replace(array_keys($searchReplaceValues), array_values($searchReplaceValues), $fileContent);
-          file_put_contents($filePath, $fileContent);
         }
       }
     }
@@ -188,7 +210,7 @@ EOF
       $classnameSearch = implode("\\", $classnameSearchHydrate)."\\";
       if(array_key_exists($classnameSearch, $this->composerLoader->getPrefixesPsr4()))
       {
-        $filePath = AustralTools::first($this->composerLoader->getPrefixesPsr4()[$classnameSearch]);
+        $filePath = (string) AustralTools::first($this->composerLoader->getPrefixesPsr4()[$classnameSearch]);
       }
       elseif($filePath)
       {

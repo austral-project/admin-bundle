@@ -15,13 +15,15 @@ use Austral\AdminBundle\Module\Modules;
 
 /**
  * Austral Navigation.
+ * @template T of object
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class Navigation
 {
 
   /**
-   * @var array
+   * @var array<string, array{url: string|null, entitled: string, picto: string, modulePath: string}>
    */
   protected array $navigation = array();
 
@@ -34,14 +36,14 @@ class Navigation
   }
 
   /**
-   * @param Modules $modules
+   * @param Modules<T> $modules
    *
-   * @return Navigation
+   * @return $this
    */
-  public function init(Modules $modules): Navigation
+  public function init(Modules $modules): self
   {
     /**
-     * @var Module $module
+     * @var Module<T> $module
      */
     foreach($modules->getModules() as $url => $module)
     {
@@ -60,9 +62,11 @@ class Navigation
   }
 
   /**
-   * @return array
+   * get
+   *
+   * @return array<string, array{url: string|null, entitled: string, picto: string, modulePath: string}>
    */
-  public function __serialize()
+  public function get(): array
   {
     return $this->navigation;
   }

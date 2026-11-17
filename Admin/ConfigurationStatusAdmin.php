@@ -17,16 +17,20 @@ use Austral\AdminBundle\Event\ConfigurationCheckerEvent;
 use Austral\ToolsBundle\AustralTools;
 
 /**
- * Configuration Status Admin .
+ * Configuration Status Admin.
+ * @template T of object
+ *
+ * @extends Admin<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class ConfigurationStatusAdmin extends Admin
 {
 
   /**
-   * @param ListAdminEvent $listAdminEvent
+   * @param ListAdminEvent<T> $listAdminEvent
    */
-  public function index(ListAdminEvent $listAdminEvent)
+  public function index(ListAdminEvent $listAdminEvent): void
   {
     $configurationCheckerEvent = new ConfigurationCheckerEvent();
     $subConfigurationChecker = $configurationCheckerEvent->addConfiguration("dirs")
@@ -42,8 +46,8 @@ class ConfigurationStatusAdmin extends Admin
     /*
      * Check Dirs
      */
-    $filepermsSuccess = array('0775', "0777");
-    $projectDir = $this->container->getParameter("kernel.project_dir");
+    $filePermsSuccess = array('0775', "0777");
+    $projectDir = $this->container->getParameter("kernel.project_dir") ?? "";
     $publicDir = $this->container->hasParameter("austral.file.public.path") ? $this->container->getParameter("austral.file.public.path") : "public";
     $dirsToChecked = array(
       "{$publicDir}"  => array("uploads", "thumbnail"),
@@ -88,7 +92,7 @@ class ConfigurationStatusAdmin extends Admin
           $configurationCheckerValue->setName("configuration.check.dirs.fileperms.entitled")
             ->setIsTranslatable(true)
             ->setType(ConfigurationCheckerValue::$TYPE_CHECKED)
-            ->setStatus(in_array($fileperms, $filepermsSuccess) ? ConfigurationCheckerValue::$STATUS_SUCCESS : ConfigurationCheckerValue::$STATUS_ERROR)
+            ->setStatus(in_array($fileperms, $filePermsSuccess) ? ConfigurationCheckerValue::$STATUS_SUCCESS : ConfigurationCheckerValue::$STATUS_ERROR)
             ->setValue($fileperms);
         }
         else

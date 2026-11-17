@@ -15,12 +15,17 @@ use Austral\AdminBundle\Module\Module;
 use Austral\AdminBundle\Module\Modules;
 use Austral\AdminBundle\Template\Elements\Breadcrumb;
 use Austral\AdminBundle\Template\Elements\Navigation;
+use Austral\HttpBundle\Template\Interfaces\HttpTemplateParametersInterface;
 
 /**
  * Austral Admin Template Interface.
+ * @template T of object
+ *
+ * @extends HttpTemplateParametersInterface<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
-interface TemplateParametersInterface
+interface TemplateParametersInterface extends HttpTemplateParametersInterface
 {
 
   /**
@@ -31,12 +36,12 @@ interface TemplateParametersInterface
   public function __construct(AdminConfiguration $adminConfiguration);
 
   /**
-   * @return Navigation
+   * @return Navigation<T>
    */
   public function navigation(): Navigation;
 
   /**
-   * @return Breadcrumb
+   * @return Breadcrumb<T>
    */
   public function breadcrumb(): Breadcrumb;
 
@@ -46,14 +51,14 @@ interface TemplateParametersInterface
   public function initTemplate(): TemplateParametersInterface;
 
   /**
-   * @param Modules $modules
+   * @param Modules<T> $modules
    *
    * @return $this
    */
   public function setModules(Modules $modules): TemplateParametersInterface;
 
   /**
-   * @param Module $module
+   * @param Module<T> $module
    *
    * @return $this
    */

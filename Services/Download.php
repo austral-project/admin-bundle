@@ -11,7 +11,7 @@
 namespace Austral\AdminBundle\Services;
 
 use Austral\AdminBundle\Configuration\AdminConfiguration;
-use Austral\EntityBundle\Entity\EntityInterface;
+use Austral\Contracts\Entity\EntityInterface;
 use Austral\ListBundle\Column\Interfaces\ColumnInterface;
 use Austral\ListBundle\Mapper\ListMapper;
 use Austral\ListBundle\Row\Row;
@@ -28,6 +28,8 @@ use function Symfony\Component\String\u;
 
 /**
  * Austral Download.
+ * @template T of object
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 Class Download
@@ -39,9 +41,9 @@ Class Download
   protected AdminConfiguration $adminConfiguration;
 
   /**
-   * @var ListMapper
+   * @var ListMapper<T>|null
    */
-  protected ListMapper $listMapper;
+  protected ?ListMapper $listMapper = null;
 
   /**
    * @var TranslatorInterface
@@ -49,33 +51,35 @@ Class Download
   protected TranslatorInterface $translator;
 
   /**
-   * @var string
+   * @var string|null
    */
-  protected string $format;
+  protected ?string $format = null;
 
   /**
-   * @var string
+   * @var string|null
    */
-  protected string $extension;
+  protected ?string $extension = null;
 
   /**
-   * @var string
+   * @var string|null
    */
-  protected string $filename;
+  protected ?string $filename = null;
 
   /**
-   * @var string
+   * @var string|null
    */
-  protected string $contentFile;
+  protected ?string $contentFile = null;
 
   /**
-   * @var string
+   * @var string|null
    */
-  protected string $contentType;
+  protected ?string $contentType = null;
 
   /**
-   * @var AdminConfiguration $adminConfiguration
-   * Constructor
+   * Download constructor
+   *
+   * @param AdminConfiguration $adminConfiguration
+   * @param TranslatorInterface $translator
    */
   public function __construct(AdminConfiguration $adminConfiguration, TranslatorInterface $translator)
   {
@@ -84,11 +88,11 @@ Class Download
   }
 
   /**
-   * @param ListMapper $listMapper
+   * @param ListMapper<T> $listMapper
    *
    * @return $this
    */
-  public function setListMapper(ListMapper $listMapper): Download
+  public function setListMapper(ListMapper $listMapper): self
   {
     $this->listMapper = $listMapper;
     return $this;
@@ -100,7 +104,7 @@ Class Download
    * @return $this
    * @throws Exception
    */
-  public function setFormat(string $format): Download
+  public function setFormat(string $format): self
   {
     $this->format = $format;
     $mimeTypes = new MimeTypes();
@@ -122,7 +126,7 @@ Class Download
     $now = new \DateTime();
     $before = $this->adminConfiguration->get('download.title_before');
     $before = $before ? $before." - " : "";
-    $filename = u($this->filename)->lower()->toString();
+    $filename = u($this->filename ?? "")->lower()->toString();
     $filename = AustralTools::removeAccents($filename);
     return "{$before}{$filename} - {$now->format("Y-m-d")}.{$this->extension}";
   }
@@ -132,80 +136,94 @@ Class Download
    *
    * @return $this
    */
-  public function setFilename(string $filename): Download
+  public function setFilename(string $filename): self
   {
     $this->filename = $filename;
     return $this;
   }
 
   /**
-   * @return string
+   * @return string|null
    */
-  public function getContentFile(): string
+  public function getContentFile(): ?string
   {
     return $this->contentFile;
   }
 
   /**
-   * @return string
+   * @return string|null
    */
-  public function getContentType(): string
+  public function getContentType(): ?string
   {
     return $this->contentType;
   }
 
   /**
-   * @throws Exception
+   * generate
+   *
+   * @return $this
    */
-  public function generate()
+  public function generate(): self
   {
     $generateByFormat = "{$this->format}Generate";
     return $this->$generateByFormat();
   }
 
   /**
-   * @throws Exception
+   * push
+   *
+   * @return void
    */
-  public function push()
+  public function push(): void
   {
     $generateByFormat = "{$this->format}Push";
     $this->$generateByFormat();
   }
 
 
-  protected string $jsonValues = "";
   /**
-   * Generate JSON File
+   * @var string
    */
-  protected function jsonGenerate(): Download
+  protected string $jsonValues = "";
+
+  /**
+   * @return $this
+   */
+  protected function jsonGenerate(): self
   {
     $returnValues = array();
-    /** @var Section $section */
-    foreach($this->listMapper->getSections() as $section)
+
+    if($this->listMapper)
     {
-      $headerColumns = array();
-      /** @var ColumnInterface $headerColumn */
-      foreach($section->headerColumns() as $headerColumn)
+      /** @var Section<T> $section */
+      foreach($this->listMapper->getSections() as $section)
       {
-        $headerColumns[$headerColumn->getFieldname()] = $this->translate($headerColumn->getEntitled(), $headerColumn->getTranslateParameters());
-      }
-      $valuesColumns = array();
-      /** @var Row $row */
-      foreach ($section->rows() as $row) {
-        $valueColumns = array();
-        /** @var ColumnInterface $column */
-        foreach($row->columns() as $column)
+        $headerColumns = array();
+        /** @var ColumnInterface<T> $headerColumn */
+        foreach($section->headerColumns() as $headerColumn)
         {
-          $valueColumns[$column->getFieldname()] = $this->getValueByColumn($column, true);
+          $headerColumns[$headerColumn->getFieldname()] = $this->translate($headerColumn->getEntitled(), $headerColumn->getTranslateParameters());
         }
-        $valuesColumns[] = $valueColumns;
+        $valuesColumns = array();
+        /** @var Row<T> $row */
+        foreach ($section->rows() as $row) {
+          $valueColumns = array();
+          /** @var ColumnInterface<T> $column */
+          foreach($row->columns() as $column)
+          {
+            $valueColumns[$column->getFieldname()] = $this->getValueByColumn($column, true);
+          }
+          $valuesColumns[] = $valueColumns;
+        }
+        $returnValues[$section->getKeyname()] = array(
+          "header"  =>  $headerColumns,
+          "values"  =>  $valuesColumns
+        );
       }
-      $returnValues[$section->getKeyname()] = array(
-        "header"  =>  $headerColumns,
-        "values"  =>  $valuesColumns
-      );
+      $jsonValues = json_encode(count($returnValues) == 1 ? AustralTools::first($returnValues) : $returnValues);
+      $this->jsonValues = $jsonValues ?: "{}";
     }
-    $this->jsonValues = json_encode(count($returnValues) == 1 ? AustralTools::first($returnValues) : $returnValues);
+
     return $this;
   }
 
@@ -214,43 +232,49 @@ Class Download
    *
    * @return void
    */
-  protected function jsonPush()
+  protected function jsonPush(): void
   {
     $file = fopen("php://output", 'w');
-    echo $this->jsonValues;
-    fclose($file);
+    if($file && $this->jsonValues !== "")
+    {
+      echo $this->jsonValues;
+      fclose($file);
+    }
   }
 
 
   /**
-   * @var array
+   * @var array<int, mixed>
    */
   protected array $csvValues = array();
 
   /**
-   * Generate CVS File
+   * @return $this
    */
-  protected function csvGenerate(): Download
+  protected function csvGenerate(): self
   {
-    /** @var Section $section */
-    foreach($this->listMapper->getSections() as $section)
+    if($this->listMapper)
     {
-      $headerColumns = array();
-      /** @var ColumnInterface $headerColumn */
-      foreach($section->headerColumns() as $headerColumn)
+      /** @var Section<T> $section */
+      foreach($this->listMapper->getSections() as $section)
       {
-        $headerColumns[] = $this->translate($headerColumn->getEntitled(), $headerColumn->getTranslateParameters());
-      }
-      $this->csvValues[] = $headerColumns;
-      /** @var Row $row */
-      foreach ($section->rows() as $row) {
-        $valueColumns = array();
-        /** @var ColumnInterface $column */
-        foreach($row->columns() as $column)
+        $headerColumns = array();
+        /** @var ColumnInterface<T> $headerColumn */
+        foreach($section->headerColumns() as $headerColumn)
         {
-          $valueColumns[] = $this->getValueByColumn($column);
+          $headerColumns[] = $this->translate($headerColumn->getEntitled(), $headerColumn->getTranslateParameters());
         }
-        $this->csvValues[] = $valueColumns;
+        $this->csvValues[] = $headerColumns;
+        /** @var Row<T> $row */
+        foreach ($section->rows() as $row) {
+          $valueColumns = array();
+          /** @var ColumnInterface<T> $column */
+          foreach($row->columns() as $column)
+          {
+            $valueColumns[] = $this->getValueByColumn($column);
+          }
+          $this->csvValues[] = $valueColumns;
+        }
       }
     }
     return $this;
@@ -261,162 +285,168 @@ Class Download
    *
    * @return void
    */
-  protected function csvPush()
+  protected function csvPush(): void
   {
     ob_start();
     $file = fopen("php://output", 'w');
-    foreach($this->csvValues as $values)
+    if($file)
     {
-      fputcsv($file, $values);
+      foreach($this->csvValues as $values)
+      {
+        fputcsv($file, $values);
+      }
+      fclose($file);
     }
-    fclose($file);
   }
 
 
 
   /**
-   * @var Xlsx
+   * @var Xlsx|null
    */
-  protected Xlsx $xlsxValues;
+  protected ?Xlsx $xlsxValues = null;
 
   /**
-   * Generate XLSX File
-   *
+   * @return $this
    * @throws \PhpOffice\PhpSpreadsheet\Exception
-   * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
    */
-  protected function xlsxGenerate(): Download
+  protected function xlsxGenerate(): self
   {
-    $spreadsheet = new Spreadsheet();
-    $spreadsheet->getProperties()->setCreator($this->adminConfiguration->get('download.creator'))->setTitle($this->getFilename());
-
-    $sheet = 0;
-    /** @var Section $section */
-    foreach($this->listMapper->getSections() as $section)
+    if($this->listMapper)
     {
-      if($sheet > 0) {
-        $spreadsheet->createSheet($sheet);
-        $spreadsheet->setActiveSheetIndex($sheet);
-      }
-      $row = 1;
-      $col = 0;
-      $spreadsheet->getActiveSheet()->setTitle($this->translate($section->getTitle()));
-      /** @var ColumnInterface $headerColumn */
-      foreach($section->headerColumns() as $headerColumn)
+      $spreadsheet = new Spreadsheet();
+      $spreadsheet->getProperties()->setCreator($this->adminConfiguration->get('download.creator'))->setTitle($this->getFilename());
+
+      $sheet = 0;
+      /** @var Section<T> $section */
+      foreach($this->listMapper->getSections() as $section)
       {
-        $colName = $this->colName($col);
-        $spreadsheet->getActiveSheet()->getColumnDimension($colName)->setAutoSize(true);
-
-        $value = $this->translate($headerColumn->getEntitled(), $headerColumn->getTranslateParameters());
-        $spreadsheet->getActiveSheet()->setCellValue($colName.$row, $value);
-        $spreadsheet->getActiveSheet()->getRowDimension($row)->setRowHeight(40);
-        $col++;
-      }
-
-      $row++;
-      /** @var Row $row */
-      foreach ($section->rows() as $rowValues) {
-        /** @var ColumnInterface $column */
-        foreach($rowValues->columns() as $col => $column)
+        if($sheet > 0) {
+          $spreadsheet->createSheet($sheet);
+          $spreadsheet->setActiveSheetIndex($sheet);
+        }
+        $row = 1;
+        $col = 0;
+        $spreadsheet->getActiveSheet()->setTitle($this->translate($section->getTitle() ?? ""));
+        /** @var ColumnInterface<T> $headerColumn */
+        foreach($section->headerColumns() as $headerColumn)
         {
           $colName = $this->colName($col);
-          $spreadsheet->getActiveSheet()
-            ->setCellValue($colName.$row, $this->getValueByColumn($column));
-          $spreadsheet->getActiveSheet()->getRowDimension($row)->setRowHeight(30);
+          $spreadsheet->getActiveSheet()->getColumnDimension($colName)->setAutoSize(true);
+
+          $value = $this->translate($headerColumn->getEntitled(), $headerColumn->getTranslateParameters());
+          $spreadsheet->getActiveSheet()->setCellValue($colName.$row, $value);
+          $spreadsheet->getActiveSheet()->getRowDimension($row)->setRowHeight(40);
+          $col++;
         }
+
         $row++;
+        /** @var Row<T> $rowValues */
+        foreach ($section->rows() as $rowValues) {
+          /** @var ColumnInterface<T> $column */
+          foreach($rowValues->columns() as $col => $column)
+          {
+            $colName = $this->colName($col);
+            $spreadsheet->getActiveSheet()
+              ->setCellValue($colName.$row, $this->getValueByColumn($column));
+            $spreadsheet->getActiveSheet()->getRowDimension($row)->setRowHeight(30);
+          }
+          $row++;
+        }
+
+        if($this->adminConfiguration->get("download.xlsTheme.enabled"))
+        {
+          $styleHeaderArray = array(
+            "font"    =>  array(
+              "bold"    => true,
+              "size"    => 10,
+              "color"   => array('rgb' => u($this->adminConfiguration->get("download.xlsTheme.header.color"))->trim("#")->toString()),
+              'name'    => 'Verdana'
+            ),
+            'fill' => array(
+              'fillType' => Fill::FILL_SOLID,
+              'startColor' => array(
+                'rgb' => u($this->adminConfiguration->get("download.xlsTheme.header.background"))->trim("#")->toString(),
+              )
+            ),
+          );
+
+          $styleContentArray = array(
+            "font"    =>  array(
+              "bold"    => true,
+              "size"    => 10,
+              "color"   => array('rgb' => u($this->adminConfiguration->get("download.xlsTheme.content.color"))->trim("#")->toString()),
+              'name'    => 'Verdana'
+            ),
+            'fill' => array(
+              'fillType' => Fill::FILL_SOLID,
+              'startColor' => array(
+                'rgb' => u($this->adminConfiguration->get("download.xlsTheme.content.background"))->trim("#")->toString(),
+              )
+            ),
+          );
+
+          $spreadsheet->getActiveSheet()
+            ->getStyle("A1:{$this->colName(count($section->headerColumns())-1)}1")
+            ->applyFromArray($styleHeaderArray)
+            ->getAlignment()
+            ->setHorizontal('left')
+            ->setVertical('center');
+
+          $spreadsheet->getActiveSheet()
+            ->getStyle("A1:{$this->colName(count($section->headerColumns())-1)}".($row-1))
+            ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+          $spreadsheet->getActiveSheet()
+            ->getStyle("A2:{$this->colName(count($section->headerColumns())-1)}".($row-1))
+            ->applyFromArray($styleContentArray)
+            ->getAlignment()
+            ->setHorizontal('left')
+            ->setVertical('center');
+        }
+
+        $sheet++;
       }
-
-      if($this->adminConfiguration->get("download.xlsTheme.enabled"))
-      {
-        $styleHeaderArray = array(
-          "font"    =>  array(
-            "bold"    => true,
-            "size"    => 10,
-            "color"   => array('rgb' => u($this->adminConfiguration->get("download.xlsTheme.header.color"))->trim("#")->toString()),
-            'name'    => 'Verdana'
-          ),
-          'fill' => array(
-            'fillType' => Fill::FILL_SOLID,
-            'startColor' => array(
-              'rgb' => u($this->adminConfiguration->get("download.xlsTheme.header.background"))->trim("#")->toString(),
-            )
-          ),
-        );
-
-        $styleContentArray = array(
-          "font"    =>  array(
-            "bold"    => true,
-            "size"    => 10,
-            "color"   => array('rgb' => u($this->adminConfiguration->get("download.xlsTheme.content.color"))->trim("#")->toString()),
-            'name'    => 'Verdana'
-          ),
-          'fill' => array(
-            'fillType' => Fill::FILL_SOLID,
-            'startColor' => array(
-              'rgb' => u($this->adminConfiguration->get("download.xlsTheme.content.background"))->trim("#")->toString(),
-            )
-          ),
-        );
-
-        $spreadsheet->getActiveSheet()
-          ->getStyle("A1:{$this->colName(count($section->headerColumns())-1)}1")
-          ->applyFromArray($styleHeaderArray)
-          ->getAlignment()
-          ->setHorizontal('left')
-          ->setVertical('center');
-
-        $spreadsheet->getActiveSheet()
-          ->getStyle("A1:{$this->colName(count($section->headerColumns())-1)}".($row-1))
-          ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-
-        $spreadsheet->getActiveSheet()
-          ->getStyle("A2:{$this->colName(count($section->headerColumns())-1)}".($row-1))
-          ->applyFromArray($styleContentArray)
-          ->getAlignment()
-          ->setHorizontal('left')
-          ->setVertical('center');
-      }
-
-      $sheet++;
+      $this->xlsxValues = new Xlsx($spreadsheet);
     }
-    $this->xlsxValues = new Xlsx($spreadsheet);
     return $this;
   }
 
   /**
-   * csvPush
-   *
    * @return void
    * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
    */
-  protected function xlsxPush()
+  protected function xlsxPush(): void
   {
-    $this->xlsxValues->save('php://output');
+    $this->xlsxValues?->save('php://output');
   }
 
   /**
    * @param string $value
-   * @param array $parameters
+   * @param array<string, string> $parameters
    *
    * @return string
    */
   protected function translate(string $value, array $parameters = array()): string
   {
-    $parameters = array_merge($this->listMapper->getTranslateParameters(), $parameters);
-    return u($this->translator->trans($value, $parameters, $this->adminConfiguration->get('download.trans_domain', $this->listMapper->getTranslateDomain())))
-      ->trim()
-      ->toString();
+    if($this->listMapper)
+    {
+      $parameters = array_merge($this->listMapper->getTranslateParameters(), $parameters);
+      return u($this->translator->trans($value, $parameters, $this->adminConfiguration->get('download.trans_domain', $this->listMapper->getTranslateDomain())))
+        ->trim()
+        ->toString();
+    }
+    return "";
   }
 
 
   /**
-   * @param ColumnInterface $column
+   * @param ColumnInterface<T> $column
    * @param bool $accepteArray
    *
-   * @return string|array
+   * @return string|array<int|string, mixed>
    */
-  protected function getValueByColumn(ColumnInterface $column, bool $accepteArray = false)
+  protected function getValueByColumn(ColumnInterface $column, bool $accepteArray = false): string|array
   {
     $columnValue = $column->getValue();
     if(!is_array($columnValue) && !is_object($columnValue))
@@ -425,7 +455,6 @@ Class Download
       {
         $columnValue = $columnValue ? "true" : "false";
         $columnValue = $this->translate("boolean_value.{$columnValue}");
-
       }
       elseif($column->withLanguage())
       {
@@ -443,22 +472,25 @@ Class Download
       }
 
       $finalValue = array();
-      foreach ($columnValue as $key => $value)
+      if(is_array($columnValue))
       {
-        if($value instanceof EntityInterface)
+        foreach ($columnValue as $key => $value)
         {
-          if(method_exists($value, "arrayToDownload"))
+          if($value instanceof EntityInterface)
           {
-            $finalValue[] = $value->arrayToDownload();
+            if(method_exists($value, "arrayToDownload"))
+            {
+              $finalValue[] = $value->arrayToDownload();
+            }
+            else
+            {
+              $finalValue[] = $value->arrayObject();
+            }
           }
           else
           {
-            $finalValue[] = $value->arrayObject();
+            $finalValue[$key] = $value;
           }
-        }
-        else
-        {
-          $finalValue[$key] = $value;
         }
       }
       if($accepteArray)
@@ -475,12 +507,12 @@ Class Download
   }
 
   /**
-   * @param $array
+   * @param array<int|string, mixed> $array
    * @param int $indent
    *
    * @return string
    */
-  protected function transformArrayToString($array, int $indent = 0): string
+  protected function transformArrayToString(array $array, int $indent = 0): string
   {
     $textFinal = "";
     foreach($array as $key => $value)
@@ -498,22 +530,18 @@ Class Download
   }
 
   /**
-   * @param $col
+   * @param int $col
    *
    * @return string
    */
-  protected function colName($col): string
+  protected function colName(int $col): string
   {
-    if(is_int($col))
+    $prefix = "";
+    if($col > 25 )
     {
-      $prefix = "";
-      if($col > 25 )
-      {
-        $prefix = "A";
-      }
-      $col = $prefix.chr(($col%26)+65);
+      $prefix = "A";
     }
-    return $col;
+    return $prefix.chr(($col%26)+65);
   }
 
 }

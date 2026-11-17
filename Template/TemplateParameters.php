@@ -21,6 +21,11 @@ use Austral\HttpBundle\Template\HttpTemplateParametersParameters;
 
 /**
  * Austral Template Parameters.
+ * @template T of object
+ *
+ * @extends HttpTemplateParametersParameters<T>
+ * @implements TemplateParametersInterface<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class TemplateParameters extends HttpTemplateParametersParameters implements TemplateParametersInterface
@@ -31,40 +36,39 @@ class TemplateParameters extends HttpTemplateParametersParameters implements Tem
   protected AdminConfiguration $adminConfiguration;
 
   /**
-   * @var Navigation
+   * @var Navigation<T>
    */
   protected Navigation $navigation;
 
   /**
-   * @var Breadcrumb
+   * @var Breadcrumb<T>
    */
   protected Breadcrumb $breadcrumb;
 
   /**
-   * @var Modules|null
+   * @var Modules<T>|null
    */
   protected ?Modules $modules = null;
 
   /**
-   * @var Module|null
+   * @var Module<T>|null
    */
   protected ?Module $module = null;
 
   /**
-   * TemplateParameters constructor.
+   * TemplateParameters constructor
    *
    * @param AdminConfiguration $adminConfiguration
    */
   public function __construct(AdminConfiguration $adminConfiguration)
   {
-    parent::__construct();
     $this->adminConfiguration = $adminConfiguration;
     $this->navigation = new Navigation();
     $this->breadcrumb = new Breadcrumb();
   }
 
   /**
-   * @return Navigation
+   * @return Navigation<T>
    */
   public function navigation(): Navigation
   {
@@ -72,7 +76,7 @@ class TemplateParameters extends HttpTemplateParametersParameters implements Tem
   }
 
   /**
-   * @return Breadcrumb
+   * @return Breadcrumb<T>
    */
   public function breadcrumb(): Breadcrumb
   {
@@ -93,38 +97,38 @@ class TemplateParameters extends HttpTemplateParametersParameters implements Tem
   }
 
   /**
-   * @return array
+   * @return array<string, mixed>
    */
-  public function __serialize()
+  public function __serialize(): array
   {
     return array_merge($this->parameters, array(
         "config"      =>  array(
           "data_reload_js"   =>  $this->adminConfiguration->getConfig("data_reload_js")
         ),
         "module"      =>  $this->module,
-        "navigation"  =>  $this->navigation->__serialize(),
-        "breadcrumb"  =>  $this->breadcrumb->__serialize(),
+        "navigation"  =>  $this->navigation->get(),
+        "breadcrumb"  =>  $this->breadcrumb->get(),
       )
     );
   }
 
   /**
-   * @param Modules $modules
+   * @param Modules<T> $modules
    *
    * @return $this
    */
-  public function setModules(Modules $modules): TemplateParameters
+  public function setModules(Modules $modules): self
   {
     $this->modules = $modules;
     return $this;
   }
 
   /**
-   * @param Module $module
+   * @param Module<T> $module
    *
    * @return $this
    */
-  public function setModule(Module $module): TemplateParameters
+  public function setModule(Module $module): self
   {
     $this->module = $module;
     return $this;

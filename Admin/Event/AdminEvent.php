@@ -12,10 +12,15 @@ namespace Austral\AdminBundle\Admin\Event;
 
 use Austral\AdminBundle\Handler\AdminHandler;
 use Austral\AdminBundle\Module\Module;
+use Austral\Contracts\Entity\EntityInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Austral Admin Event Abstract.
+ * @template T of object
+ *
+ * @extends AdminEventInterface<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  * @abstract
  */
@@ -28,14 +33,19 @@ abstract class AdminEvent implements AdminEventInterface
   private ?Request $request;
 
   /**
-   * @var AdminHandler
+   * @var AdminHandler<T>
    */
   private AdminHandler $adminHandler;
 
   /**
+   * @var EntityInterface<T>|null
+   */
+  protected ?EntityInterface $object = null;
+
+  /**
    * ListAdminEvent constructor.
    *
-   * @param AdminHandler $adminHandler
+   * @param AdminHandler<T> $adminHandler
    */
   public function __construct(AdminHandler $adminHandler)
   {
@@ -55,9 +65,9 @@ abstract class AdminEvent implements AdminEventInterface
   /**
    * @param Request $request
    *
-   * @return AdminEvent
+   * @return $this
    */
-  public function setRequest(Request $request): AdminEvent
+  public function setRequest(Request $request): self
   {
     $this->request = $request;
     return $this;
@@ -65,7 +75,7 @@ abstract class AdminEvent implements AdminEventInterface
 
   /**
    * Get module
-   * @return Module
+   * @return Module<T>
    */
   public function getCurrentModule(): Module
   {
@@ -74,11 +84,31 @@ abstract class AdminEvent implements AdminEventInterface
 
   /**
    * Get request
-   * @return AdminHandler
+   * @return AdminHandler<T>
    */
   public function getAdminHandler(): AdminHandler
   {
     return $this->adminHandler;
+  }
+
+  /**
+   * Get object
+   * @return EntityInterface<T>|null
+   */
+  public function getObject(): ?EntityInterface
+  {
+    return $this->object;
+  }
+
+  /**
+   * @param EntityInterface<T> $object
+   *
+   * @return $this
+   */
+  public function setObject(EntityInterface $object): self
+  {
+    $this->object = $object;
+    return $this;
   }
 
 }

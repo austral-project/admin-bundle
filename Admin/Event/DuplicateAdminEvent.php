@@ -11,26 +11,33 @@
 namespace Austral\AdminBundle\Admin\Event;
 
 use Austral\AdminBundle\Handler\AdminHandler;
-use Austral\EntityBundle\Entity\EntityInterface;
-use Austral\EntityBundle\Entity\Interfaces\TranslateChildInterface;
+use Austral\Contracts\Entity\EntityInterface;
+use Austral\Contracts\Translate\TranslateChildInterface;
 
 /**
  * Austral Admin Event Duplicate.
+ * @template T of object
+ *
+ * @extends AdminEvent<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class DuplicateAdminEvent extends AdminEvent
 {
 
-  CONST EVENT_START = "austral.admin.event.duplicate.start";
-  CONST EVENT_END = "austral.admin.event.duplicate.end";
+  /** @deprecated */
+  CONST string EVENT_START = "austral.admin.event.duplicate.start";
+
+  /** @deprecated */
+  CONST string EVENT_END = "austral.admin.event.duplicate.end";
 
   /**
-   * @var EntityInterface
+   * @var EntityInterface<T>
    */
   private EntityInterface $sourceObject;
 
   /**
-   * @var EntityInterface|null
+   * @var EntityInterface<T>|null
    */
   private ?EntityInterface $duplicateObject;
 
@@ -40,12 +47,12 @@ class DuplicateAdminEvent extends AdminEvent
   private bool $flush;
 
   /**
-   * @param AdminHandler $adminHandler
-   * @param EntityInterface $sourceObject
-   * @param EntityInterface|null $duplicateObject
+   * @param AdminHandler<T> $adminHandler
+   * @param EntityInterface<T> $sourceObject
+   * @param EntityInterface<T>|null $duplicateObject
    * @param bool $flush
    */
-  public function __construct(AdminHandler $adminHandler, EntityInterface $sourceObject, EntityInterface $duplicateObject = null, bool $flush = true)
+  public function __construct(AdminHandler $adminHandler, EntityInterface $sourceObject, ?EntityInterface $duplicateObject = null, bool $flush = true)
   {
     parent::__construct($adminHandler);
     $this->sourceObject = $sourceObject;
@@ -54,8 +61,7 @@ class DuplicateAdminEvent extends AdminEvent
   }
 
   /**
-   * Get sourceObject
-   * @return EntityInterface
+   * @return EntityInterface<T>
    */
   public function getSourceObject(): EntityInterface
   {
@@ -63,19 +69,18 @@ class DuplicateAdminEvent extends AdminEvent
   }
 
   /**
-   * @param EntityInterface $sourceObject
+   * @param EntityInterface<T> $sourceObject
    *
-   * @return DuplicateAdminEvent
+   * @return $this
    */
-  public function setSourceObject(EntityInterface $sourceObject): DuplicateAdminEvent
+  public function setSourceObject(EntityInterface $sourceObject): self
   {
     $this->sourceObject = $sourceObject;
     return $this;
   }
 
   /**
-   * Get duplicateObject
-   * @return EntityInterface|TranslateChildInterface|null
+   * @return EntityInterface<T>|null
    */
   public function getDuplicateObject(): ?EntityInterface
   {
@@ -83,11 +88,11 @@ class DuplicateAdminEvent extends AdminEvent
   }
 
   /**
-   * @param EntityInterface|null $duplicateObject
+   * @param EntityInterface<T>|null $duplicateObject
    *
-   * @return DuplicateAdminEvent
+   * @return $this
    */
-  public function setDuplicateObject(?EntityInterface $duplicateObject): DuplicateAdminEvent
+  public function setDuplicateObject(?EntityInterface $duplicateObject): self
   {
     $this->duplicateObject = $duplicateObject;
     return $this;
@@ -106,7 +111,7 @@ class DuplicateAdminEvent extends AdminEvent
    *
    * @return $this
    */
-  public function setFlush(bool $flush): DuplicateAdminEvent
+  public function setFlush(bool $flush): self
   {
     $this->flush = $flush;
     return $this;

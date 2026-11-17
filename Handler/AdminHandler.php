@@ -29,7 +29,7 @@ use Austral\AdminBundle\Admin\Event\ListAdminEvent;
 use Austral\AdminBundle\Admin\AdminModuleInterface;
 use Austral\CacheBundle\Event\HttpCacheEvent;
 use Austral\EntityBundle\Entity\Interfaces\ComponentsInterface;
-use Austral\EntityBundle\Entity\EntityInterface;
+use Austral\Contracts\Entity\EntityInterface;
 use Austral\EntityBundle\ORM\AustralQueryBuilder;
 use Austral\FilterBundle\Filter\Filter;
 use Austral\FilterBundle\Mapper\FilterMapper;
@@ -40,10 +40,9 @@ use Austral\HttpBundle\Mapping\DomainFilterMapping;
 use Austral\ListBundle\DataHydrate\DataHydrateInterface;
 use Austral\ListBundle\Filter\FilterMapperInterface;
 use Austral\ListBundle\Mapper\ListMapper;
-use Austral\ListBundle\Section\Section;
 use Austral\NotifyBundle\Notification\Push;
 use Austral\ToolsBundle\AustralTools;
-use Austral\EntityBundle\Entity\Interfaces\TranslateMasterInterface;
+use Austral\Contracts\Translate\TranslateMasterInterface;
 
 use \Exception;
 use Symfony\Component\Form\Form;
@@ -52,6 +51,11 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Handler Admin.
+ * @template T of object
+ *
+ * @extends BaseAdminHandler<T>
+ * @implements AdminHandlerInterface<T>
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
@@ -68,7 +72,7 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
    */
   public function index(): AdminHandler
   {
-    if($this->module->getModuleKey() == "austral_admin_dashboard")
+    if($this->module?->getModuleKey() == "austral_admin_dashboard")
     {
       return $this->dashboard();
     }
@@ -81,6 +85,8 @@ class AdminHandler extends BaseAdminHandler implements AdminHandlerInterface
   public function dashboard(): AdminHandler
   {
     $this->debug->stopWatchStart("austral.admin.handler.dashboard", $this->debugContainer);
+
+
     $listAdminEvent = new ListAdminEvent(
       $this,
       $this->templateParameters,

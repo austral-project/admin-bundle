@@ -13,53 +13,70 @@ namespace Austral\AdminBundle\Admin;
 
 use Austral\AdminBundle\Admin\Event\AdminEventInterface;
 use Austral\AdminBundle\Module\Module;
-use Austral\EntityBundle\Entity\EntityInterface;
+use Austral\Contracts\Entity\EntityInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * Austral Admin  Interface.
+ * Austral Admin Interface.
+ * @template T of object
+ *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
 interface AdminInterface
 {
 
   /**
-   * @return array
+   * @param Module<T> $module
+   *
+   * @return $this
+   */
+  public function setModule(Module $module): self;
+
+  /**
+   * @param string $currentLanguage
+   *
+   * @return $this
+   */
+  public function setCurrentLanguage(string $currentLanguage): self;
+
+  /**
+   * @param ContainerInterface $container
+   *
+   * @return $this
+   */
+  public function setContainer(ContainerInterface $container): self;
+
+  /**
+   * @param TranslatorInterface $translator
+   *
+   * @return $this
+   */
+  public function setTranslator(TranslatorInterface $translator): self;
+
+  /**
+   * @return array<string, array<int, list<string>>>
    */
   public function getEvents(): array;
 
   /**
-   * @param $container
-   *
-   * @return $this
-   */
-  public function setContainer($container): AdminInterface;
-
-  /**
-   * @param $translator
-   *
-   * @return $this
-   */
-  public function setTranslator($translator): AdminInterface;
-
-  /**
    * @param string $eventName
-   * @param AdminEventInterface $managerEvent
+   * @param AdminEventInterface<T> $managerEvent
+   *
+   * @return void
    */
-  public function dispatch(string $eventName, AdminEventInterface $managerEvent);
+  public function dispatch(string $eventName, AdminEventInterface $managerEvent): void;
 
   /**
-   * @param EntityInterface $object
+   * @param EntityInterface<T> $object
    *
    * @return $this
    */
-  public function setObject(EntityInterface $object): AdminInterface;
+  public function setObject(EntityInterface $object): self;
 
   /**
-   * setModule
-   *
-   * @param Module $module
-   * @return $this
+   * @return bool
    */
-  public function setModule(Module $module): AdminInterface;
+  public function isDevEnv(): bool;
 
 }
