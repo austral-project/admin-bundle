@@ -21,8 +21,8 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class ModuleEvent extends Event
 {
-  const EVENT_AUSTRAL_MODULE_ADD = "austral.event.module.admin.add";
-  const EVENT_AUSTRAL_MODULE_REMOVE = "austral.event.module.admin.remove";
+  const string EVENT_AUSTRAL_MODULE_ADD = "austral.event.module.admin.add";
+  const string EVENT_AUSTRAL_MODULE_REMOVE = "austral.event.module.admin.remove";
 
   /**
    * @var Modules

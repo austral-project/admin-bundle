@@ -21,16 +21,16 @@ use Exception;
 class DashboardBlock
 {
 
-  const WIDTH_FULL = "full";
-  const WIDTH_MIDDLE = "middle";
-  const WIDTH_AUTO = "";
+  const string WIDTH_FULL = "full";
+  const string WIDTH_MIDDLE = "middle";
+  const string WIDTH_AUTO = "";
 
-  const TYPE_TILE = "tile";
-  const TYPE_ON_OFF = "onOff";
-  const TYPE_ACTION = "action";
+  const string TYPE_TILE = "tile";
+  const string TYPE_ON_OFF = "onOff";
+  const string TYPE_ACTION = "action";
 
-  const DIRECTION_ROW = "row";
-  const DIRECTION_COLUMN = "column";
+  const string DIRECTION_ROW = "row";
+  const string DIRECTION_COLUMN = "column";
 
   /**
    * @var string

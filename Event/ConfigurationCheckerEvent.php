@@ -21,7 +21,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 class ConfigurationCheckerEvent extends Event
 {
 
-  const EVENT_AUSTRAL_ADMIN_CONFIGURATION_CHECKER = "austral.event.admin.configuration_checker";
+  const string EVENT_AUSTRAL_ADMIN_CONFIGURATION_CHECKER = "austral.event.admin.configuration_checker";
 
   /**
    * @var ConfigurationChecker

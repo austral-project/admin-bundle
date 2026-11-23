@@ -23,7 +23,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 class DashboardEvent extends Event
 {
 
-  const EVENT_AUSTRAL_ADMIN_DASHBOARD = "austral.event.admin.dashboard";
+  const string EVENT_AUSTRAL_ADMIN_DASHBOARD = "austral.event.admin.dashboard";
 
   /**
    * @var DashboardBlock
