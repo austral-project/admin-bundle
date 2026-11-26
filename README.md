@@ -28,6 +28,10 @@ JavaScript of the sortable lists, confirmations) is in design-bundle, which over
 composer require austral/admin-bundle
 ```
 
+With the [Austral recipes](https://github.com/austral-project/recipes), Flex registers the bundle and copies
+`config/packages/austral_admin.yaml` and `config/routes/austral_admin.yaml`, then displays the firewall to add in
+`config/packages/security.yaml` (below).
+
 If you do not use Symfony Flex, register the bundle in `config/bundles.php` (with the Austral bundles it needs):
 
 ```php
