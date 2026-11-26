@@ -25,6 +25,7 @@
     "require": {
         "php": ">=8.4 <9.0",
         "austral/contracts": "^4.0",
+        "austral/design-bundle": "^4.0",
         "austral/entity-bundle": "^4.0",
         "austral/filter-bundle": "^4.0",
         "austral/form-bundle": "^4.0",

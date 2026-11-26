@@ -43,6 +43,8 @@
 'confirm.delete': Delete this element?
 'confirm.duplicate': Duplicate this element?
 'confirm.truncate': Delete all the elements of this list? This cannot be undone.
+'confirm.yes': Confirm
+'confirm.no': Cancel
 
 'flash.created': The element is created.
 'flash.saved': The changes are saved.

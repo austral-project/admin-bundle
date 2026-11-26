@@ -13,7 +13,7 @@
     {%- set label = action.label|trans(action.label_parameters, action.translation_domain ?? domain) -%}
     {%- set confirm = action.attr['data-confirm'] ?? null -%}
     {%- set attr = action.attr|filter((value, name) => name not in ['data-method', 'data-confirm', 'data-url'])|merge({class: ['austral-list-action', 'austral-list-action--' ~ action.name|replace({'.': '-'}), action.class, action.attr.class ?? null]|filter(class => class)|join(' ')}) -%}
-    <form method="post" action="{{ action.url }}" class="austral-admin-inline"{% if confirm %} data-confirm="{{ confirm|trans({}, domain) }}"{% endif %}>
+    <form method="post" action="{{ action.url }}" class="austral-admin-inline"{% if confirm %} data-confirm="{{ confirm|trans({}, domain) }}" data-confirm-yes="{{ 'confirm.yes'|trans({}, 'austral') }}" data-confirm-no="{{ 'confirm.no'|trans({}, 'austral') }}"{% endif %}>
       <input type="hidden" name="_token" value="{{ austral_admin_csrf_token() }}">
       <button type="submit"{{ block('austral_list_attributes') }}>{{ block('austral_list_action_label') }}</button>
     </form>

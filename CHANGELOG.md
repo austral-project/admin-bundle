@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 The bundle is rewritten for 4.0 on form-bundle, list-bundle, filter-bundle and security-bundle 4: the same way
 of writing an Admin class, without the service container and the routes that change data with a GET. As in 3.1,
 every page goes through http-bundle (`AdminHttpEvent`, `HttpAdminEventSubscriber`, `AdminHandler`,
-`AdminController`). The design moves to design-bundle. See UPGRADE-4.0.
+`AdminController`). The styles, scripts and form theme come from design-bundle 4. See UPGRADE-4.0.
 
 ### Added
 
@@ -45,7 +45,9 @@ every page goes through http-bundle (`AdminHttpEvent`, `HttpAdminEventSubscriber
   returned by `ListPage`, `FormPage`, `DashboardPage` and `AccountPage`); the services `austral.admin.handler` and
   `austral.admin.template`, reset between two requests (`kernel.reset`)
 - Interface in the language of the user
-- Minimal templates and an admin list theme (POST forms with the CSRF token)
+- Templates on design-bundle 4 (build `austral-design-admin`, form theme `@AustralDesign/Form/austral_layout.html.twig`),
+  without inline style nor script; an admin list theme (POST forms with the CSRF token); confirmation of the forms
+  that change data (`data-confirm`, component `confirm` of design-bundle)
 - Unit and functional tests (test application on SQLite)
 
 ### Changed
@@ -74,7 +76,7 @@ every page goes through http-bundle (`AdminHttpEvent`, `HttpAdminEventSubscriber
   `austral.admin.*` and `austral_admin.modules.<bundle>` (`AdminHandler` and `Template\TemplateParameters` are
   rewritten on http-bundle 4)
 - Module keys `data_hydrate_class` and `enable_multi_domain`
-- The dependencies on design-bundle, entity-file-bundle and notify-bundle (http-bundle and tools-bundle stay)
+- The dependencies on entity-file-bundle and notify-bundle (http-bundle, tools-bundle and design-bundle stay)
 
 ## [3.1.0] - 2022-09-17
 

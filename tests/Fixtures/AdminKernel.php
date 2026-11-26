@@ -21,6 +21,7 @@ use Austral\AdminBundle\Tests\Fixtures\Entity\Page;
 use Austral\AdminBundle\Tests\Fixtures\Entity\Role;
 use Austral\AdminBundle\Tests\Fixtures\Entity\User;
 use Austral\AdminBundle\Tests\Fixtures\Variant\CategoryVariantProvider;
+use Austral\DesignBundle\AustralDesignBundle;
 use Austral\EntityBundle\AustralEntityBundle;
 use Austral\EntityBundle\EntityManager\EntityManager;
 use Austral\EntityFileBundle\AustralEntityFileBundle;
@@ -45,6 +46,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+use Symfony\UX\TwigComponent\TwigComponentBundle;
 
 /**
  * Application of the functional tests: the admin on SQLite, the modules "pages" (with restriction, toggle,
@@ -69,6 +71,7 @@ final class AdminKernel extends Kernel
     yield new FrameworkBundle();
     yield new SecurityBundle();
     yield new TwigBundle();
+    yield new TwigComponentBundle();
     yield new DoctrineBundle();
     yield new AustralToolsBundle();
     yield new AustralEntityBundle();
@@ -78,6 +81,7 @@ final class AdminKernel extends Kernel
     yield new AustralListBundle();
     yield new AustralFilterBundle();
     yield new AustralSecurityBundle();
+    yield new AustralDesignBundle();
     yield new AustralAdminBundle();
   }
 
@@ -120,6 +124,7 @@ final class AdminKernel extends Kernel
         'router' => ['utf8' => true],
       ]);
       $container->loadFromExtension('twig', ['strict_variables' => true]);
+      $container->loadFromExtension('twig_component', ['anonymous_template_directory' => 'components/']);
       $container->loadFromExtension('austral_http', $this->httpConfig);
       $container->loadFromExtension('doctrine', [
         'dbal' => ['driver' => 'pdo_sqlite', 'path' => $this->getDatabasePath()],

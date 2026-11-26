@@ -13,10 +13,11 @@
 + "austral/admin-bundle": "^4.0"
 ```
 
-All `austral/*` packages must be upgraded to `^4.0` at the same time. admin-bundle depends on http-bundle and
-tools-bundle, no longer on design-bundle, entity-file-bundle and notify-bundle: require the ones the application
-uses. Enable `Austral\HttpBundle\AustralHttpBundle` before `AustralAdminBundle` in `config/bundles.php` (Flex
-does it). For the XLSX export, require `phpoffice/phpspreadsheet`; for the security mails, `symfony/mailer`.
+All `austral/*` packages must be upgraded to `^4.0` at the same time. admin-bundle depends on http-bundle, tools-bundle and
+design-bundle, no longer on entity-file-bundle and notify-bundle: require the ones the application uses. Enable
+`Austral\HttpBundle\AustralHttpBundle`, `Symfony\UX\TwigComponent\TwigComponentBundle` and
+`Austral\DesignBundle\AustralDesignBundle` before `AustralAdminBundle` in `config/bundles.php` (Flex does it),
+and install the assets (`bin/console assets:install`). For the XLSX export, require `phpoffice/phpspreadsheet`; for the security mails, `symfony/mailer`.
 
 ## Breaking changes
 
@@ -256,6 +257,6 @@ The route names of the modules are generated (`austral_admin.module.<path>.<acti
 
 ### Templates and translations
 
-The templates are rewritten (minimal markup, the design is in design-bundle): an override of a 3.1 template
-must be written again. The translations stay in the domain `austral`; the keys of the pages (`pages.names.*`) are
+The templates are rewritten on design-bundle 4 (its build and its form theme, no inline style nor script): an
+override of a 3.1 template must be written again. The translations stay in the domain `austral`; the keys of the pages (`pages.names.*`) are
 kept, the keys of the screens are new (see `Resources/translations`).

@@ -3,8 +3,9 @@
  #
  # (c) Austral <support@austral.dev>
  #
- # Layout of the admin. Minimal markup, to use the admin from a browser: the design is in design-bundle, which
- # overrides these templates (templates/bundles/AustralAdminBundle/ in an application).
+ # Layout of the admin. The styles and the scripts are the compiled build of design-bundle (entry
+ # austral-design-admin): no inline style nor script, for a strict Content Security Policy. An application overrides
+ # the templates in templates/bundles/AustralAdminBundle/.
  #}
 {%- trans_default_domain 'austral' -%}
 <!DOCTYPE html>
@@ -18,28 +19,7 @@
   {% endif -%}
   <title>{% block title %}{{ austral_admin.name }}{% endblock %}</title>
   {%- block stylesheets -%}
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 0; color: #1d1d1f; }
-      a { color: #0b57d0; }
-      .austral-admin-header { display: flex; justify-content: space-between; align-items: center; padding: .75rem 1.5rem; background: #1d1d1f; color: #fff; }
-      .austral-admin-header a { color: #fff; }
-      .austral-admin-container { display: flex; min-height: calc(100vh - 3rem); }
-      .austral-admin-navigation { width: 15rem; padding: 1rem; background: #f5f5f7; }
-      .austral-admin-navigation ul { list-style: none; padding-left: .75rem; margin: 0; }
-      .austral-admin-navigation .is-active > a { font-weight: bold; }
-      .austral-admin-main { flex: 1; padding: 1rem 2rem; }
-      .austral-admin-breadcrumb ol { list-style: none; display: flex; gap: .5rem; padding: 0; }
-      .austral-admin-breadcrumb li + li::before { content: "/"; margin-right: .5rem; color: #888; }
-      .austral-admin-flash { padding: .5rem 1rem; margin: .5rem 0; border-radius: .25rem; background: #e8f0fe; }
-      .austral-admin-flash--error { background: #fde7e9; }
-      .austral-admin-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: 1rem; list-style: none; padding: 0; }
-      .austral-admin-tiles a { display: block; padding: 1.5rem; border: 1px solid #ddd; border-radius: .5rem; text-decoration: none; }
-      table { border-collapse: collapse; width: 100%; }
-      th, td { text-align: left; padding: .4rem .6rem; border-bottom: 1px solid #eee; }
-      form.austral-admin-inline { display: inline; }
-      .austral-list-actions-list { display: flex; gap: .5rem; list-style: none; padding: 0; margin: 0; }
-      .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-    </style>
+    {{ austral_design_styles('austral-design-admin') }}
   {%- endblock -%}
 </head>
 <body class="austral-admin austral-admin--{{ page|default('page') }}">
@@ -86,14 +66,7 @@
   </div>
 {%- endblock -%}
 {%- block javascripts -%}
-  <script>
-    document.addEventListener('submit', function (event) {
-      var message = event.target.getAttribute('data-confirm');
-      if (message && !window.confirm(message)) {
-        event.preventDefault();
-      }
-    });
-  </script>
+  {{ austral_design_scripts('austral-design-admin') }}
 {%- endblock -%}
 </body>
 </html>

@@ -12,15 +12,15 @@ reset, my account). The modules of the users, groups and roles come from the bri
 
 > This bundle is part of [Austral](https://github.com/austral-project), a modular back office and CMS for Symfony.
 
-The bundle gives the mechanics and minimal templates, enough to use the admin from a browser. The design (theme,
-JavaScript of the sortable lists, confirmations) is in design-bundle, which overrides the templates.
+The bundle gives the mechanics and the templates of the admin. Their styles, scripts and form theme come from
+design-bundle (compiled build, entry `austral-design-admin`), without inline style nor script.
 
 ## Requirements
 
 - PHP 8.4 or higher
 - Symfony 7.4
 - Doctrine ORM 3
-- austral/http-bundle, tools-bundle, entity-bundle, form-bundle, list-bundle, filter-bundle and security-bundle 4
+- austral/http-bundle, tools-bundle, design-bundle, entity-bundle, form-bundle, list-bundle, filter-bundle and security-bundle 4
 
 ## Installation
 
@@ -494,11 +494,16 @@ public function prepend(ContainerBuilder $container): void
 
 ## Templates
 
-`@AustralAdmin/layout.html.twig` and the pages (`module/list`, `module/form`, `module/tiles`, `module/page`,
-`dashboard`, `configuration`, `security/*`, `email/*`) are minimal. The list theme
-`@AustralAdmin/list/austral_admin_list.html.twig` renders the actions with `data-method="post"`, the switches
-and the choices as forms with the CSRF token. Override them in `templates/bundles/AustralAdminBundle/` or with
-design-bundle. Globals: `austral_admin` (name, path, languages); functions: `austral_admin_navigation()`,
+`@AustralAdmin/layout.html.twig` loads the build of design-bundle (`austral_design_styles('austral-design-admin')`,
+`austral_design_scripts('austral-design-admin')`); the forms use its theme `@AustralDesign/Form/austral_layout.html.twig`.
+The pages are `module/list`, `module/form`, `module/tiles`, `module/page`, `dashboard`, `configuration`,
+`security/*` and `email/*`. To add scripts, components or styles to the administration, or to change its theme,
+a project builds the design system with its additions: see "Customize the administration in a project" in the
+README of design-bundle. The list theme `@AustralAdmin/list/austral_admin_list.html.twig` renders the actions
+with `data-method="post"`, the switches and the choices as forms with the CSRF token. A form that changes data
+asks for a confirmation (`data-confirm`, component `confirm` of design-bundle). No template has inline style,
+script or `on*=` attribute, for a strict Content Security Policy. Override them in
+`templates/bundles/AustralAdminBundle/`. Globals: `austral_admin` (name, path, languages); functions: `austral_admin_navigation()`,
 `austral_admin_csrf_token()`, `austral_admin_module_url()`, `austral_admin_object_url()`,
 `austral_admin_language_url()`. The translations are in the domain `austral`.
 

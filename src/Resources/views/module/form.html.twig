@@ -8,7 +8,7 @@
  #}
 {%- extends '@AustralAdmin/layout.html.twig' -%}
 {%- trans_default_domain 'austral' -%}
-{%- form_theme form '@AustralForm/form/austral_layout.html.twig' -%}
+{%- form_theme form '@AustralDesign/Form/austral_layout.html.twig' -%}
 {%- set module_name = ('pages.names.' ~ module.definition.translationKey ~ '.singular')|trans -%}
 {%- set heading = create ? 'pages.form.create'|trans({'%module_name%': module_name, '%module_gender%': module.definition.translate}) : title -%}
 
@@ -30,7 +30,7 @@
       {%- for action in actions -%}
         <li>
           {%- if action.method == 'post' -%}
-            <form method="post" action="{{ action.url }}" class="austral-admin-inline" data-confirm="{{ ('confirm.' ~ action.name)|trans }}">
+            <form method="post" action="{{ action.url }}" class="austral-admin-inline" data-confirm="{{ ('confirm.' ~ action.name)|trans }}" data-confirm-yes="{{ 'confirm.yes'|trans }}" data-confirm-no="{{ 'confirm.no'|trans }}">
               <input type="hidden" name="_token" value="{{ austral_admin_csrf_token() }}">
               <button type="submit">{{ ('actions.' ~ action.name)|trans }}</button>
             </form>

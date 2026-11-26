@@ -43,6 +43,8 @@
 'confirm.delete': Supprimer cet élément ?
 'confirm.duplicate': Dupliquer cet élément ?
 'confirm.truncate': Supprimer tous les éléments de cette liste ? Cette action est définitive.
+'confirm.yes': Confirmer
+'confirm.no': Annuler
 
 'flash.created': L'élément est créé.
 'flash.saved': Les modifications sont enregistrées.
