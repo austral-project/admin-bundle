@@ -1,0 +1,44 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Form of an entity of a module. Variables: module, form, object, create, title, list_url, actions (name, url,
+ # method).
+ #}
+{%- extends '@AustralAdmin/layout.html.twig' -%}
+{%- trans_default_domain 'austral' -%}
+{%- form_theme form '@AustralForm/form/austral_layout.html.twig' -%}
+{%- set module_name = ('pages.names.' ~ module.definition.translationKey ~ '.singular')|trans -%}
+{%- set heading = create ? 'pages.form.create'|trans({'%module_name%': module_name, '%module_gender%': module.definition.translate}) : title -%}
+
+{%- block title -%}{{ heading }} - {{ parent() }}{%- endblock -%}
+
+{%- block content -%}
+  <h1>{{ heading }}</h1>
+  {{- include('@AustralAdmin/module/_languages.html.twig', {action: create ? 'create' : 'edit', parameters: create ? {} : {id: object.id}}) -}}
+  {{- form_start(form) -}}
+    {{- form_widget(form) -}}
+    <div class="austral-admin-form-actions">
+      <button type="submit" name="_save" value="stay">{{ 'actions.save'|trans }}</button>
+      <button type="submit" name="_save" value="back">{{ 'actions.save_back'|trans }}</button>
+      <a href="{{ list_url }}">{{ 'actions.back'|trans }}</a>
+    </div>
+  {{- form_end(form) -}}
+  {%- if actions -%}
+    <ul class="austral-admin-object-actions">
+      {%- for action in actions -%}
+        <li>
+          {%- if action.method == 'post' -%}
+            <form method="post" action="{{ action.url }}" class="austral-admin-inline" data-confirm="{{ ('confirm.' ~ action.name)|trans }}">
+              <input type="hidden" name="_token" value="{{ austral_admin_csrf_token() }}">
+              <button type="submit">{{ ('actions.' ~ action.name)|trans }}</button>
+            </form>
+          {%- else -%}
+            <a href="{{ action.url }}">{{ ('actions.' ~ action.name)|trans }}</a>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+{%- endblock -%}

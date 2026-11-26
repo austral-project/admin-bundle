@@ -1,0 +1,18 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Default page of a page module (the Admin sets its template with PageAdminEvent::setTemplate()). Variables:
+ # module, action and the variables of the Admin; "content" is displayed when it is set.
+ #}
+{%- extends '@AustralAdmin/layout.html.twig' -%}
+{%- trans_default_domain 'austral' -%}
+{%- set module_name = ('pages.names.' ~ module.definition.translationKey ~ '.plural')|trans -%}
+
+{%- block title -%}{{ module_name }} - {{ parent() }}{%- endblock -%}
+
+{%- block content -%}
+  <h1>{{ module_name }}</h1>
+  {%- if content is defined -%}<div class="austral-admin-page-content">{{ content }}</div>{%- endif -%}
+{%- endblock -%}

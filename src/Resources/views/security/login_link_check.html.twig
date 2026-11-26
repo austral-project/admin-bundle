@@ -1,0 +1,20 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Confirmation of a login link: the POST logs in (login_link.check_post_only). Variable: parameters (user,
+ # expires, hash of the link).
+ #}
+{%- extends '@AustralAdmin/security/layout.html.twig' -%}
+{%- trans_default_domain 'austral' -%}
+
+{%- block security_content -%}
+  <h2>{{ 'authentication.login_link_check'|trans }}</h2>
+  <form method="post" action="{{ path('austral_admin_security_login_link_check') }}">
+    {%- for name, value in parameters -%}
+      <input type="hidden" name="{{ name }}" value="{{ value }}">
+    {%- endfor -%}
+    <button type="submit">{{ 'authentication.login_link_continue'|trans }}</button>
+  </form>
+{%- endblock -%}

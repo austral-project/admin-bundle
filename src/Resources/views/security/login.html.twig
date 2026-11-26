@@ -1,0 +1,34 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Login, checked by form_login of the firewall. Variables: last_username, error, login_link, password_reset.
+ #}
+{%- extends '@AustralAdmin/security/layout.html.twig' -%}
+{%- trans_default_domain 'austral' -%}
+
+{%- block security_content -%}
+  {%- if error -%}
+    <div class="austral-admin-flash austral-admin-flash--error" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+  {%- endif -%}
+  <form method="post" action="{{ path('austral_admin_security_login') }}">
+    <p>
+      <label for="username">{{ 'authentication.login'|trans }}</label>
+      <input type="text" id="username" name="_username" value="{{ last_username }}" autocomplete="username" required autofocus>
+    </p>
+    <p>
+      <label for="password">{{ 'authentication.password'|trans }}</label>
+      <input type="password" id="password" name="_password" autocomplete="current-password" required>
+    </p>
+    <p>
+      <label><input type="checkbox" name="_remember_me" value="on"> {{ 'authentication.remember_me'|trans }}</label>
+    </p>
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+    <button type="submit">{{ 'authentication.submit'|trans }}</button>
+  </form>
+  <ul class="austral-admin-security-links">
+    {%- if login_link -%}<li><a href="{{ path('austral_admin_security_login_link') }}">{{ 'authentication.login_link'|trans }}</a></li>{%- endif -%}
+    {%- if password_reset -%}<li><a href="{{ path('austral_admin_security_password_forgot') }}">{{ 'authentication.password_forgot'|trans }}</a></li>{%- endif -%}
+  </ul>
+{%- endblock -%}

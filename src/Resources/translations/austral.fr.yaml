@@ -1,0 +1,117 @@
+# Traductions d'admin-bundle (domaine austral), clés à plat.
+'breadcrumb.dashboard': Tableau de bord
+'breadcrumb.title': Fil d'Ariane
+'navigation.title': Navigation
+'header.user': Menu utilisateur
+'links.logout': Déconnexion
+
+'pages.names.statusConfiguration.singular': État de la configuration
+'pages.names.statusConfiguration.plural': État de la configuration
+'pages.form.create': 'Création : %module_name%'
+
+'list.count': '{0} Aucun élément|{1} 1 élément|]1,Inf[ %count% éléments'
+'list.empty': Rien à afficher
+'list.pagination.title': Pagination
+'list.pagination.previous': Précédent
+'list.pagination.next': Suivant
+
+'switch.value.0': Désactivé
+'switch.value.1': Activé
+
+'filter.title': Filtres
+'filter.search': Rechercher
+'filter.search.entitled': Recherche
+'filter.clear': Effacer les filtres
+'filter.remove': Retirer ce filtre
+'filter.all': Tous
+'filter.boolean.yes': Oui
+'filter.boolean.no': Non
+'filter.boolean.empty': Vide
+'filter.exists.yes': Renseigné
+'filter.exists.no': Non renseigné
+
+'actions.create': Ajouter
+'actions.edit': Modifier
+'actions.duplicate': Dupliquer
+'actions.delete': Supprimer
+'actions.truncate': Tout supprimer
+'actions.export': 'Exporter en %format%'
+'actions.save': Enregistrer
+'actions.save_back': Enregistrer et revenir à la liste
+'actions.back': Revenir à la liste
+
+'confirm.delete': Supprimer cet élément ?
+'confirm.duplicate': Dupliquer cet élément ?
+'confirm.truncate': Supprimer tous les éléments de cette liste ? Cette action est définitive.
+
+'flash.created': L'élément est créé.
+'flash.saved': Les modifications sont enregistrées.
+'flash.invalid': Le formulaire contient des erreurs.
+'flash.deleted': L'élément est supprimé.
+'flash.duplicated': L'élément est dupliqué.
+'flash.truncated': Les éléments sont supprimés.
+'flash.password_reset': Votre mot de passe est modifié, vous pouvez vous connecter.
+
+'languages.title': Langues du contenu
+'choices.language.en': Anglais
+'choices.language.fr': Français
+'choices.interfaceTheme.auto': Automatique
+'choices.interfaceTheme.light': Clair
+'choices.interfaceTheme.dark': Sombre
+
+'fieldset.account': Mon compte
+'fieldset.password': Mot de passe
+'fieldset.generalInformation': Informations générales
+
+'fields.name.entitled': Nom
+'fields.username.entitled': Identifiant
+'fields.email.entitled': Email
+'fields.language.entitled': Langue
+'fields.interfaceTheme.entitled': Thème
+'fields.currentPassword.entitled': Mot de passe actuel
+
+'helpers.plainPassword.keep': Laisser vide pour garder le mot de passe actuel.
+
+'errors.currentPassword.invalid': Le mot de passe actuel n'est pas valide.
+
+'authentication.remember_me': Se souvenir de moi
+'authentication.submit': Se connecter
+'authentication.login_link': Recevoir un lien de connexion
+'authentication.login_link_sent': Si un compte correspond, un lien de connexion a été envoyé.
+'authentication.login_link_submit': Envoyer le lien
+'authentication.login_link_check': Connexion
+'authentication.login_link_continue': Continuer
+'authentication.password_forgot': Mot de passe oublié
+'authentication.password_forgot_sent': Si un compte correspond, un lien pour changer le mot de passe a été envoyé.
+'authentication.password_forgot_submit': Envoyer le lien
+'authentication.password_reset': Nouveau mot de passe
+'authentication.password_reset_invalid': Ce lien n'est pas valide ou a expiré.
+'authentication.new_password': Nouveau mot de passe
+'authentication.new_password_confirmation': Confirmation du nouveau mot de passe
+'authentication.password_reset_submit': Changer le mot de passe
+'authentication.back': Revenir à la connexion
+
+'account.title': Mon compte
+
+'email.password_reset.subject': Changez votre mot de passe
+'email.password_reset.body': 'Bonjour %name%, ouvrez ce lien pour choisir un nouveau mot de passe :'
+'email.login_link.subject': Votre lien de connexion
+'email.login_link.body': 'Bonjour %name%, ouvrez ce lien pour vous connecter :'
+'email.expires': 'Le lien expire le %date%.'
+
+'configuration.categories.security': Sécurité
+'configuration.categories.environment': Environnement
+'configuration.status.success': OK
+'configuration.status.warning': Attention
+'configuration.status.error': Erreur
+'configuration.status.info': Information
+'configuration.https.entitled': HTTPS
+'configuration.https.description': Le protocole HTTPS sécurise les échanges avec l'administration.
+'configuration.env.entitled': Environnement
+'configuration.env.description': Un site en production fonctionne dans l'environnement « prod ».
+'configuration.debug.entitled': Debug
+'configuration.debug.description': Le mode debug est désactivé en production.
+'configuration.mail.entitled': Emails
+'configuration.mail.description': 'Les emails de l''administration ont besoin de symfony/mailer et de « austral_admin.mail.from ».'
+'configuration.login_link.entitled': Lien de connexion
+'configuration.login_link.description': 'Activé avec « login_link » dans le firewall et « austral_security.login_link.firewall ».'

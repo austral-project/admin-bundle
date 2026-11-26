@@ -1,0 +1,18 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Block "modules" of the dashboard: the modules the user opens. Variable: modules (navigation items).
+ #}
+{%- trans_default_domain 'austral' -%}
+<ul class="austral-admin-tiles">
+  {%- for item in modules -%}
+    <li class="austral-admin-tile austral-admin-tile--{{ item.key }}">
+      <a href="{{ item.url }}">
+        {%- if item.picto_tile ?? item.picto %}<span class="picto {{ item.picto_tile ?? item.picto }}" aria-hidden="true"></span>{% endif -%}
+        <span>{{ item.label|trans }}</span>
+      </a>
+    </li>
+  {%- endfor -%}
+</ul>

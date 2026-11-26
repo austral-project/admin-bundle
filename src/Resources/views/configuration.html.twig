@@ -1,0 +1,29 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Configuration status. Variables: module, checks (by category, ConfigurationCheck objects).
+ #}
+{%- extends '@AustralAdmin/module/page.html.twig' -%}
+{%- trans_default_domain 'austral' -%}
+
+{%- block content -%}
+  <h1>{{ ('pages.names.' ~ module.definition.translationKey ~ '.plural')|trans }}</h1>
+  {%- for category, items in checks -%}
+    <section class="austral-admin-configuration-category">
+      <h2>{{ ('configuration.categories.' ~ category)|trans }}</h2>
+      <table>
+        <tbody>
+          {%- for check in items -%}
+            <tr class="austral-admin-check austral-admin-check--{{ check.status }}">
+              <th scope="row">{{ check.label|trans }}</th>
+              <td>{{ ('configuration.status.' ~ check.status)|trans }}{% if check.value is not null %} ({{ check.value }}){% endif %}</td>
+              <td>{{ check.description ? check.description|trans }}</td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+    </section>
+  {%- endfor -%}
+{%- endblock -%}

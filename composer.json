@@ -1,12 +1,12 @@
 {
     "name": "austral/admin-bundle",
     "type": "symfony-bundle",
-    "description": "Admin symfony Bundle",
+    "description": "Austral back office: modules, lists, forms, security screens",
     "keywords": [
         "Austral",
         "Admin",
         "Symfony",
-        "vendor"
+        "Back office"
     ],
     "license": "MIT",
     "homepage": "https://austral.dev",
@@ -25,44 +25,67 @@
     "require": {
         "php": ">=8.4 <9.0",
         "austral/contracts": "^4.0",
-        "austral/tools-bundle": "^4.0",
-        "austral/security-bundle": "^4.0",
-        "austral/design-bundle": "^4.0",
-        "austral/http-bundle": "^4.0",
         "austral/entity-bundle": "^4.0",
-        "austral/entity-file-bundle": "^4.0",
-        "austral/list-bundle": "^4.0",
-        "austral/form-bundle": "^4.0",
         "austral/filter-bundle": "^4.0",
-        "austral/notify-bundle": "^4.0",
-        "symfony/framework-bundle": "^7.4",
-        "symfony/routing": "^7.4",
+        "austral/form-bundle": "^4.0",
+        "austral/list-bundle": "^4.0",
+        "austral/security-bundle": "^4.0",
+        "doctrine/orm": "^3.7",
+        "psr/container": "^2.0",
         "symfony/config": "^7.4",
-        "symfony/event-dispatcher": "^7.4",
-        "symfony/property-access": "^7.4",
-        "symfony/property-info": "^7.4",
-        "symfony/intl": "^7.4",
-        "symfony/translation": "^7.4",
+        "symfony/console": "^7.4",
+        "symfony/dependency-injection": "^7.4",
+        "symfony/event-dispatcher-contracts": "^3.5",
+        "symfony/form": "^7.4",
+        "symfony/http-foundation": "^7.4",
         "symfony/http-kernel": "^7.4",
-        "phpoffice/phpspreadsheet": "1.*"
-    },
-    "suggest": {
-        "austral/entity-translate-bundle": "^4.0",
-        "austral/entity-file-bundle": "^4.0",
-        "austral/website-bundle": "^4.0",
-        "austral/email-bundle": "^4.0"
+        "symfony/property-access": "^7.4",
+        "symfony/routing": "^7.4",
+        "symfony/security-bundle": "^7.4",
+        "symfony/security-core": "^7.4",
+        "symfony/security-csrf": "^7.4",
+        "symfony/security-http": "^7.4",
+        "symfony/service-contracts": "^3.5",
+        "symfony/string": "^7.4",
+        "symfony/translation": "^7.4",
+        "symfony/translation-contracts": "^3.5",
+        "symfony/twig-bundle": "^7.4",
+        "symfony/validator": "^7.4",
+        "symfony/yaml": "^7.4",
+        "twig/twig": "^3.21"
     },
     "require-dev": {
+        "austral/entity-file-bundle": "^4.0",
+        "austral/tools-bundle": "^4.0",
+        "doctrine/doctrine-bundle": "^2.15 || ^3.0",
         "friendsofphp/php-cs-fixer": "^3.64",
+        "phpoffice/phpspreadsheet": "^3.9 || ^4.0 || ^5.0",
         "phpstan/phpstan": "^2.0",
-        "phpstan/phpstan-symfony": "^2.0"
+        "phpstan/phpstan-symfony": "^2.0",
+        "phpunit/phpunit": "^11.5",
+        "symfony/browser-kit": "^7.4",
+        "symfony/css-selector": "^7.4",
+        "symfony/dom-crawler": "^7.4",
+        "symfony/framework-bundle": "^7.4",
+        "symfony/mailer": "^7.4",
+        "symfony/uid": "^7.4"
+    },
+    "suggest": {
+        "phpoffice/phpspreadsheet": "For the XLSX export of the lists (downloadFormats: [xlsx])",
+        "symfony/mailer": "To send the password reset and login link mails (austral_admin.mail.from)",
+        "symfony/rate-limiter": "For login_throttling in the firewall of the admin"
     },
     "config": {
         "sort-packages": true
     },
     "autoload": {
         "psr-4": {
-            "Austral\\AdminBundle\\": ""
+            "Austral\\AdminBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Austral\\AdminBundle\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "dev",

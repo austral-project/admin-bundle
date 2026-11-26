@@ -14,16 +14,24 @@ declare(strict_types=1);
 namespace Austral\AdminBundle\Tests;
 
 use Austral\AdminBundle\AustralAdminBundle;
+use Austral\AdminBundle\DependencyInjection\Compiler\ModuleRegistryPass;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
-/**
- * Smoke test: the bundle can be loaded. To be completed with real tests.
- */
 final class BundleTest extends TestCase
 {
-    public function testBundleCanBeInstantiated(): void
-    {
-        self::assertInstanceOf(BundleInterface::class, new AustralAdminBundle());
-    }
+  public function testBundleCanBeInstantiated(): void
+  {
+    self::assertInstanceOf(BundleInterface::class, new AustralAdminBundle());
+  }
+
+  public function testTheBundleRegistersTheModulePass(): void
+  {
+    $container = new ContainerBuilder();
+    new AustralAdminBundle()->build($container);
+
+    $passes = array_filter($container->getCompilerPassConfig()->getPasses(), static fn (object $pass): bool => $pass instanceof ModuleRegistryPass);
+    self::assertCount(1, $passes);
+  }
 }

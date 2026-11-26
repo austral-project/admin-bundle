@@ -1,0 +1,33 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # List of an entity module. Variables: module, sections (name, label, list, total), filters (views by group),
+ # actions (toolbar), sort (url, field) or null, language.
+ #}
+{%- extends '@AustralAdmin/layout.html.twig' -%}
+{%- trans_default_domain 'austral' -%}
+{%- set module_name = ('pages.names.' ~ module.definition.translationKey ~ '.plural')|trans -%}
+
+{%- block title -%}{{ module_name }} - {{ parent() }}{%- endblock -%}
+
+{%- block content -%}
+  <h1>{{ module_name }}</h1>
+  {{- include('@AustralAdmin/module/_languages.html.twig') -}}
+  {%- for group, filter in filters -%}
+    <section class="austral-admin-filter" aria-label="{{ 'filter.title'|trans }}">
+      {{- include('@AustralFilter/filter/austral_filter.html.twig', {filter: filter}) -}}
+    </section>
+  {%- endfor -%}
+  {%- for section in sections -%}
+    <section class="austral-admin-section austral-admin-section--{{ section.name }}"{% if sort %} data-sort-url="{{ sort.url }}" data-sort-field="{{ sort.field }}" data-csrf-token="{{ austral_admin_csrf_token() }}"{% endif %}>
+      {%- if section.label -%}
+        <h2>{{ section.label|trans }}</h2>
+      {%- endif -%}
+      <p class="austral-admin-count">{{ 'list.count'|trans({'%count%': section.total}) }}</p>
+      {%- set list = section.list|merge(loop.first ? {} : {actions: []}) -%}
+      {{- include('@AustralAdmin/list/austral_admin_list.html.twig', {list: list}) -}}
+    </section>
+  {%- endfor -%}
+{%- endblock -%}

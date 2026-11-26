@@ -1,0 +1,11 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Mail of a login link. Variables: user, url, expires_at, locale.
+ #}
+{%- trans_default_domain 'austral' -%}
+<p>{{ 'email.login_link.body'|trans({'%name%': user.firstname ?? user.username}, null, locale) }}</p>
+<p><a href="{{ url }}">{{ url }}</a></p>
+<p>{{ 'email.expires'|trans({'%date%': expires_at|date('Y-m-d H:i')}, null, locale) }}</p>

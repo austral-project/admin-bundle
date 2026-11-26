@@ -1,0 +1,117 @@
+# Translations of admin-bundle (domain austral), flat keys.
+'breadcrumb.dashboard': Dashboard
+'breadcrumb.title': Breadcrumb
+'navigation.title': Navigation
+'header.user': User menu
+'links.logout': Logout
+
+'pages.names.statusConfiguration.singular': Configuration status
+'pages.names.statusConfiguration.plural': Configuration status
+'pages.form.create': 'New: %module_name%'
+
+'list.count': '{0} No entity|{1} 1 entity|]1,Inf[ %count% entities'
+'list.empty': Nothing to display
+'list.pagination.title': Pagination
+'list.pagination.previous': Previous
+'list.pagination.next': Next
+
+'switch.value.0': Disabled
+'switch.value.1': Enabled
+
+'filter.title': Filters
+'filter.search': Search
+'filter.search.entitled': Search
+'filter.clear': Clear the filters
+'filter.remove': Remove this filter
+'filter.all': All
+'filter.boolean.yes': Yes
+'filter.boolean.no': No
+'filter.boolean.empty': Empty
+'filter.exists.yes': Set
+'filter.exists.no': Not set
+
+'actions.create': Add
+'actions.edit': Edit
+'actions.duplicate': Duplicate
+'actions.delete': Delete
+'actions.truncate': Delete all
+'actions.export': 'Export %format%'
+'actions.save': Save
+'actions.save_back': Save and go back to the list
+'actions.back': Back to the list
+
+'confirm.delete': Delete this element?
+'confirm.duplicate': Duplicate this element?
+'confirm.truncate': Delete all the elements of this list? This cannot be undone.
+
+'flash.created': The element is created.
+'flash.saved': The changes are saved.
+'flash.invalid': The form has errors.
+'flash.deleted': The element is deleted.
+'flash.duplicated': The element is duplicated.
+'flash.truncated': The elements are deleted.
+'flash.password_reset': Your password is changed, you can log in.
+
+'languages.title': Languages of the content
+'choices.language.en': English
+'choices.language.fr': French
+'choices.interfaceTheme.auto': Automatic
+'choices.interfaceTheme.light': Light
+'choices.interfaceTheme.dark': Dark
+
+'fieldset.account': My account
+'fieldset.password': Password
+'fieldset.generalInformation': General information
+
+'fields.name.entitled': Name
+'fields.username.entitled': Username
+'fields.email.entitled': Email
+'fields.language.entitled': Language
+'fields.interfaceTheme.entitled': Theme
+'fields.currentPassword.entitled': Current password
+
+'helpers.plainPassword.keep': Leave empty to keep the current password.
+
+'errors.currentPassword.invalid': The current password is not valid.
+
+'authentication.remember_me': Remember me
+'authentication.submit': Log in
+'authentication.login_link': Receive a login link
+'authentication.login_link_sent': If an account matches, a login link has been sent.
+'authentication.login_link_submit': Send the link
+'authentication.login_link_check': Log in
+'authentication.login_link_continue': Continue
+'authentication.password_forgot': Forgotten password
+'authentication.password_forgot_sent': If an account matches, a link to change the password has been sent.
+'authentication.password_forgot_submit': Send the link
+'authentication.password_reset': New password
+'authentication.password_reset_invalid': This link is not valid or has expired.
+'authentication.new_password': New password
+'authentication.new_password_confirmation': New password again
+'authentication.password_reset_submit': Change the password
+'authentication.back': Back to the login
+
+'account.title': My account
+
+'email.password_reset.subject': Change your password
+'email.password_reset.body': 'Hello %name%, open this link to choose a new password:'
+'email.login_link.subject': Your login link
+'email.login_link.body': 'Hello %name%, open this link to log in:'
+'email.expires': 'The link expires on %date%.'
+
+'configuration.categories.security': Security
+'configuration.categories.environment': Environment
+'configuration.status.success': OK
+'configuration.status.warning': Warning
+'configuration.status.error': Error
+'configuration.status.info': Information
+'configuration.https.entitled': HTTPS
+'configuration.https.description': The HTTPS protocol secures the exchanges with the admin.
+'configuration.env.entitled': Environment
+'configuration.env.description': A production site runs in the "prod" environment.
+'configuration.debug.entitled': Debug
+'configuration.debug.description': The debug mode is disabled in production.
+'configuration.mail.entitled': Mails
+'configuration.mail.description': 'The mails of the admin need symfony/mailer and "austral_admin.mail.from".'
+'configuration.login_link.entitled': Login link
+'configuration.login_link.description': 'Enabled with "login_link" in the firewall and "austral_security.login_link.firewall".'

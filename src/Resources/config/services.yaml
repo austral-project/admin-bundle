@@ -1,0 +1,265 @@
+services:
+
+##### Modules (the arguments of the registry and of the factory are set by ModuleRegistryPass)
+  Austral\AdminBundle\Module\ModuleRegistry:
+    arguments:
+      $rawDefinitions: []
+
+  austral.admin.module_registry:
+    alias: Austral\AdminBundle\Module\ModuleRegistry
+    public: true
+
+  Austral\AdminBundle\Security\ModuleAccess:
+    arguments:
+      $authorizationChecker: '@security.authorization_checker'
+      $registry: '@Austral\AdminBundle\Module\ModuleRegistry'
+
+  Austral\AdminBundle\Module\ModuleFactory:
+    arguments:
+      $registry: '@Austral\AdminBundle\Module\ModuleRegistry'
+      $access: '@Austral\AdminBundle\Security\ModuleAccess'
+      $admins: ~
+      $entityManagers: ~
+      $variantProviders: ~
+
+  austral.admin.module_factory:
+    alias: Austral\AdminBundle\Module\ModuleFactory
+    public: true
+
+  Austral\AdminBundle\Module\ModuleResolver:
+    arguments:
+      $factory: '@Austral\AdminBundle\Module\ModuleFactory'
+
+##### Routing ($path and $languages are set by the extension)
+  Austral\AdminBundle\Routing\AdminUrlGenerator:
+    arguments:
+      $router: '@router'
+
+  austral.admin.url_generator:
+    alias: Austral\AdminBundle\Routing\AdminUrlGenerator
+    public: true
+
+  Austral\AdminBundle\Routing\AdminRouteLoader:
+    arguments:
+      $registry: '@Austral\AdminBundle\Module\ModuleRegistry'
+      $path: '/austral-admin'
+      $languages: []
+      $routesHash: '%austral_admin.routes_hash%'
+      $env: '%kernel.environment%'
+    tags:
+      - { name: routing.loader }
+
+##### Events
+  Austral\AdminBundle\Event\AdminEventDispatcher:
+    arguments:
+      $dispatcher: '@event_dispatcher'
+
+  austral.admin.event_dispatcher:
+    alias: Austral\AdminBundle\Event\AdminEventDispatcher
+    public: true
+
+##### Pages
+  Austral\AdminBundle\Page\EntityQuery:
+    arguments:
+      $dispatcher: '@Austral\AdminBundle\Event\AdminEventDispatcher'
+
+  Austral\AdminBundle\Page\ListConfigurator:
+    arguments:
+      $listMapperFactory: '@Austral\ListBundle\Mapper\ListMapperFactory'
+      $filterMapperFactory: '@Austral\FilterBundle\Mapper\FilterMapperFactory'
+      $dispatcher: '@Austral\AdminBundle\Event\AdminEventDispatcher'
+      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
+      $perPage: 30
+
+  Austral\AdminBundle\Page\ListUrlStore:
+    arguments:
+      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
+
+  Austral\AdminBundle\Page\ListPage:
+    arguments:
+      $configurator: '@Austral\AdminBundle\Page\ListConfigurator'
+      $query: '@Austral\AdminBundle\Page\EntityQuery'
+      $filterHandler: '@Austral\FilterBundle\Handler\FilterHandler'
+      $filterApplier: '@Austral\FilterBundle\Doctrine\DoctrineFilterApplier'
+      $filterViewBuilder: '@Austral\FilterBundle\View\FilterViewBuilder'
+      $listViewBuilder: '@Austral\ListBundle\View\ListViewBuilder'
+      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
+      $listUrls: '@Austral\AdminBundle\Page\ListUrlStore'
+      $renderer: '@Austral\AdminBundle\View\AdminRenderer'
+
+  Austral\AdminBundle\Page\FormPage:
+    arguments:
+      $mapperFactory: '@Austral\FormBundle\Mapper\FormMapperFactory'
+      $formFactory: '@form.factory'
+      $formHandler: '@Austral\FormBundle\Handler\FormHandler'
+      $dispatcher: '@Austral\AdminBundle\Event\AdminEventDispatcher'
+      $query: '@Austral\AdminBundle\Page\EntityQuery'
+      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
+      $listUrls: '@Austral\AdminBundle\Page\ListUrlStore'
+      $renderer: '@Austral\AdminBundle\View\AdminRenderer'
+
+  Austral\AdminBundle\Page\EntityActions:
+    arguments:
+      $query: '@Austral\AdminBundle\Page\EntityQuery'
+      $configurator: '@Austral\AdminBundle\Page\ListConfigurator'
+      $dispatcher: '@Austral\AdminBundle\Event\AdminEventDispatcher'
+      $csrf: '@Austral\AdminBundle\Security\CsrfGuard'
+      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
+      $listUrls: '@Austral\AdminBundle\Page\ListUrlStore'
+      $propertyAccessor: '@?property_accessor'
+
+  Austral\AdminBundle\Export\Exporter:
+    arguments:
+      $configurator: '@Austral\AdminBundle\Page\ListConfigurator'
+      $query: '@Austral\AdminBundle\Page\EntityQuery'
+      $filterHandler: '@Austral\FilterBundle\Handler\FilterHandler'
+      $listPage: '@Austral\AdminBundle\Page\ListPage'
+      $listViewBuilder: '@Austral\ListBundle\View\ListViewBuilder'
+      $dispatcher: '@Austral\AdminBundle\Event\AdminEventDispatcher'
+      $translator: '@?translator'
+      $csvDelimiter: ','
+
+##### View
+  Austral\AdminBundle\View\Breadcrumb:
+    arguments:
+      $registry: '@Austral\AdminBundle\Module\ModuleRegistry'
+      $access: '@Austral\AdminBundle\Security\ModuleAccess'
+      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
+
+  Austral\AdminBundle\View\Navigation:
+    arguments:
+      $registry: '@Austral\AdminBundle\Module\ModuleRegistry'
+      $access: '@Austral\AdminBundle\Security\ModuleAccess'
+      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
+      $requestStack: '@request_stack'
+    tags:
+      - { name: kernel.reset, method: reset }
+
+  Austral\AdminBundle\View\AdminRenderer:
+    arguments:
+      $twig: '@twig'
+      $dispatcher: '@Austral\AdminBundle\Event\AdminEventDispatcher'
+      $breadcrumb: '@Austral\AdminBundle\View\Breadcrumb'
+
+  austral.admin.renderer:
+    alias: Austral\AdminBundle\View\AdminRenderer
+    public: true
+
+  Austral\AdminBundle\Twig\AdminExtension:
+    arguments:
+      $navigation: '@Austral\AdminBundle\View\Navigation'
+      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
+      $csrf: '@Austral\AdminBundle\Security\CsrfGuard'
+      $config: []
+    tags:
+      - { name: twig.extension }
+
+##### Security
+  Austral\AdminBundle\Security\CsrfGuard:
+    arguments:
+      $tokenManager: '@security.csrf.token_manager'
+
+  Austral\AdminBundle\Security\RoleTree:
+    arguments:
+      $registry: '@Austral\AdminBundle\Module\ModuleRegistry'
+
+##### Controllers (public: the controller resolver reads them from the container)
+  Austral\AdminBundle\Controller\ModuleController:
+    public: true
+    arguments:
+      $resolver: '@Austral\AdminBundle\Module\ModuleResolver'
+      $listPage: '@Austral\AdminBundle\Page\ListPage'
+      $formPage: '@Austral\AdminBundle\Page\FormPage'
+      $entityActions: '@Austral\AdminBundle\Page\EntityActions'
+      $query: '@Austral\AdminBundle\Page\EntityQuery'
+      $exporter: '@Austral\AdminBundle\Export\Exporter'
+      $navigation: '@Austral\AdminBundle\View\Navigation'
+      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
+      $listUrls: '@Austral\AdminBundle\Page\ListUrlStore'
+      $csrf: '@Austral\AdminBundle\Security\CsrfGuard'
+      $renderer: '@Austral\AdminBundle\View\AdminRenderer'
+    tags:
+      - { name: controller.service_arguments }
+
+  Austral\AdminBundle\Controller\DashboardController:
+    public: true
+    arguments:
+      $authorizationChecker: '@security.authorization_checker'
+      $navigation: '@Austral\AdminBundle\View\Navigation'
+      $dispatcher: '@Austral\AdminBundle\Event\AdminEventDispatcher'
+      $renderer: '@Austral\AdminBundle\View\AdminRenderer'
+    tags:
+      - { name: controller.service_arguments }
+
+  Austral\AdminBundle\Controller\SecurityController:
+    public: true
+    arguments:
+      $authenticationUtils: '@security.authentication_utils'
+      $authorizationChecker: '@security.authorization_checker'
+      $loginLinkRequester: '@Austral\SecurityBundle\LoginLink\LoginLinkRequester'
+      $passwordResetManager: '@Austral\SecurityBundle\Password\PasswordResetManager'
+      $csrf: '@Austral\AdminBundle\Security\CsrfGuard'
+      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
+      $renderer: '@Austral\AdminBundle\View\AdminRenderer'
+      $passwordResetEnabled: false
+    tags:
+      - { name: controller.service_arguments }
+
+  Austral\AdminBundle\Controller\AccountController:
+    public: true
+    arguments:
+      $tokenStorage: '@security.token_storage'
+      $users: '@Austral\SecurityBundle\EntityManager\Interfaces\UserEntityManagerInterface'
+      $mapperFactory: '@Austral\FormBundle\Mapper\FormMapperFactory'
+      $formFactory: '@form.factory'
+      $formHandler: '@Austral\FormBundle\Handler\FormHandler'
+      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
+      $renderer: '@Austral\AdminBundle\View\AdminRenderer'
+      $languages: ['en', 'fr']
+    tags:
+      - { name: controller.service_arguments }
+
+##### Listeners
+  Austral\AdminBundle\Listener\LocaleListener:
+    arguments:
+      $tokenStorage: '@security.token_storage'
+      $localeSwitcher: '@?translation.locale_switcher'
+      $languages: ['en', 'fr']
+    tags:
+      # after the firewall (8)
+      - { name: kernel.event_listener, event: kernel.request, priority: 7 }
+
+  Austral\AdminBundle\Listener\SecurityMailListener:
+    arguments:
+      $mailer: '@mailer'
+      $twig: '@twig'
+      $from: ~
+      $fromName: ~
+      $translator: '@?translator'
+    tags:
+      - { name: kernel.event_listener, event: 'austral.security.password_reset.requested', method: onPasswordResetRequested }
+      - { name: kernel.event_listener, event: 'austral.security.login_link.requested', method: onLoginLinkRequested }
+
+  Austral\AdminBundle\Listener\ConfigurationCheckListener:
+    arguments:
+      $environment: '%kernel.environment%'
+      $debug: '%kernel.debug%'
+      $mailEnabled: false
+      $loginLinkRequester: '@?Austral\SecurityBundle\LoginLink\LoginLinkRequester'
+    tags:
+      - { name: kernel.event_listener, event: 'austral.admin.configuration_check' }
+
+##### Admin class of the module of the bundle (Resources/config/austral_admin.yaml)
+  Austral\AdminBundle\Admin\ConfigurationAdmin:
+    arguments:
+      $dispatcher: '@Austral\AdminBundle\Event\AdminEventDispatcher'
+    tags:
+      - { name: austral.admin }
+
+##### Command
+  Austral\AdminBundle\Command\AdminRolesCommand:
+    arguments:
+      $roleTree: '@Austral\AdminBundle\Security\RoleTree'
+      $roles: '@Austral\SecurityBundle\EntityManager\RoleEntityManager'
+    tags:
+      - { name: console.command, command: 'austral:admin:roles' }

@@ -1,0 +1,31 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Tiles: the variants of a level of an entity module, or the children of a container module. Variables: module,
+ # tiles (key, label, translate, picto, image, url, attributes).
+ #}
+{%- extends '@AustralAdmin/layout.html.twig' -%}
+{%- trans_default_domain 'austral' -%}
+{%- set module_name = ('pages.names.' ~ module.definition.translationKey ~ '.plural')|trans -%}
+
+{%- block title -%}{{ module_name }} - {{ parent() }}{%- endblock -%}
+
+{%- block content -%}
+  <h1>{{ module_name }}</h1>
+  {%- if tiles -%}
+    <ul class="austral-admin-tiles">
+      {%- for tile in tiles -%}
+        <li class="austral-admin-tile austral-admin-tile--{{ tile.key }}">
+          <a href="{{ tile.url }}">
+            {%- if tile.image %}<img src="{{ tile.image }}" alt="">{% elseif tile.picto %}<span class="picto {{ tile.picto }}" aria-hidden="true"></span>{% endif -%}
+            <span>{{ tile.translate ? tile.label|trans : tile.label }}</span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- else -%}
+    <p>{{ 'list.empty'|trans }}</p>
+  {%- endif -%}
+{%- endblock -%}

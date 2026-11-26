@@ -1,0 +1,64 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # List theme of the admin: the actions with data-method="post", the switches and the choices are forms with the
+ # CSRF token of the admin (POST, never a link that changes data).
+ #}
+{%- extends '@AustralList/list/austral_list.html.twig' -%}
+
+{%- block austral_list_action -%}
+  {%- if action.url and (action.attr['data-method'] ?? null) == 'post' -%}
+    {%- set label = action.label|trans(action.label_parameters, action.translation_domain ?? domain) -%}
+    {%- set confirm = action.attr['data-confirm'] ?? null -%}
+    {%- set attr = action.attr|filter((value, name) => name not in ['data-method', 'data-confirm', 'data-url'])|merge({class: ['austral-list-action', 'austral-list-action--' ~ action.name|replace({'.': '-'}), action.class, action.attr.class ?? null]|filter(class => class)|join(' ')}) -%}
+    <form method="post" action="{{ action.url }}" class="austral-admin-inline"{% if confirm %} data-confirm="{{ confirm|trans({}, domain) }}"{% endif %}>
+      <input type="hidden" name="_token" value="{{ austral_admin_csrf_token() }}">
+      <button type="submit"{{ block('austral_list_attributes') }}>{{ block('austral_list_action_label') }}</button>
+    </form>
+  {%- else -%}
+    {{- parent() -}}
+  {%- endif -%}
+{%- endblock austral_list_action -%}
+
+{%- block austral_list_cell_switch -%}
+  {%- set url = cell.vars.checked ? cell.vars.off_url : cell.vars.on_url -%}
+  {%- set label = (cell.vars.checked ? cell.vars.on_label : cell.vars.off_label)|trans({}, domain) -%}
+  {%- set attr = {
+    class: ['austral-list-switch', cell.vars.checked ? 'is-checked']|filter(class => class)|join(' '),
+    role: 'switch',
+    'aria-checked': cell.vars.checked ? 'true' : 'false',
+    title: cell.vars.title ? cell.vars.title|trans({}, domain) : null,
+    style: cell.vars.style,
+  } -%}
+  {%- if url -%}
+    <form method="post" action="{{ url }}" class="austral-admin-inline">
+      <input type="hidden" name="_token" value="{{ austral_admin_csrf_token() }}">
+      <button type="submit"{{ block('austral_list_attributes') }}>{{ block('austral_list_switch_label') }}</button>
+    </form>
+  {%- else -%}
+    <span{{ block('austral_list_attributes') }} aria-disabled="true">{{ block('austral_list_switch_label') }}</span>
+  {%- endif -%}
+{%- endblock austral_list_cell_switch -%}
+
+{%- block austral_list_cell_choices -%}
+  {%- if cell.vars.granted and cell.vars.choices|filter(choice => choice.url)|length > 0 -%}
+    <ul class="austral-list-choices">
+      {%- for choice in cell.vars.choices -%}
+        <li class="{{ ['austral-list-choice', choice.current ? 'is-current', choice.class]|filter(class => class)|join(' ') }}"{% if choice.style %} style="{{ choice.style }}"{% endif %}>
+          {%- if choice.url and not choice.current -%}
+            <form method="post" action="{{ choice.url }}" class="austral-admin-inline">
+              <input type="hidden" name="_token" value="{{ austral_admin_csrf_token() }}">
+              <button type="submit">{{ block('austral_list_choice_label') }}</button>
+            </form>
+          {%- else -%}
+            <span{% if choice.current %} aria-current="true"{% endif %}>{{ block('austral_list_choice_label') }}</span>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- else -%}
+    {{- parent() -}}
+  {%- endif -%}
+{%- endblock austral_list_cell_choices -%}

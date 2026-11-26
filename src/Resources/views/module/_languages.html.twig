@@ -1,0 +1,22 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Languages of the content of an entity module (austral_admin.languages.content). Variables: module, action,
+ # parameters.
+ #}
+{%- trans_default_domain 'austral' -%}
+{%- set languages = austral_admin.languages.content -%}
+{%- if languages and module.definition.isEntity() -%}
+  <nav class="austral-admin-languages" aria-label="{{ 'languages.title'|trans }}">
+    <ul>
+      {%- for language in languages -%}
+        {%- set current = (module.language ?? languages|first) == language -%}
+        <li>
+          <a href="{{ austral_admin_language_url(module, language, action|default('list'), parameters|default({})) }}" hreflang="{{ language }}"{% if current %} aria-current="true"{% endif %}>{{ ('choices.language.' ~ language)|trans }}</a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </nav>
+{%- endif -%}

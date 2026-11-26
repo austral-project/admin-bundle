@@ -1,0 +1,25 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Request of a login link. Variables: sent, token_id.
+ #}
+{%- extends '@AustralAdmin/security/layout.html.twig' -%}
+{%- trans_default_domain 'austral' -%}
+
+{%- block security_content -%}
+  <h2>{{ 'authentication.login_link'|trans }}</h2>
+  {%- if sent -%}
+    <p role="status">{{ 'authentication.login_link_sent'|trans }}</p>
+  {%- endif -%}
+  <form method="post" action="{{ path('austral_admin_security_login_link') }}">
+    <p>
+      <label for="login">{{ 'authentication.login'|trans }}</label>
+      <input type="text" id="login" name="login" autocomplete="username" required>
+    </p>
+    <input type="hidden" name="_token" value="{{ csrf_token(token_id) }}">
+    <button type="submit">{{ 'authentication.login_link_submit'|trans }}</button>
+  </form>
+  <p><a href="{{ path('austral_admin_security_login') }}">{{ 'authentication.back'|trans }}</a></p>
+{%- endblock -%}

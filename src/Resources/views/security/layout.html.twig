@@ -1,0 +1,17 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Layout of the pages of the firewall (login, login link, password): no navigation.
+ #}
+{%- extends '@AustralAdmin/layout.html.twig' -%}
+{%- trans_default_domain 'austral' -%}
+
+{%- block body -%}
+  <main class="austral-admin-security">
+    <h1>{{ austral_admin.name }}</h1>
+    {{- block('flashes') -}}
+    {%- block security_content -%}{%- endblock -%}
+  </main>
+{%- endblock -%}

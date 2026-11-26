@@ -1,0 +1,113 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Layout of the admin. Minimal markup, to use the admin from a browser: the design is in design-bundle, which
+ # overrides these templates (templates/bundles/AustralAdminBundle/ in an application).
+ #}
+{%- trans_default_domain 'austral' -%}
+<!DOCTYPE html>
+<html lang="{{ app.request.locale|default('en') }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  {% if app.user -%}
+  <meta name="austral-admin-csrf-token" content="{{ austral_admin_csrf_token() }}">
+  {% endif -%}
+  <title>{% block title %}{{ austral_admin.name }}{% endblock %}</title>
+  {%- block stylesheets -%}
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; color: #1d1d1f; }
+      a { color: #0b57d0; }
+      .austral-admin-header { display: flex; justify-content: space-between; align-items: center; padding: .75rem 1.5rem; background: #1d1d1f; color: #fff; }
+      .austral-admin-header a { color: #fff; }
+      .austral-admin-container { display: flex; min-height: calc(100vh - 3rem); }
+      .austral-admin-navigation { width: 15rem; padding: 1rem; background: #f5f5f7; }
+      .austral-admin-navigation ul { list-style: none; padding-left: .75rem; margin: 0; }
+      .austral-admin-navigation .is-active > a { font-weight: bold; }
+      .austral-admin-main { flex: 1; padding: 1rem 2rem; }
+      .austral-admin-breadcrumb ol { list-style: none; display: flex; gap: .5rem; padding: 0; }
+      .austral-admin-breadcrumb li + li::before { content: "/"; margin-right: .5rem; color: #888; }
+      .austral-admin-flash { padding: .5rem 1rem; margin: .5rem 0; border-radius: .25rem; background: #e8f0fe; }
+      .austral-admin-flash--error { background: #fde7e9; }
+      .austral-admin-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: 1rem; list-style: none; padding: 0; }
+      .austral-admin-tiles a { display: block; padding: 1.5rem; border: 1px solid #ddd; border-radius: .5rem; text-decoration: none; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { text-align: left; padding: .4rem .6rem; border-bottom: 1px solid #eee; }
+      form.austral-admin-inline { display: inline; }
+      .austral-list-actions-list { display: flex; gap: .5rem; list-style: none; padding: 0; margin: 0; }
+      .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    </style>
+  {%- endblock -%}
+</head>
+<body class="austral-admin austral-admin--{{ page|default('page') }}">
+{%- block body -%}
+  <header class="austral-admin-header">
+    <a href="{{ path('austral_admin_index') }}">{{ austral_admin.name }}</a>
+    {%- if app.user -%}
+      <nav aria-label="{{ 'header.user'|trans }}">
+        <a href="{{ path('austral_admin_my_account') }}">{{ app.user.userIdentifier }}</a>
+        &nbsp;·&nbsp;
+        <a href="{{ path('austral_admin_security_logout') }}">{{ 'links.logout'|trans }}</a>
+      </nav>
+    {%- endif -%}
+  </header>
+  <div class="austral-admin-container">
+    <nav class="austral-admin-navigation" aria-label="{{ 'navigation.title'|trans }}">
+      {%- block navigation -%}
+        {%- import _self as macros -%}
+        {{ macros.navigation(austral_admin_navigation()) }}
+      {%- endblock -%}
+    </nav>
+    <main class="austral-admin-main" id="austral-admin-content">
+      {%- block breadcrumb -%}
+        {%- if breadcrumb|default([])|length > 1 -%}
+          <nav class="austral-admin-breadcrumb" aria-label="{{ 'breadcrumb.title'|trans }}">
+            <ol>
+              {%- for item in breadcrumb -%}
+                {%- set label = item.translate ? item.label|trans(item.parameters) : item.label -%}
+                <li>{% if item.url %}<a href="{{ item.url }}">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}</li>
+              {%- endfor -%}
+            </ol>
+          </nav>
+        {%- endif -%}
+      {%- endblock -%}
+      {%- block flashes -%}
+        {%- for type, messages in app.flashes -%}
+          {%- for message in messages -%}
+            <div class="austral-admin-flash austral-admin-flash--{{ type }}" role="{{ type == 'error' ? 'alert' : 'status' }}">{{ message|trans }}</div>
+          {%- endfor -%}
+        {%- endfor -%}
+      {%- endblock -%}
+      {%- block content -%}{%- endblock -%}
+    </main>
+  </div>
+{%- endblock -%}
+{%- block javascripts -%}
+  <script>
+    document.addEventListener('submit', function (event) {
+      var message = event.target.getAttribute('data-confirm');
+      if (message && !window.confirm(message)) {
+        event.preventDefault();
+      }
+    });
+  </script>
+{%- endblock -%}
+</body>
+</html>
+
+{%- macro navigation(items) -%}
+  {%- import _self as macros -%}
+  {%- if items -%}
+    <ul>
+      {%- for item in items -%}
+        <li class="{{ item.active ? 'is-active' }}">
+          <a href="{{ item.url }}"{% if item.active %} aria-current="page"{% endif %}>{{ item.label|trans({}, 'austral') }}</a>
+          {%- if item.children -%}{{ macros.navigation(item.children) }}{%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+{%- endmacro -%}

@@ -1,0 +1,18 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # Dashboard. Variables: blocks (name, template, vars, position) of AdminEvents::DASHBOARD.
+ #}
+{%- extends '@AustralAdmin/layout.html.twig' -%}
+{%- trans_default_domain 'austral' -%}
+
+{%- block content -%}
+  <h1>{{ 'breadcrumb.dashboard'|trans }}</h1>
+  {%- for block in blocks -%}
+    <section class="austral-admin-dashboard-block austral-admin-dashboard-block--{{ block.name }}">
+      {{- include(block.template, block.vars) -}}
+    </section>
+  {%- endfor -%}
+{%- endblock -%}

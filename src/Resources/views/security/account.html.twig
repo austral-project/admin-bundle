@@ -1,0 +1,20 @@
+{#
+ # This file is part of the Austral Admin Bundle package.
+ #
+ # (c) Austral <support@austral.dev>
+ #
+ # My account. Variables: form, user.
+ #}
+{%- extends '@AustralAdmin/layout.html.twig' -%}
+{%- trans_default_domain 'austral' -%}
+{%- form_theme form '@AustralForm/form/austral_layout.html.twig' -%}
+
+{%- block title -%}{{ 'account.title'|trans }} - {{ parent() }}{%- endblock -%}
+
+{%- block content -%}
+  <h1>{{ 'account.title'|trans }}</h1>
+  {{- form_start(form) -}}
+    {{- form_widget(form) -}}
+    <button type="submit">{{ 'actions.save'|trans }}</button>
+  {{- form_end(form) -}}
+{%- endblock -%}
