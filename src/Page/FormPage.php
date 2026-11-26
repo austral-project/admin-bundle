@@ -17,7 +17,7 @@ use Austral\AdminBundle\Event\FormAdminEvent;
 use Austral\AdminBundle\Module\Module;
 use Austral\AdminBundle\Module\ModuleAction;
 use Austral\AdminBundle\Routing\AdminUrlGenerator;
-use Austral\AdminBundle\View\AdminRenderer;
+use Austral\AdminBundle\View\AdminView;
 use Austral\Contracts\Entity\EntityInterface;
 use Austral\Contracts\Translate\TranslateMasterInterface;
 use Austral\FormBundle\Form\Type\AustralFormType;
@@ -35,7 +35,8 @@ use Symfony\Component\HttpFoundation\Response;
  * Austral Form Page.
  *
  * The form of an entity of a module (create, edit), on form-bundle: the mapper configured by
- * AdminEvents::FORM_CONFIGURE, the form handled by FormHandler, the entity saved by the entity manager.
+ * AdminEvents::FORM_CONFIGURE, the form handled by FormHandler, the entity saved by the entity manager. Called by
+ * AdminHandler::create() and AdminHandler::edit().
  *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
@@ -50,6 +51,8 @@ final class FormPage
   public const string SAVE_PARAMETER = '_save';
 
   /**
+   * __construct
+   *
    * @param FormMapperFactory    $mapperFactory
    * @param FormFactoryInterface $formFactory
    * @param FormHandler          $formHandler
@@ -57,7 +60,8 @@ final class FormPage
    * @param EntityQuery          $query
    * @param AdminUrlGenerator    $urls
    * @param ListUrlStore         $listUrls
-   * @param AdminRenderer        $renderer
+   *
+   * @return void
    */
   public function __construct(
     private readonly FormMapperFactory $mapperFactory,
@@ -67,18 +71,22 @@ final class FormPage
     private readonly EntityQuery $query,
     private readonly AdminUrlGenerator $urls,
     private readonly ListUrlStore $listUrls,
-    private readonly AdminRenderer $renderer,
   ) {
   }
 
   /**
+   * handle
+   * Saves the form and redirects (to the list or to the form), else the page of the form.
+   *
    * @param Module      $module
    * @param Request     $request
    * @param string|null $id      Null to create an entity
    *
-   * @return Response
+   * @return Response|AdminView
+   *
+   * @throws \LogicException when the form of the module has no field
    */
-  public function render(Module $module, Request $request, ?string $id = null): Response
+  public function handle(Module $module, Request $request, ?string $id = null): Response|AdminView
   {
     $create = null === $id;
     $object = $create ? $this->newObject($module) : $this->query->find($module, $request, $id);
@@ -124,17 +132,19 @@ final class FormPage
       self::flash($request, 'error', 'flash.invalid');
     }
 
-    return $this->renderer->render($request, $create ? 'create' : 'edit', self::TEMPLATE, [
+    return new AdminView($create ? 'create' : 'edit', self::TEMPLATE, [
       'form' => $form->createView(),
       'object' => $object,
       'create' => $create,
       'title' => $create ? null : ListConfigurator::label($object),
       'list_url' => $this->listUrls->get($module, $request),
       'actions' => $this->objectActions($module, $object, $create),
-    ], $module, FormResult::STATUS_INVALID === $result->getStatus() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK, $create ? null : ListConfigurator::label($object));
+    ], FormResult::STATUS_INVALID === $result->getStatus() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK, $create ? null : ListConfigurator::label($object));
   }
 
   /**
+   * newObject
+   *
    * @param Module $module
    *
    * @return object
@@ -154,6 +164,8 @@ final class FormPage
   }
 
   /**
+   * flash
+   *
    * @param Request $request
    * @param string  $type
    * @param string  $message Translation key (domain austral)
@@ -169,6 +181,7 @@ final class FormPage
   }
 
   /**
+   * objectActions
    * Actions of the page of an existing entity: duplicate and delete (POST), extra actions.
    *
    * @param Module $module

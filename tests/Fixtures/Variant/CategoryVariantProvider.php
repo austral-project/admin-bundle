@@ -25,6 +25,13 @@ use Doctrine\ORM\QueryBuilder;
  */
 final class CategoryVariantProvider implements ModuleVariantProviderInterface
 {
+  /**
+   * Categories given as variants: a test may keep one only.
+   *
+   * @var array<string, string>
+   */
+  public static array $categories = ['news' => 'News', 'events' => 'Events'];
+
   public static function supports(ModuleDefinition $definition): bool
   {
     return Page::class === $definition->getEntityClass() && 'articles' === $definition->getKey();
@@ -32,7 +39,7 @@ final class CategoryVariantProvider implements ModuleVariantProviderInterface
 
   public function variants(Module $module, array $parents): iterable
   {
-    foreach (['news' => 'News', 'events' => 'Events'] as $key => $name)
+    foreach (self::$categories as $key => $name)
     {
       yield new ModuleVariant(
         $key,

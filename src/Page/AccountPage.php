@@ -9,13 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Austral\AdminBundle\Controller;
+namespace Austral\AdminBundle\Page;
 
-use Austral\AdminBundle\Page\FormPage;
-use Austral\AdminBundle\Page\ListConfigurator;
 use Austral\AdminBundle\Routing\AdminRouteLoader;
 use Austral\AdminBundle\Routing\AdminUrlGenerator;
-use Austral\AdminBundle\View\AdminRenderer;
+use Austral\AdminBundle\View\AdminView;
 use Austral\FormBundle\Field\PasswordField;
 use Austral\FormBundle\Field\SelectField;
 use Austral\FormBundle\Field\TextField;
@@ -37,26 +35,30 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 
 /**
- * Austral Account Controller.
+ * Austral Account Page.
  *
  * "My account": the user changes his name, email, username, language, theme and password, his current password
- * required. The type, the groups and the state of the account are not in this form.
+ * required. The type, the groups and the state of the account are not in this form. Called by
+ * AdminHandler::account().
  *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
-final class AccountController
+final class AccountPage
 {
   public const string TEMPLATE = '@AustralAdmin/security/account.html.twig';
 
   /**
+   * __construct
+   *
    * @param TokenStorageInterface      $tokenStorage
    * @param UserEntityManagerInterface $users
    * @param FormMapperFactory          $mapperFactory
    * @param FormFactoryInterface       $formFactory
    * @param FormHandler                $formHandler
    * @param AdminUrlGenerator          $urls
-   * @param AdminRenderer              $renderer
    * @param list<string>               $languages     Languages of the interface
+   *
+   * @return void
    */
   public function __construct(
     private readonly TokenStorageInterface $tokenStorage,
@@ -65,17 +67,21 @@ final class AccountController
     private readonly FormFactoryInterface $formFactory,
     private readonly FormHandler $formHandler,
     private readonly AdminUrlGenerator $urls,
-    private readonly AdminRenderer $renderer,
     private readonly array $languages = ['en', 'fr'],
   ) {
   }
 
   /**
+   * handle
+   * Saves the form and redirects to my account, else the page of the form.
+   *
    * @param Request $request
    *
-   * @return Response
+   * @return Response|AdminView
+   *
+   * @throws AccessDeniedException without an Austral user
    */
-  public function edit(Request $request): Response
+  public function handle(Request $request): Response|AdminView
   {
     $user = $this->tokenStorage->getToken()?->getUser();
     if (!$user instanceof UserInterface)
@@ -134,13 +140,14 @@ final class AccountController
       $this->users->refresh($user);
     }
 
-    return $this->renderer->render($request, 'account', self::TEMPLATE, [
+    return new AdminView('account', self::TEMPLATE, [
       'form' => $view,
       'user' => $user,
-    ], null, FormResult::STATUS_INVALID === $result->getStatus() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK);
+    ], FormResult::STATUS_INVALID === $result->getStatus() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK);
   }
 
   /**
+   * requiredText
    * Options of a required text: never null (empty_data) and not blank.
    *
    * @return array<string, mixed>

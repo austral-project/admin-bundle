@@ -12,13 +12,13 @@
 namespace Austral\AdminBundle\DependencyInjection;
 
 use Austral\AdminBundle\Admin\Admin;
-use Austral\AdminBundle\Controller\AccountController;
 use Austral\AdminBundle\Controller\SecurityController;
 use Austral\AdminBundle\DependencyInjection\Compiler\ModuleRegistryPass;
+use Austral\AdminBundle\EventSubscriber\HttpAdminEventSubscriber;
 use Austral\AdminBundle\Export\Exporter;
 use Austral\AdminBundle\Listener\ConfigurationCheckListener;
-use Austral\AdminBundle\Listener\LocaleListener;
 use Austral\AdminBundle\Listener\SecurityMailListener;
+use Austral\AdminBundle\Page\AccountPage;
 use Austral\AdminBundle\Page\ListConfigurator;
 use Austral\AdminBundle\Routing\AdminRouteLoader;
 use Austral\AdminBundle\Twig\AdminExtension;
@@ -47,6 +47,7 @@ class AustralAdminExtension extends Extension implements PrependExtensionInterfa
   public const string PARAMETER_MODULES = '.austral_admin.modules';
 
   /**
+   * prepend
    * The modules of the admin (security, configuration), before the configuration of the application.
    *
    * @param ContainerBuilder $container
@@ -70,6 +71,8 @@ class AustralAdminExtension extends Extension implements PrependExtensionInterfa
   }
 
   /**
+   * load
+   *
    * @param array<array-key, mixed> $configs
    * @param ContainerBuilder        $container
    *
@@ -98,10 +101,10 @@ class AustralAdminExtension extends Extension implements PrependExtensionInterfa
     $container->getDefinition(ListConfigurator::class)->setArgument('$perPage', $config['list']['per_page']);
     $container->getDefinition(Exporter::class)->setArgument('$csvDelimiter', $config['export']['csv_delimiter']);
     $container->getDefinition(SecurityController::class)->setArgument('$passwordResetEnabled', $config['security']['password_reset']);
-    foreach ([AccountController::class, LocaleListener::class] as $id)
-    {
-      $container->getDefinition($id)->setArgument('$languages', $interfaceLanguages);
-    }
+    $container->getDefinition(AccountPage::class)->setArgument('$languages', $interfaceLanguages);
+    $container->getDefinition(HttpAdminEventSubscriber::class)
+      ->setArgument('$interfaceLanguages', $interfaceLanguages)
+      ->setArgument('$contentLanguages', $contentLanguages);
     $container->getDefinition(AdminExtension::class)->setArgument('$config', [
       'name' => $config['name'],
       'path' => $path,
@@ -127,6 +130,8 @@ class AustralAdminExtension extends Extension implements PrependExtensionInterfa
   }
 
   /**
+   * getNamespace
+   *
    * @return string
    */
   public function getNamespace(): string

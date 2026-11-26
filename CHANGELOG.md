@@ -7,8 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 The bundle is rewritten for 4.0 on form-bundle, list-bundle, filter-bundle and security-bundle 4: the same way
-of writing an Admin class, without the service container, the god handler and the routes that change data with a
-GET. The design moves to design-bundle. See UPGRADE-4.0.
+of writing an Admin class, without the service container and the routes that change data with a GET. As in 3.1,
+every page goes through http-bundle (`AdminHttpEvent`, `HttpAdminEventSubscriber`, `AdminHandler`,
+`AdminController`). The design moves to design-bundle. See UPGRADE-4.0.
 
 ### Added
 
@@ -20,7 +21,8 @@ GET. The design moves to design-bundle. See UPGRADE-4.0.
   data, optional `/{language}` with `languages.content`
 - Attribute `AsAdminModule`: a module of the application declared on its Admin class, the YAML wins
 - Variants of the modules (`ModuleVariantProviderInterface`, tag `austral.admin.module_variants`), on several
-  levels, replacing the modules cloned by listener and the multi-domain modules
+  levels, replacing the modules cloned by listener and the multi-domain modules; a level with one variant only
+  redirects to it (a site with one domain does not show a tile to click)
 - `Admin::configureQuery()` (`QueryAdminEvent`): restrictions applied to the list and to every entity read by an
   action (edit, delete, toggle, sort, export, truncate)
 - Sections of a list with their own query, pagination and filter group; the last URL of the list is kept
@@ -33,6 +35,15 @@ GET. The design moves to design-bundle. See UPGRADE-4.0.
 - `RoleTree`: the roles of the modules in navigation order, for the groups of security-bundle (its bridge
   `Bridge/Admin` brings the modules of the administrators, users, groups and roles)
 - Events `AdminEvents::*` for the bridges, `PageRenderEvent`, `DashboardEvent`, `ConfigurationCheckEvent`
+- Pipeline of http-bundle on every route of the admin, the pages of the firewall included (attribute
+  `_austral_http_event: AdminHttpEvent`): `HttpAdminEventSubscriber` sets the compression
+  (`austral_http.compression_gzip.admin`, else `default`) and, after the firewall, the language of the interface,
+  the template parameters shared by all the pages (`user`, `language`) and the module of the route (resolved and
+  granted before the controller); `AdminHandler` (one method per page) fills the template parameters or sets the
+  response; `AdminController` (dashboard, my account, modules) and `SecurityController` render them
+- `Template\TemplateParameters` (template, variables and status code of the page) and `View\AdminView` (page
+  returned by `ListPage`, `FormPage`, `DashboardPage` and `AccountPage`); the services `austral.admin.handler` and
+  `austral.admin.template`, reset between two requests (`kernel.reset`)
 - Interface in the language of the user
 - Minimal templates and an admin list theme (POST forms with the CSRF token)
 - Unit and functional tests (test application on SQLite)
@@ -59,10 +70,11 @@ GET. The design moves to design-bundle. See UPGRADE-4.0.
 - Mercure notifications (notify-bundle), deployment push, conflict detection, guideline, HTTP cache clear, ping,
   popins of links and graphic items (their bundles bring them back through the events)
 - Commands `austral:admin:modules` and `austral:admin:conflict-detect`
-- `AdminModuleInterface`, `AdminHandler`, `Modules`, `Module` of 3.1, `DataHydrate`, `Template\TemplateParameters`,
-  `austral-service`, the parameters `austral.admin.*` and `austral_admin.modules.<bundle>`
+- `AdminModuleInterface`, `Modules`, `Module` of 3.1, `DataHydrate`, `austral-service`, the parameters
+  `austral.admin.*` and `austral_admin.modules.<bundle>` (`AdminHandler` and `Template\TemplateParameters` are
+  rewritten on http-bundle 4)
 - Module keys `data_hydrate_class` and `enable_multi_domain`
-- The dependencies on http-bundle, tools-bundle, design-bundle, entity-file-bundle and notify-bundle
+- The dependencies on design-bundle, entity-file-bundle and notify-bundle (http-bundle and tools-bundle stay)
 
 ## [3.1.0] - 2022-09-17
 

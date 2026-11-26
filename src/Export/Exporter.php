@@ -201,6 +201,8 @@ final class Exporter
    * @param iterable<array<string, string>> $rows
    *
    * @return void
+   *
+   * @throws \JsonException
    */
   private static function json(array $headers, iterable $rows): void
   {

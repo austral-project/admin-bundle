@@ -20,7 +20,7 @@ JavaScript of the sortable lists, confirmations) is in design-bundle, which over
 - PHP 8.4 or higher
 - Symfony 7.4
 - Doctrine ORM 3
-- austral/entity-bundle, form-bundle, list-bundle, filter-bundle and security-bundle 4
+- austral/http-bundle, tools-bundle, entity-bundle, form-bundle, list-bundle, filter-bundle and security-bundle 4
 
 ## Installation
 
@@ -344,8 +344,9 @@ final class CategoryVariantProvider implements ModuleVariantProviderInterface
 
 The provider is a service tagged `austral.admin.module_variants` (automatic with autoconfigure); the priority of
 the tag orders the levels, the highest first. The URLs get a segment by level: `/products` shows the tiles of
-the categories, `/products/{category}` the list, `/products/{category}/{id}/edit` the form. An unknown key is a
-404; the rights stay those of the module, the URLs of a page keep its variants.
+the categories, `/products/{category}` the list, `/products/{category}/{id}/edit` the form. When a level has one
+variant only, its tiles page redirects to it. An unknown key is a 404; the rights stay those of the module, the
+URLs of a page keep its variants.
 
 ## Rights
 
@@ -443,6 +444,40 @@ checks of the other bundles).
 The module events go to the methods of the Admin of the module first (`getEvents()`), then to the listeners of
 the application: a bridge listens to them for every module (`$event->getModule()->getEntityClass()`).
 
+## HTTP pipeline
+
+Every route of the admin, the pages of the firewall included, has `_austral_http_event: AdminHttpEvent`: the
+`HttpListener` of http-bundle dispatches its events (`austral.event.http.*`) for the main request.
+
+1. `HttpAdminEventSubscriber::onRequestInitialise()`: compression of the response, `austral_http.compression_gzip.admin`
+   (else `default`).
+2. `HttpAdminEventSubscriber::onRequest()`, after the firewall: language of the interface (the user, else the
+   browser), template parameters `user` and `language` (`interface`, `current`, `default`, `list`), module of the
+   route resolved and granted (404 / 403 before the controller), then the `AdminHandler` on the event.
+3. `AdminController` (dashboard, my account, modules) or `SecurityController` (firewall) receives the handler and
+   calls the method of the page: `AdminHandler::view(AdminView)` fills the template parameters (after
+   `austral.admin.page.render`), or the handler sets the response (redirection, JSON, export).
+4. The controller renders the template parameters with their status code.
+
+A bundle adds its own template parameters from its bridge, after `HttpAdminEventSubscriber::PRIORITY`:
+
+```php
+public static function getSubscribedEvents(): array
+{
+    return [HttpEventInterface::EVENT_AUSTRAL_HTTP_REQUEST => ['onRequest', HttpAdminEventSubscriber::PRIORITY - 1]];
+}
+
+public function onRequest(HttpEventInterface $httpEvent): void
+{
+    if ($httpEvent instanceof AdminHttpEvent)
+    {
+        $httpEvent->getHandler()?->getTemplateParameters()?->addParameters('graphicItems', $this->pictos->all());
+    }
+}
+```
+
+The `austral.event.http.*` events are shared with website-bundle: always check the class of the event.
+
 ## Bridges
 
 A bundle adds its modules from a YAML file in the `prepend()` of its extension; nothing happens when admin-bundle
@@ -475,7 +510,8 @@ design-bundle. Globals: `austral_admin` (name, path, languages); functions: `aus
 | `austral.admin.module_factory` | `ModuleFactory` (the module of a request, its variants) |
 | `austral.admin.url_generator` | `AdminUrlGenerator` |
 | `austral.admin.event_dispatcher` | `AdminEventDispatcher` |
-| `austral.admin.renderer` | `AdminRenderer` |
+| `austral.admin.handler` | `AdminHandler` (the pages; reset between two requests) |
+| `austral.admin.template` | `TemplateParameters` (template, variables and status code of the page; reset between two requests) |
 
 ## Documentation
 

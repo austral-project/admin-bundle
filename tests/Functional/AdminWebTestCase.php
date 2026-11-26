@@ -39,13 +39,23 @@ abstract class AdminWebTestCase extends WebTestCase
    */
   protected static function createKernel(array $options = []): KernelInterface
   {
-    return new AdminKernel('test', false, static::adminConfig());
+    return new AdminKernel('test', false, static::adminConfig(), static::httpConfig());
   }
 
   /**
    * @return array<string, mixed>
    */
   protected static function adminConfig(): array
+  {
+    return [];
+  }
+
+  /**
+   * Configuration of austral_http (compression_gzip...).
+   *
+   * @return array<string, mixed>
+   */
+  protected static function httpConfig(): array
   {
     return [];
   }

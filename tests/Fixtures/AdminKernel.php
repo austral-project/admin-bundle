@@ -26,6 +26,7 @@ use Austral\EntityBundle\EntityManager\EntityManager;
 use Austral\EntityFileBundle\AustralEntityFileBundle;
 use Austral\FilterBundle\AustralFilterBundle;
 use Austral\FormBundle\AustralFormBundle;
+use Austral\HttpBundle\AustralHttpBundle;
 use Austral\ListBundle\AustralListBundle;
 use Austral\SecurityBundle\AustralSecurityBundle;
 use Austral\SecurityBundle\Entity\Interfaces\GroupInterface;
@@ -56,8 +57,9 @@ final class AdminKernel extends Kernel
 
   /**
    * @param array<string, mixed> $adminConfig Merged into the configuration of austral_admin
+   * @param array<string, mixed> $httpConfig  Configuration of austral_http
    */
-  public function __construct(string $environment = 'test', bool $debug = false, private readonly array $adminConfig = [])
+  public function __construct(string $environment = 'test', bool $debug = false, private readonly array $adminConfig = [], private readonly array $httpConfig = [])
   {
     parent::__construct($environment, $debug);
   }
@@ -70,6 +72,7 @@ final class AdminKernel extends Kernel
     yield new DoctrineBundle();
     yield new AustralToolsBundle();
     yield new AustralEntityBundle();
+    yield new AustralHttpBundle();
     yield new AustralEntityFileBundle();
     yield new AustralFormBundle();
     yield new AustralListBundle();
@@ -85,7 +88,7 @@ final class AdminKernel extends Kernel
 
   public function getCacheDir(): string
   {
-    return sys_get_temp_dir().'/austral-admin-tests/'.md5(serialize($this->adminConfig)).'/cache';
+    return sys_get_temp_dir().'/austral-admin-tests/'.md5(serialize([$this->adminConfig, $this->httpConfig])).'/cache';
   }
 
   public function getLogDir(): string
@@ -117,6 +120,7 @@ final class AdminKernel extends Kernel
         'router' => ['utf8' => true],
       ]);
       $container->loadFromExtension('twig', ['strict_variables' => true]);
+      $container->loadFromExtension('austral_http', $this->httpConfig);
       $container->loadFromExtension('doctrine', [
         'dbal' => ['driver' => 'pdo_sqlite', 'path' => $this->getDatabasePath()],
         'orm' => self::nativeLazyObjects() + [

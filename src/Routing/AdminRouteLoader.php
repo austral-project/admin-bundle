@@ -11,11 +11,10 @@
 
 namespace Austral\AdminBundle\Routing;
 
-use Austral\AdminBundle\Controller\AccountController;
-use Austral\AdminBundle\Controller\DashboardController;
-use Austral\AdminBundle\Controller\ModuleController;
+use Austral\AdminBundle\Controller\AdminController;
 use Austral\AdminBundle\Controller\SecurityController;
 use Austral\AdminBundle\DependencyInjection\Compiler\ModuleRegistryPass;
+use Austral\AdminBundle\Event\AdminHttpEvent;
 use Austral\AdminBundle\Module\ModuleAction;
 use Austral\AdminBundle\Module\ModuleDefinition;
 use Austral\AdminBundle\Module\ModuleRegistry;
@@ -35,7 +34,8 @@ use Symfony\Component\Routing\RouteCollection;
  *     type: austral_admin
  *
  * The pages of the admin (index, login, account...) and, for each module, one route by available action. The
- * prefix is "austral_admin.path".
+ * prefix is "austral_admin.path". Every route has the AdminHttpEvent (_austral_http_event): http-bundle dispatches
+ * its events, and HttpAdminEventSubscriber prepares the AdminHandler of the controller.
  *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
@@ -46,6 +46,7 @@ final class AdminRouteLoader extends Loader
   public const string ATTRIBUTE_ADMIN = '_austral_admin';
   public const string ATTRIBUTE_MODULE = '_austral_admin_module';
   public const string ATTRIBUTE_ACTION = '_austral_admin_action';
+  public const string ATTRIBUTE_HTTP_EVENT = '_austral_http_event';
 
   public const string ROUTE_INDEX = 'austral_admin_index';
   public const string ROUTE_LOGIN = 'austral_admin_security_login';
@@ -57,11 +58,15 @@ final class AdminRouteLoader extends Loader
   public const string ROUTE_ACCOUNT = 'austral_admin_my_account';
 
   /**
+   * __construct
+   *
    * @param ModuleRegistry $registry
    * @param string         $path       Prefix of the URLs (/austral-admin)
    * @param list<string>   $languages  Languages of the content, an optional segment of the URLs when not empty
    * @param string|null    $routesHash Hash of the modules (ModuleRegistryPass): the cache of the routes is refreshed when it changes
    * @param string|null    $env
+   *
+   * @return void
    */
   public function __construct(
     private readonly ModuleRegistry $registry,
@@ -74,6 +79,8 @@ final class AdminRouteLoader extends Loader
   }
 
   /**
+   * supports
+   *
    * @param mixed       $resource
    * @param string|null $type
    *
@@ -85,6 +92,8 @@ final class AdminRouteLoader extends Loader
   }
 
   /**
+   * load
+   *
    * @param mixed       $resource
    * @param string|null $type
    *
@@ -99,18 +108,18 @@ final class AdminRouteLoader extends Loader
     }
     $prefix = '/'.trim($this->path, '/');
     $pages = [
-      self::ROUTE_INDEX => ['/', DashboardController::class.'::index', ['GET']],
+      self::ROUTE_INDEX => ['/', AdminController::class.'::index', ['GET']],
       self::ROUTE_LOGIN => ['/login', SecurityController::class.'::login', ['GET', 'POST']],
       self::ROUTE_LOGOUT => ['/logout', SecurityController::class.'::logout', ['GET', 'POST']],
       self::ROUTE_LOGIN_LINK => ['/login/link', SecurityController::class.'::loginLink', ['GET', 'POST']],
       self::ROUTE_LOGIN_LINK_CHECK => ['/login/link/check', SecurityController::class.'::loginLinkCheck', ['GET', 'POST']],
       self::ROUTE_PASSWORD_FORGOT => ['/password/forgot', SecurityController::class.'::passwordForgot', ['GET', 'POST']],
       self::ROUTE_PASSWORD_RESET => ['/password/reset/{token}', SecurityController::class.'::passwordReset', ['GET', 'POST']],
-      self::ROUTE_ACCOUNT => ['/me', AccountController::class.'::edit', ['GET', 'POST']],
+      self::ROUTE_ACCOUNT => ['/me', AdminController::class.'::account', ['GET', 'POST']],
     ];
     foreach ($pages as $name => [$path, $controller, $methods])
     {
-      $route = new Route($prefix.$path, ['_controller' => $controller, self::ATTRIBUTE_ADMIN => true], methods: $methods);
+      $route = new Route($prefix.$path, ['_controller' => $controller, self::ATTRIBUTE_ADMIN => true, self::ATTRIBUTE_HTTP_EVENT => AdminHttpEvent::class], methods: $methods);
       if (self::ROUTE_PASSWORD_RESET === $name)
       {
         $route->setRequirement('token', '[0-9a-f]+');
@@ -131,6 +140,8 @@ final class AdminRouteLoader extends Loader
   }
 
   /**
+   * moduleRoutes
+   *
    * @param ModuleDefinition $definition
    * @param string           $prefix
    *
@@ -211,10 +222,12 @@ final class AdminRouteLoader extends Loader
   }
 
   /**
+   * route
+   *
    * @param ModuleDefinition $definition
    * @param string           $action
    * @param string           $path
-   * @param string           $method     Method of ModuleController
+   * @param string           $method     Method of AdminController
    * @param list<string>     $methods
    *
    * @return Route
@@ -222,8 +235,9 @@ final class AdminRouteLoader extends Loader
   private function route(ModuleDefinition $definition, string $action, string $path, string $method, array $methods): Route
   {
     $defaults = [
-      '_controller' => ModuleController::class.'::'.$method,
+      '_controller' => AdminController::class.'::'.$method,
       self::ATTRIBUTE_ADMIN => true,
+      self::ATTRIBUTE_HTTP_EVENT => AdminHttpEvent::class,
       self::ATTRIBUTE_MODULE => $definition->getPath(),
       self::ATTRIBUTE_ACTION => $action,
     ];

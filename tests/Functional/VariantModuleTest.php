@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Austral\AdminBundle\Tests\Functional;
 
 use Austral\AdminBundle\Tests\Fixtures\Entity\Page;
+use Austral\AdminBundle\Tests\Fixtures\Variant\CategoryVariantProvider;
 
 /**
  * The module "articles": a variant by category (CategoryVariantProvider), "duplicate" and "change" disabled.
@@ -46,6 +47,20 @@ final class VariantModuleTest extends AdminWebTestCase
     self::assertStringContainsString('An event', $crawler->filter('tbody')->text());
     self::assertStringContainsString('Events', $crawler->filter('.austral-admin-breadcrumb')->text());
     self::assertCount(1, $crawler->filter('a[href="/austral-admin/articles/events/new"]'), 'The URLs keep the variant.');
+  }
+
+  public function testALevelWithOneVariantIsSkipped(): void
+  {
+    CategoryVariantProvider::$categories = ['news' => 'News'];
+    try
+    {
+      $this->client->request('GET', '/austral-admin/articles');
+      self::assertResponseRedirects('/austral-admin/articles/news');
+    }
+    finally
+    {
+      CategoryVariantProvider::$categories = ['news' => 'News', 'events' => 'Events'];
+    }
   }
 
   public function testAnUnknownVariantIsNotFound(): void

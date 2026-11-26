@@ -85,7 +85,6 @@ services:
       $listViewBuilder: '@Austral\ListBundle\View\ListViewBuilder'
       $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
       $listUrls: '@Austral\AdminBundle\Page\ListUrlStore'
-      $renderer: '@Austral\AdminBundle\View\AdminRenderer'
 
   Austral\AdminBundle\Page\FormPage:
     arguments:
@@ -96,7 +95,23 @@ services:
       $query: '@Austral\AdminBundle\Page\EntityQuery'
       $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
       $listUrls: '@Austral\AdminBundle\Page\ListUrlStore'
-      $renderer: '@Austral\AdminBundle\View\AdminRenderer'
+
+  Austral\AdminBundle\Page\DashboardPage:
+    arguments:
+      $authorizationChecker: '@security.authorization_checker'
+      $navigation: '@Austral\AdminBundle\View\Navigation'
+      $dispatcher: '@Austral\AdminBundle\Event\AdminEventDispatcher'
+
+  # $languages is set by the extension (languages of the interface)
+  Austral\AdminBundle\Page\AccountPage:
+    arguments:
+      $tokenStorage: '@security.token_storage'
+      $users: '@Austral\SecurityBundle\EntityManager\Interfaces\UserEntityManagerInterface'
+      $mapperFactory: '@Austral\FormBundle\Mapper\FormMapperFactory'
+      $formFactory: '@form.factory'
+      $formHandler: '@Austral\FormBundle\Handler\FormHandler'
+      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
+      $languages: ['en', 'fr']
 
   Austral\AdminBundle\Page\EntityActions:
     arguments:
@@ -135,16 +150,6 @@ services:
     tags:
       - { name: kernel.reset, method: reset }
 
-  Austral\AdminBundle\View\AdminRenderer:
-    arguments:
-      $twig: '@twig'
-      $dispatcher: '@Austral\AdminBundle\Event\AdminEventDispatcher'
-      $breadcrumb: '@Austral\AdminBundle\View\Breadcrumb'
-
-  austral.admin.renderer:
-    alias: Austral\AdminBundle\View\AdminRenderer
-    public: true
-
   Austral\AdminBundle\Twig\AdminExtension:
     arguments:
       $navigation: '@Austral\AdminBundle\View\Navigation'
@@ -163,72 +168,84 @@ services:
     arguments:
       $registry: '@Austral\AdminBundle\Module\ModuleRegistry'
 
-##### Controllers (public: the controller resolver reads them from the container)
-  Austral\AdminBundle\Controller\ModuleController:
+##### Http (http-bundle): template parameters, handler and subscriber of the AdminHttpEvent
+  Austral\AdminBundle\Template\TemplateParameters:
+    tags:
+      - { name: kernel.reset, method: reset }
+
+  austral.admin.template:
+    alias: Austral\AdminBundle\Template\TemplateParameters
     public: true
+
+  Austral\AdminBundle\Handler\AdminHandler:
     arguments:
-      $resolver: '@Austral\AdminBundle\Module\ModuleResolver'
+      $dispatcher: '@event_dispatcher'
+      $translator: '@translator'
+      $router: '@router'
+      $requestStack: '@request_stack'
+      $environment: '%kernel.environment%'
+      $debug: '@austral.tools.debug'
+      $adminDispatcher: '@Austral\AdminBundle\Event\AdminEventDispatcher'
+      $factory: '@Austral\AdminBundle\Module\ModuleFactory'
       $listPage: '@Austral\AdminBundle\Page\ListPage'
       $formPage: '@Austral\AdminBundle\Page\FormPage'
       $entityActions: '@Austral\AdminBundle\Page\EntityActions'
       $query: '@Austral\AdminBundle\Page\EntityQuery'
       $exporter: '@Austral\AdminBundle\Export\Exporter'
+      $dashboardPage: '@Austral\AdminBundle\Page\DashboardPage'
+      $accountPage: '@Austral\AdminBundle\Page\AccountPage'
       $navigation: '@Austral\AdminBundle\View\Navigation'
+      $breadcrumb: '@Austral\AdminBundle\View\Breadcrumb'
       $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
       $listUrls: '@Austral\AdminBundle\Page\ListUrlStore'
       $csrf: '@Austral\AdminBundle\Security\CsrfGuard'
-      $renderer: '@Austral\AdminBundle\View\AdminRenderer'
     tags:
-      - { name: controller.service_arguments }
+      - { name: kernel.reset, method: reset }
 
-  Austral\AdminBundle\Controller\DashboardController:
+  austral.admin.handler:
+    alias: Austral\AdminBundle\Handler\AdminHandler
+    public: true
+
+  # $interfaceLanguages and $contentLanguages are set by the extension
+  Austral\AdminBundle\EventSubscriber\HttpAdminEventSubscriber:
+    arguments:
+      $configuration: '@austral.http.config'
+      $debug: '@austral.tools.debug'
+      $resolver: '@Austral\AdminBundle\Module\ModuleResolver'
+      $handler: '@Austral\AdminBundle\Handler\AdminHandler'
+      $templateParameters: '@Austral\AdminBundle\Template\TemplateParameters'
+      $tokenStorage: '@security.token_storage'
+      $localeSwitcher: '@?translation.locale_switcher'
+      $interfaceLanguages: ['en', 'fr']
+      $contentLanguages: []
+    tags:
+      - { name: kernel.event_subscriber }
+
+##### Controllers (public: the controller resolver reads them from the container)
+  Austral\AdminBundle\Controller\AdminController:
     public: true
     arguments:
-      $authorizationChecker: '@security.authorization_checker'
-      $navigation: '@Austral\AdminBundle\View\Navigation'
-      $dispatcher: '@Austral\AdminBundle\Event\AdminEventDispatcher'
-      $renderer: '@Austral\AdminBundle\View\AdminRenderer'
+      $router: '@router'
+      $twig: '@twig'
     tags:
       - { name: controller.service_arguments }
 
   Austral\AdminBundle\Controller\SecurityController:
     public: true
     arguments:
+      $router: '@router'
+      $twig: '@twig'
       $authenticationUtils: '@security.authentication_utils'
       $authorizationChecker: '@security.authorization_checker'
       $loginLinkRequester: '@Austral\SecurityBundle\LoginLink\LoginLinkRequester'
       $passwordResetManager: '@Austral\SecurityBundle\Password\PasswordResetManager'
       $csrf: '@Austral\AdminBundle\Security\CsrfGuard'
       $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
-      $renderer: '@Austral\AdminBundle\View\AdminRenderer'
       $passwordResetEnabled: false
     tags:
       - { name: controller.service_arguments }
 
-  Austral\AdminBundle\Controller\AccountController:
-    public: true
-    arguments:
-      $tokenStorage: '@security.token_storage'
-      $users: '@Austral\SecurityBundle\EntityManager\Interfaces\UserEntityManagerInterface'
-      $mapperFactory: '@Austral\FormBundle\Mapper\FormMapperFactory'
-      $formFactory: '@form.factory'
-      $formHandler: '@Austral\FormBundle\Handler\FormHandler'
-      $urls: '@Austral\AdminBundle\Routing\AdminUrlGenerator'
-      $renderer: '@Austral\AdminBundle\View\AdminRenderer'
-      $languages: ['en', 'fr']
-    tags:
-      - { name: controller.service_arguments }
-
 ##### Listeners
-  Austral\AdminBundle\Listener\LocaleListener:
-    arguments:
-      $tokenStorage: '@security.token_storage'
-      $localeSwitcher: '@?translation.locale_switcher'
-      $languages: ['en', 'fr']
-    tags:
-      # after the firewall (8)
-      - { name: kernel.event_listener, event: kernel.request, priority: 7 }
-
   Austral\AdminBundle\Listener\SecurityMailListener:
     arguments:
       $mailer: '@mailer'

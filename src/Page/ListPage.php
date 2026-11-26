@@ -15,7 +15,7 @@ use Austral\AdminBundle\Event\QueryAdminEvent;
 use Austral\AdminBundle\Module\Module;
 use Austral\AdminBundle\Module\ModuleAction;
 use Austral\AdminBundle\Routing\AdminUrlGenerator;
-use Austral\AdminBundle\View\AdminRenderer;
+use Austral\AdminBundle\View\AdminView;
 use Austral\FilterBundle\Doctrine\DoctrineFilterApplier;
 use Austral\FilterBundle\Handler\FilterHandler;
 use Austral\FilterBundle\Handler\FilterState;
@@ -25,12 +25,12 @@ use Austral\ListBundle\Pagination\Pagination;
 use Austral\ListBundle\View\ListViewBuilder;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Austral List Page.
  *
- * The list of an entity module: its sections, each one with its query, filters and pagination.
+ * The list of an entity module: its sections, each one with its query, filters and pagination. Called by
+ * AdminHandler::list(); Exporter uses applyFilters().
  *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
@@ -39,6 +39,8 @@ final class ListPage
   public const string TEMPLATE = '@AustralAdmin/module/list.html.twig';
 
   /**
+   * __construct
+   *
    * @param ListConfigurator      $configurator
    * @param EntityQuery           $query
    * @param FilterHandler         $filterHandler
@@ -47,7 +49,8 @@ final class ListPage
    * @param ListViewBuilder       $listViewBuilder
    * @param AdminUrlGenerator     $urls
    * @param ListUrlStore          $listUrls
-   * @param AdminRenderer         $renderer
+   *
+   * @return void
    */
   public function __construct(
     private readonly ListConfigurator $configurator,
@@ -58,17 +61,18 @@ final class ListPage
     private readonly ListViewBuilder $listViewBuilder,
     private readonly AdminUrlGenerator $urls,
     private readonly ListUrlStore $listUrls,
-    private readonly AdminRenderer $renderer,
   ) {
   }
 
   /**
+   * build
+   *
    * @param Module  $module
    * @param Request $request
    *
-   * @return Response
+   * @return AdminView
    */
-  public function render(Module $module, Request $request): Response
+  public function build(Module $module, Request $request): AdminView
   {
     $listEvent = $this->configurator->configureList($module, $request);
     $mapper = $listEvent->getMapper();
@@ -95,16 +99,17 @@ final class ListPage
 
     $sortField = $module->getDefinition()->getSortableField();
 
-    return $this->renderer->render($request, 'list', self::TEMPLATE, [
+    return new AdminView('list', self::TEMPLATE, [
       'sections' => $views,
       'filters' => $filterMapper->getGroups() ? $this->filterViewBuilder->build($filterState, $request) : [],
       'actions' => $views ? reset($views)['list']['actions'] : [],
       'sort' => null !== $sortField && $module->isGranted(ModuleAction::SORT) ? ['url' => $this->urls->module($module, ModuleAction::SORT), 'field' => $sortField] : null,
-      'language' => $module->getLanguage(),
-    ], $module);
+    ]);
   }
 
   /**
+   * applyFilters
+   *
    * @param QueryBuilder $queryBuilder
    * @param FilterMapper $mapper
    * @param FilterState  $state
@@ -122,6 +127,7 @@ final class ListPage
   }
 
   /**
+   * defaultOrder
    * The position of a sortable module when the query has no order.
    *
    * @param QueryBuilder $queryBuilder
@@ -139,6 +145,8 @@ final class ListPage
   }
 
   /**
+   * paginate
+   *
    * @param Module       $module
    * @param Request      $request
    * @param QueryBuilder $queryBuilder
@@ -146,6 +154,8 @@ final class ListPage
    * @param int          $perPage
    *
    * @return array{0: list<object>, 1: ?Pagination}
+   *
+   * @throws \Exception the error of the query of the paginator
    */
   private function paginate(Module $module, Request $request, QueryBuilder $queryBuilder, ListSection $section, int $perPage): array
   {

@@ -15,7 +15,7 @@ use Austral\AdminBundle\Page\FormPage;
 use Austral\AdminBundle\Routing\AdminRouteLoader;
 use Austral\AdminBundle\Routing\AdminUrlGenerator;
 use Austral\AdminBundle\Security\CsrfGuard;
-use Austral\AdminBundle\View\AdminRenderer;
+use Austral\AdminBundle\View\AdminView;
 use Austral\FormBundle\Field\PasswordField;
 use Austral\SecurityBundle\Entity\Interfaces\UserInterface;
 use Austral\SecurityBundle\Exception\InvalidPasswordResetTokenException;
@@ -26,48 +26,59 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Twig\Environment;
 
 /**
  * Austral Security Controller.
  *
  * The pages of the firewall of the admin: login, login link (with a confirmation page, check_post_only), password
- * forgotten and reset. The answers do not tell whether an account exists.
+ * forgotten and reset. The answers do not tell whether an account exists. Like every route of the admin, they go
+ * through the AdminHttpEvent (language, compression, template parameters), without module.
  *
  * @author Matthieu Beurel <matthieu@austral.dev>
  */
-final class SecurityController
+final class SecurityController extends AbstractAdminController
 {
   public const string TOKEN_LOGIN_LINK = 'austral_admin_login_link';
   public const string TOKEN_PASSWORD_FORGOT = 'austral_admin_password_forgot';
   public const string TOKEN_PASSWORD_RESET = 'austral_admin_password_reset';
 
   /**
+   * __construct
+   *
+   * @param RouterInterface               $router
+   * @param Environment                   $twig
    * @param AuthenticationUtils           $authenticationUtils
    * @param AuthorizationCheckerInterface $authorizationChecker
    * @param LoginLinkRequester            $loginLinkRequester
    * @param PasswordResetManager          $passwordResetManager
    * @param CsrfGuard                     $csrf
    * @param AdminUrlGenerator             $urls
-   * @param AdminRenderer                 $renderer
    * @param bool                          $passwordResetEnabled
    * @param string                        $passwordPattern      Regular expression of a new password
+   *
+   * @return void
    */
   public function __construct(
+    RouterInterface $router,
+    Environment $twig,
     private readonly AuthenticationUtils $authenticationUtils,
     private readonly AuthorizationCheckerInterface $authorizationChecker,
     private readonly LoginLinkRequester $loginLinkRequester,
     private readonly PasswordResetManager $passwordResetManager,
     private readonly CsrfGuard $csrf,
     private readonly AdminUrlGenerator $urls,
-    private readonly AdminRenderer $renderer,
     private readonly bool $passwordResetEnabled = false,
     private readonly string $passwordPattern = PasswordField::MATCH_DEFAULT,
   ) {
+    parent::__construct($router, $twig);
   }
 
   /**
+   * login
    * The form is checked by form_login of the firewall (check_path: this route).
    *
    * @param Request $request
@@ -81,16 +92,20 @@ final class SecurityController
       return new RedirectResponse($this->urls->route(AdminRouteLoader::ROUTE_INDEX));
     }
 
-    return $this->renderer->render($request, 'login', '@AustralAdmin/security/login.html.twig', [
+    return $this->renderPage(new AdminView('login', '@AustralAdmin/security/login.html.twig', [
       'last_username' => $this->authenticationUtils->getLastUsername(),
       'error' => $this->authenticationUtils->getLastAuthenticationError(),
       'login_link' => $this->loginLinkRequester->isEnabled(),
       'password_reset' => $this->passwordResetEnabled,
-    ]);
+    ]));
   }
 
   /**
+   * logout
+   *
    * @return never
+   *
+   * @throws \LogicException always: the firewall handles the logout before this controller
    */
   public function logout(): never
   {
@@ -98,9 +113,13 @@ final class SecurityController
   }
 
   /**
+   * loginLink
+   *
    * @param Request $request
    *
    * @return Response
+   *
+   * @throws NotFoundHttpException when the login link is not enabled
    */
   public function loginLink(Request $request): Response
   {
@@ -120,19 +139,22 @@ final class SecurityController
       $sent = true;
     }
 
-    return $this->renderer->render($request, 'login_link', '@AustralAdmin/security/login_link.html.twig', [
+    return $this->renderPage(new AdminView('login_link', '@AustralAdmin/security/login_link.html.twig', [
       'sent' => $sent,
       'token_id' => self::TOKEN_LOGIN_LINK,
-    ]);
+    ]));
   }
 
   /**
+   * loginLinkCheck
    * Confirmation page of a login link: the firewall (check_post_only) logs in on the POST of this page, a mail
    * scanner opening the link does not use it up.
    *
    * @param Request $request
    *
    * @return Response
+   *
+   * @throws NotFoundHttpException when the login link is not enabled
    */
   public function loginLinkCheck(Request $request): Response
   {
@@ -140,22 +162,26 @@ final class SecurityController
     {
       throw new NotFoundHttpException('The login link is not enabled.');
     }
-    $response = $this->renderer->render($request, 'login_link_check', '@AustralAdmin/security/login_link_check.html.twig', [
+    $response = $this->renderPage(new AdminView('login_link_check', '@AustralAdmin/security/login_link_check.html.twig', [
       'parameters' => array_filter([
         'user' => $request->query->get('user'),
         'expires' => $request->query->get('expires'),
         'hash' => $request->query->get('hash'),
       ], static fn (mixed $value): bool => \is_string($value) && '' !== $value),
-    ]);
+    ]));
     $response->headers->set('Referrer-Policy', 'no-referrer');
 
     return $response;
   }
 
   /**
+   * passwordForgot
+   *
    * @param Request $request
    *
    * @return Response
+   *
+   * @throws NotFoundHttpException when the password reset is not enabled
    */
   public function passwordForgot(Request $request): Response
   {
@@ -175,17 +201,21 @@ final class SecurityController
       $sent = true;
     }
 
-    return $this->renderer->render($request, 'password_forgot', '@AustralAdmin/security/password_forgot.html.twig', [
+    return $this->renderPage(new AdminView('password_forgot', '@AustralAdmin/security/password_forgot.html.twig', [
       'sent' => $sent,
       'token_id' => self::TOKEN_PASSWORD_FORGOT,
-    ]);
+    ]));
   }
 
   /**
+   * passwordReset
+   *
    * @param Request $request
    * @param string  $token
    *
    * @return Response
+   *
+   * @throws NotFoundHttpException when the password reset is not enabled
    */
   public function passwordReset(Request $request, string $token): Response
   {
@@ -224,12 +254,12 @@ final class SecurityController
       }
     }
 
-    $response = $this->renderer->render($request, 'password_reset', '@AustralAdmin/security/password_reset.html.twig', [
+    $response = $this->renderPage(new AdminView('password_reset', '@AustralAdmin/security/password_reset.html.twig', [
       'valid' => $valid,
       'errors' => $errors,
       'token' => $token,
       'token_id' => self::TOKEN_PASSWORD_RESET,
-    ], null, $valid ? ($errors ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK) : Response::HTTP_NOT_FOUND);
+    ], $valid ? ($errors ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK) : Response::HTTP_NOT_FOUND));
     $response->headers->set('Referrer-Policy', 'no-referrer');
 
     return $response;

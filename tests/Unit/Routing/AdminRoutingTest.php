@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Austral\AdminBundle\Tests\Unit\Routing;
 
+use Austral\AdminBundle\Controller\AdminController;
+use Austral\AdminBundle\Controller\SecurityController;
+use Austral\AdminBundle\Event\AdminHttpEvent;
 use Austral\AdminBundle\Module\Module;
 use Austral\AdminBundle\Module\ModuleRegistry;
 use Austral\AdminBundle\Routing\AdminRouteLoader;
@@ -79,6 +82,20 @@ final class AdminRoutingTest extends TestCase
     self::assertSame('GET /admin/security', $paths['austral_admin.module.security.list']);
     self::assertSame('csv', $routes->get('austral_admin.module.pages.export')?->getRequirement('format'));
     self::assertEquals([new ContainerParametersResource(['austral_admin.routes_hash' => 'hash'])], $routes->getResources());
+  }
+
+  public function testEveryRouteGoesThroughTheAdminHttpEvent(): void
+  {
+    foreach ($this->routes(['fr', 'en']) as $name => $route)
+    {
+      self::assertSame(AdminHttpEvent::class, $route->getDefault(AdminRouteLoader::ATTRIBUTE_HTTP_EVENT), "The route {$name} must dispatch the HTTP events of http-bundle.");
+      $controller = (string) $route->getDefault('_controller');
+      $expected = str_starts_with($name, 'austral_admin_security_') ? SecurityController::class : AdminController::class;
+      self::assertStringStartsWith($expected.'::', $controller, "Controller of the route {$name}.");
+      self::assertTrue(method_exists($expected, substr($controller, \strlen($expected) + 2)), "The method of {$controller} must exist.");
+    }
+    self::assertSame(AdminController::class.'::index', $this->routes()->get(AdminRouteLoader::ROUTE_INDEX)?->getDefault('_controller'));
+    self::assertSame(AdminController::class.'::account', $this->routes()->get(AdminRouteLoader::ROUTE_ACCOUNT)?->getDefault('_controller'));
   }
 
   public function testAChildWinsOverTheParametersOfItsParent(): void
