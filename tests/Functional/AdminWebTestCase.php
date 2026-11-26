@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\ErrorHandler\ErrorHandler;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -140,5 +141,29 @@ abstract class AdminWebTestCase extends WebTestCase
     self::assertGreaterThan(0, $meta->count(), "No CSRF token on {$url}.");
 
     return (string) $meta->first()->attr('content');
+  }
+
+  /**
+   * FrameworkBundle::boot() registers the ErrorHandler of Symfony as exception handler (without symfony/runtime):
+   * it is removed after the test, PHPUnit fails a test that leaves a handler (risky).
+   */
+  protected function tearDown(): void
+  {
+    parent::tearDown();
+    self::restoreExceptionHandlers();
+  }
+
+  private static function restoreExceptionHandlers(): void
+  {
+    while (true)
+    {
+      $handler = set_exception_handler(static fn (\Throwable $exception) => null);
+      restore_exception_handler();
+      if (!\is_array($handler) || !$handler[0] instanceof ErrorHandler)
+      {
+        return;
+      }
+      restore_exception_handler();
+    }
   }
 }
