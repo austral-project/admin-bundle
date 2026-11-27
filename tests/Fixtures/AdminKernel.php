@@ -170,6 +170,7 @@ final class AdminKernel extends Kernel
         ],
       ]);
       $container->loadFromExtension('austral_admin', array_replace_recursive([
+        'build' => __DIR__.'/build/entrypoints.json',
         'security' => ['password_reset' => true],
         'languages' => ['content' => []],
         'modules' => [

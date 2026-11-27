@@ -1,0 +1,55 @@
+{
+  "name": "@austral/admin",
+  "version": "4.0.0",
+  "description": "Administration of Austral: styles and JavaScript of the admin, built by the project with the design system of design-bundle.",
+  "license": "MIT",
+  "author": {
+    "name": "Matthieu Beurel",
+    "email": "matthieu@austral.dev",
+    "url": "https://austral.dev"
+  },
+  "homepage": "https://austral.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/austral-project/admin-bundle.git"
+  },
+  "bugs": {
+    "url": "https://github.com/austral-project/admin-bundle/issues"
+  },
+  "private": true,
+  "exports": {
+    "./encore": "./encore.mjs",
+    "./*": "./src/Resources/assets/*"
+  },
+  "files": [
+    "encore.mjs",
+    "src/Resources/assets",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": "^22.18.0 || >=24.11.0"
+  },
+  "dependencies": {
+    "@simonwep/pickr": "1.8.2",
+    "autosize": "^4.0.2",
+    "choices.js": "~10.1.0",
+    "clipboard": "^2.0.11",
+    "codemirror": "^5.65.0",
+    "cropperjs": "^1.6.0",
+    "event-source-polyfill": "^1.0.25",
+    "gsap": "^3.14.2",
+    "intl-tel-input": "^25.3.2",
+    "js-beautify": "^1.15.0",
+    "sortablejs": "^1.15.7",
+    "suneditor": "^2.47.0",
+    "sweetalert2": "^11.0.0",
+    "uuid": "^13.0.0"
+  },
+  "peerDependencies": {
+    "@symfony/webpack-encore": "^7.2.0",
+    "sass": "^1.80.0",
+    "sass-loader": "^17.0.0",
+    "webpack": "^5.82.0"
+  }
+}

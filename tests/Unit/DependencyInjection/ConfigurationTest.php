@@ -35,6 +35,7 @@ final class ConfigurationTest extends TestCase
     $config = self::process([]);
 
     self::assertSame('/austral-admin', $config['path']);
+    self::assertSame('%kernel.project_dir%/public/build/entrypoints.json', $config['build']);
     self::assertSame(['en', 'fr'], $config['languages']['interface']);
     self::assertSame([], $config['languages']['content']);
     self::assertSame(30, $config['list']['per_page']);
@@ -61,6 +62,18 @@ final class ConfigurationTest extends TestCase
     self::assertSame(['csv'], $users['downloadFormats'], 'A list is replaced, not merged.');
     self::assertSame(['duplicate'], $users['disabledActions']);
     self::assertFalse($groups['enabled']);
+  }
+
+  public function testAProjectGivesItsOwnBuild(): void
+  {
+    self::assertSame('/var/www/project/public/admin/entrypoints.json', self::process([['build' => '/var/www/project/public/admin/entrypoints.json']])['build']);
+  }
+
+  public function testAnEmptyBuildIsRefused(): void
+  {
+    $this->expectException(InvalidConfigurationException::class);
+    $this->expectExceptionMessage('The build must be the path of an entrypoints.json file');
+    self::process([['build' => ' ']]);
   }
 
   public function testTheKeysOfThe31AreRefused(): void

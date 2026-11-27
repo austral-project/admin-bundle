@@ -14,20 +14,21 @@ declare(strict_types=1);
 namespace Austral\AdminBundle\Tests\Functional;
 
 /**
- * The pages of the admin use the compiled build of design-bundle (entry austral-design-admin) and its form theme,
- * without inline style nor script (strict Content Security Policy).
+ * The pages of the admin use the build of the project (entry austral-admin, read from the entrypoints.json of the
+ * option austral_admin.build) and the form theme of design-bundle. Strict Content Security Policy: an inline style or
+ * script is only allowed with the nonce of the CSP (attribute nonce, managed by http-bundle), never without it.
  */
 final class DesignTest extends AdminWebTestCase
 {
-  public function testTheLayoutLoadsTheBuildOfDesignBundle(): void
+  public function testTheLayoutLoadsTheBuildOfTheProject(): void
   {
     $this->login('root');
 
     $crawler = $this->client->request('GET', '/austral-admin/');
 
     self::assertResponseIsSuccessful();
-    self::assertGreaterThan(0, $crawler->filter('link[rel="stylesheet"][href*="/bundles/australdesign/build/austral-design-admin."]')->count());
-    self::assertGreaterThan(0, $crawler->filter('script[src*="/bundles/australdesign/build/austral-design-admin."][defer]')->count());
+    self::assertGreaterThan(0, $crawler->filter('link[rel="stylesheet"][href="/build/austral-admin.css"]')->count());
+    self::assertGreaterThan(0, $crawler->filter('script[src="/build/austral-admin.js"][defer]')->count());
   }
 
   public function testThePagesHaveNoInlineStyleNorScript(): void
@@ -39,8 +40,8 @@ final class DesignTest extends AdminWebTestCase
     {
       $crawler = $this->client->request('GET', $url);
       self::assertResponseIsSuccessful($url);
-      self::assertSame(0, $crawler->filter('style')->count(), "Inline style on {$url}.");
-      self::assertSame(0, $crawler->filter('script:not([src])')->count(), "Inline script on {$url}.");
+      self::assertSame(0, $crawler->filter('style:not([nonce])')->count(), "Inline style without the CSP nonce on {$url}.");
+      self::assertSame(0, $crawler->filter('script:not([src]):not([nonce])')->count(), "Inline script without the CSP nonce on {$url}.");
       self::assertSame(0, $crawler->filter('[onclick], [onsubmit], [onchange]')->count(), "Inline event handler on {$url}.");
     }
   }
@@ -50,7 +51,7 @@ final class DesignTest extends AdminWebTestCase
     $crawler = $this->client->request('GET', '/austral-admin/login');
 
     self::assertResponseIsSuccessful();
-    self::assertSame(0, $crawler->filter('style, script:not([src])')->count());
+    self::assertSame(0, $crawler->filter('style:not([nonce]), script:not([src]):not([nonce])')->count(), 'Inline style or script without the CSP nonce on the login page.');
   }
 
   public function testTheFormsToConfirmHaveTheTextsOfTheConfirmation(): void

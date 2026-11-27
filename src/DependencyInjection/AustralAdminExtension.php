@@ -22,6 +22,7 @@ use Austral\AdminBundle\Page\AccountPage;
 use Austral\AdminBundle\Page\ListConfigurator;
 use Austral\AdminBundle\Routing\AdminRouteLoader;
 use Austral\AdminBundle\Twig\AdminExtension;
+use Austral\AdminBundle\Twig\BuildExtension;
 use Austral\AdminBundle\Variant\ModuleVariantProviderInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -111,6 +112,7 @@ class AustralAdminExtension extends Extension implements PrependExtensionInterfa
       'languages' => ['interface' => $interfaceLanguages, 'content' => $contentLanguages],
       'password_reset' => $config['security']['password_reset'],
     ]);
+    $container->getDefinition(BuildExtension::class)->setArgument('$entrypointsPath', $config['build']);
 
     $mailEnabled = null !== $config['mail']['from'] && interface_exists(MailerInterface::class);
     if ($mailEnabled)

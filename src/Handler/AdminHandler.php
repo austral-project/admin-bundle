@@ -200,6 +200,13 @@ final class AdminHandler extends HttpHandler
       'module' => $this->module,
       'page' => $view->page,
       'breadcrumb' => $this->breadcrumb->build($this->module, $view->last),
+      'reloadTriggerOptions' => [
+        'refresh' => [
+          'all' => ['body'],
+          'container' => ['#body-container'],
+          'default' => ['#body-container'],
+        ],
+      ],
     ];
     $event = $this->adminDispatcher->dispatchGlobal(new PageRenderEvent($this->request(), $view->page, $view->template, $vars, $this->module), AdminEvents::PAGE_RENDER);
 

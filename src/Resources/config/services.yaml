@@ -159,6 +159,15 @@ services:
     tags:
       - { name: twig.extension }
 
+  # Tags of the build of the project (austral_admin_styles() / austral_admin_scripts()), path set by the extension
+  Austral\AdminBundle\Twig\BuildExtension:
+    arguments:
+      $entrypointsPath: ''
+      $requestStack: '@?request_stack'
+    tags:
+      - { name: twig.extension }
+      - { name: kernel.reset, method: reset }
+
 ##### Security
   Austral\AdminBundle\Security\CsrfGuard:
     arguments:

@@ -3,9 +3,9 @@
  #
  # (c) Austral <support@austral.dev>
  #
- # Layout of the admin. The styles and the scripts are the compiled build of design-bundle (entry
- # austral-design-admin): no inline style nor script, for a strict Content Security Policy. An application overrides
- # the templates in templates/bundles/AustralAdminBundle/.
+ # Layout of the admin. The styles and the scripts are the build of the project (entry austral-admin of
+ # configureAustralAdmin(), see encore.mjs): no inline style nor script, for a strict Content Security Policy.
+ # An application overrides the templates in templates/bundles/AustralAdminBundle/.
  #}
 {%- trans_default_domain 'austral' -%}
 <!DOCTYPE html>
@@ -14,15 +14,38 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
+  <link type="image/x-icon" href="/bundles/australdesign/images/logo-app.png" rel="shortcut icon">
+  <meta content="&copy; Austral" name="copyright">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="application-name" content="Austral">
+
   {% if app.user -%}
-  <meta name="austral-admin-csrf-token" content="{{ austral_admin_csrf_token() }}">
+    <meta name="austral-admin-csrf-token" content="{{ austral_admin_csrf_token() }}">
   {% endif -%}
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
   <title>{% block title %}{{ austral_admin.name }}{% endblock %}</title>
   {%- block stylesheets -%}
-    {{ austral_design_styles('austral-design-admin') }}
+    {{ austral_admin_styles() }}
   {%- endblock -%}
+  {% include 'AustralAdmin/Layout/head.html.twig' ignore missing %}
+  {% if app.user %}<style nonce="{{ austral_csp_nonce() }}">:root { --color-user: {{ app.user.avatarColor ?? "#6FA8DC" }}; }</style>{% endif %}
 </head>
-<body class="austral-admin austral-admin--{{ page|default('page') }}">
+<body class="austral-admin austral-admin--{{ page|default('page') }}"
+  data-uri="{{ app.request.uri }}"
+  data-lazy-loading=""
+  data-reload-trigger-enabled="{{ reloadTriggerOptions|json_encode }}"
+  {% if mercure is defined -%}data-mercure="{{ mercure|json_encode }}"{% endif %}
+>
+
+  <div id="austral-body-container">
+    <header id="austral-admin-header" class="aside-left">
+    </header>
+  </div>
+
+
 {%- block body -%}
   <header class="austral-admin-header">
     <a href="{{ path('austral_admin_index') }}">{{ austral_admin.name }}</a>
@@ -66,7 +89,7 @@
   </div>
 {%- endblock -%}
 {%- block javascripts -%}
-  {{ austral_design_scripts('austral-design-admin') }}
+  {{ austral_admin_scripts() }}
 {%- endblock -%}
 </body>
 </html>

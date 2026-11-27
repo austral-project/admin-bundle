@@ -1,0 +1,12 @@
+{
+  "entrypoints": {
+    "austral-admin": {
+      "js": ["/build/runtime.js", "/build/austral-admin.js"],
+      "css": ["/build/shared.css", "/build/austral-admin.css"]
+    },
+    "app": {
+      "js": ["/build/runtime.js", "/build/app.js"],
+      "css": ["/build/shared.css", "/build/app.css"]
+    }
+  }
+}
